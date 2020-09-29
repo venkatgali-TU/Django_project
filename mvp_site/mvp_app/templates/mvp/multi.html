@@ -1,0 +1,85 @@
+{% extends "mvp/base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+    {% load static %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'mvp_app/style.css' %}">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <ul>
+        {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% for hidden_field in form.hidden_fields %}
+    {% if hidden_field.errors %}
+    <ul>
+        {% for error in hidden_field.errors %}
+        <li>(Hidden field {{ hidden_field.name }}) {{ error }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {{ hidden_field }}
+    {% endfor %}
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li
+                {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+            <article class="message is-info">
+                <div class="message-header">
+                    <p>Previous Submissions</p>
+                </div>
+                <div class="message-body">
+                    {{message}}
+                </div>
+            </article>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+<!--    <div class="content has-text-centered">-->
+<!--        <input type="date">-->
+<!--        {{MvpUserFormRequest.Start_Date}}-->
+<!--        <input type="date">-->
+<!--        {{MvpUserFormRequest.Start_Time}}-->
+<!--        <input type="date">-->
+<!--        {{MvpUserFormRequest.End_Date}}-->
+<!--        <input type="date">-->
+<!--        {{MvpUserFormRequest.End_Time}}-->
+<!--    </div>-->
+    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+        {% for field in form.visible_fields %}
+        <tr>
+            <th>{{ field.label_tag }}</th>
+            <td>
+                {% if field.errors %}
+                <ul>
+                    {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {{ field }}
+                {% if field.help_text %}
+                <br/>{{ field.help_text }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div class="content has-text-centered">
+
+        <td><input class="button is-info is-rounded" type="submit" value="Save and Continue" name="_con"></td>
+        <td><input class="button is-info is-rounded" type="submit" value="Submit" name="_submit"></td>
+        <!--        <button class="button is-info is-rounded">Submit</button>-->
+        <!--        <button class="button is-info is-rounded">Save and Continue</button>-->
+    </div>
+
+</form>
+{% endblock %}
