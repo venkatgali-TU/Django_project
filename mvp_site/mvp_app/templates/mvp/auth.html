@@ -1,0 +1,96 @@
+{% load socialaccount %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Google Registration{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+</head>
+<body>
+
+<section class="hero">
+    <div class="hero-body">
+        <div class="container is-fluid">
+            {% load static %}
+            <figure class="image is-128x128">
+                <img src="{% static 'images/taskus.png' %}">
+            </figure>
+            <div class="content has-text-centered">
+                <h1 class="title">
+                    Welcome to WFM Ticketing Site!
+                </h1>
+            </div>
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    <div class="hero-body">
+        <div class="content has-text-centered">
+            {% if user.is_authenticated %}
+            <p>Welcome, <strong>{{ user.username }}</strong> !</p>
+            {% else %}
+            <p>Please login with your <a href="{% provider_login_url 'google' %}">TaskUs GMail account</a></p>
+            {% endif %}
+        </div>
+
+    </div>
+
+
+    <div class="hero-foot">
+        <div class="content has-text-centered">
+            <p> Powered by <strong>Digital</strong> team. <a href="https://taskus.com">TaskUs</a>. The website
+                content is used only used internally.
+            </p>
+        </div>
+
+
+    </div>
+</section>
+
+
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta name="google-signin-scope"-->
+<!--          content="profile email https://www.googleapis.com/auth/admin.directory.user.readonly">-->
+<!--    <meta name="google-signin-client_id" content="234482154736-t5l086v5m9q4ul15sm7i12stahbfdgjd.apps.googleusercontent.com">-->
+<!--    <script src="https://apis.google.com/js/platform.js" async defer></script>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>-->
+<!--<script>-->
+<!--      function onSignIn(googleUser) {-->
+<!--        // Useful data for your client-side scripts:-->
+<!--        var profile = googleUser.getBasicProfile();-->
+<!--        console.log("ID: " + profile.getId()); // Don't send this directly to your server!-->
+<!--        console.log('Full Name: ' + profile.getName());-->
+<!--        console.log('Given Name: ' + profile.getGivenName());-->
+<!--        console.log('Family Name: ' + profile.getFamilyName());-->
+<!--        console.log("Image URL: " + profile.getImageUrl());-->
+<!--        console.log("Email: " + profile.getEmail());-->
+<!--        var authResp = googleUser.getAuthResponse();-->
+<!--        var access_token = authResp.access_token;-->
+
+<!--        fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`)-->
+<!--           .then(x => x.json())-->
+<!--           .then(x => {-->
+<!--                console.log(x);-->
+<!--                let header = { Authorization : `Bearer ${access_token}` };-->
+<!--                let directoryApi = `https://www.googleapis.com/admin/directory/v1/users/${encodeURIComponent(x.email)}?projection=full&viewType=domain_public`;-->
+<!--                fetch(directoryApi, { headers : header})-->
+<!--                    .then(z => z.json())-->
+<!--                    .then(z => {-->
+<!--                         console.log("full schema", z);-->
+<!--                         console.log("here is the employee no", z.externalIds[0].value);-->
+<!--                    });-->
+<!--           })-->
+
+<!--      }-->
+
+
+<!--        // The ID token you need to pass to your backend:-->
+<!--        //var id_token = googleUser.getAuthResponse().id_token;-->
+<!--        //console.log("ID Token: " + id_token);-->
+<!--      }-->
+
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->

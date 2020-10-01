@@ -27,18 +27,20 @@
     {{ hidden_field }}
     {% endfor %}
     {% if messages %}
-    <ul class="messages">
+    <ul class="notification">
         {% for message in messages %}
         <li
                 {% if message.tags %} class="{{ message.tags }}" {% endif %}>
-            <article class="message is-info">
-                <div class="message-header">
-                    <p>Previous Submissions</p>
-                </div>
-                <div class="message-body">
-                    {{message}}
-                </div>
-            </article>
+            {{message}}
+            <!--            <article class="message is-info">-->
+            <!--                <div class="message-header">-->
+            <!--                    <p>Your Details!</p>-->
+            <!--                </div>-->
+            <!--                <div class="message-body">-->
+            <!--                    {{message}}-->
+            <!--                </div>-->
+            <!--            </article>-->
+
         </li>
         {% endfor %}
     </ul>

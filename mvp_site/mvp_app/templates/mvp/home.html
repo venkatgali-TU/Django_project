@@ -1,5 +1,6 @@
 {% extends "mvp/base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}Irabot Plotter{% endblock %}
+{% load socialaccount %}
 
 {% block content %}
 <form action="" method="post">
@@ -8,37 +9,41 @@
     <link rel="stylesheet" type="text/css" href="{% static 'mvp_app/style.css' %}">
     {% csrf_token %}
 
-    {% if form.non_field_errors %}
-    <ul>
-        {% for error in form.non_field_errors %}
-        <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+    <!--    {% if form.non_field_errors %}-->
+    <!--    <ul>-->
+    <!--        {% for error in form.non_field_errors %}-->
+    <!--        <li>{{ error }}</li>-->
+    <!--        {% endfor %}-->
+    <!--    </ul>-->
+    <!--    {% endif %}-->
 
-    {% for hidden_field in form.hidden_fields %}
-    {% if hidden_field.errors %}
-    <ul>
-        {% for error in hidden_field.errors %}
-        <li>(Hidden field {{ hidden_field.name }}) {{ error }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {{ hidden_field }}
-    {% endfor %}
+    <!--    {% for hidden_field in form.hidden_fields %}-->
+    <!--    {% if hidden_field.errors %}-->
+    <!--    <ul>-->
+    <!--        {% for error in hidden_field.errors %}-->
+    <!--        <li>(Hidden field {{ hidden_field.name }}) {{ error }}</li>-->
+    <!--        {% endfor %}-->
+    <!--    </ul>-->
+    <!--    {% endif %}-->
+    <!--    {{ hidden_field }}-->
+    <!--    {% endfor %}-->
+    <!--    -->
     {% if messages %}
-    <ul class="messages">
+    <ul class="notification">
+
         {% for message in messages %}
         <li
                 {% if message.tags %} class="{{ message.tags }}" {% endif %}>
-            <article class="message is-info">
-                <div class="message-header">
-                    <p>Previous Submissions</p>
-                </div>
-                <div class="message-body">
-                    {{message}}
-                </div>
-            </article>
+            {{message}}
+            <!--            <article class="message is-info">-->
+            <!--                <div class="message-header">-->
+            <!--                    <p>Your Details!</p>-->
+            <!--                </div>-->
+            <!--                <div class="message-body">-->
+            <!--                    {{message}}-->
+            <!--                </div>-->
+            <!--            </article>-->
+
         </li>
         {% endfor %}
     </ul>

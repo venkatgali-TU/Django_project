@@ -36,7 +36,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mvp_app'
+    'mvp_app',
+    'allauth',
+    'allauth.account',  # <--
+    'allauth.socialaccount',  # <--
+    'allauth.socialaccount.providers.google',  # <--
 ]
 
 MIDDLEWARE = [
@@ -77,16 +81,31 @@ WSGI_APPLICATION = 'mvp_site.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'sql_server.pyodbc',
+#         'NAME': 'Django_Application',
+#         'USER': 'admin',
+#         'PASSWORD': 'Hello12345',
+#         'HOST': 'caawslp00dgtldb00.czstvmjg5rin.us-west-1.rds.amazonaws.com',
+#         'PORT': '1433',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server'
+#         }
+#
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'Django_Application',
-        'USER': 'admin',
-        'PASSWORD': 'Hello12345',
-        'HOST': 'caawslp00dgtldb00.czstvmjg5rin.us-west-1.rds.amazonaws.com',
+        'NAME': 'STG_TVT_INT',
+        'USER': 'RPA_User',
+        'PASSWORD': 'Ar5!3Y@T0C2',
+        'HOST': 'PHRZLWP02DEV01',
         'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server'
+            'driver': 'ODBC Driver 13 for SQL Server'
         }
 
     }
@@ -95,7 +114,7 @@ DATABASES = {
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'new2.db.sqlite3',
+#         'NAME': BASE_DIR / 'new5.db.sqlite3',
 #     }
 # }
 
@@ -143,3 +162,22 @@ STATIC_URL = '/static/'
 #   # Now add our custom SimpleBulma one.
 #   'django_simple_bulma.finders.SimpleBulmaFinder',
 # ]
+
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/'
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}

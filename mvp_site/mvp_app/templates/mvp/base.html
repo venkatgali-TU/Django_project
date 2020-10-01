@@ -7,23 +7,56 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
 </head>
 <body>
+{% load socialaccount %}
 <section class="hero">
-    <div class="hero-body">
-        <div class="container is-fluid">
-            {% load static %}
-            <figure class="image is-128x128">
-                <img src="{% static 'images/download.png' %}">
-            </figure>
-            <div class="content has-text-centered">
-                <h1 class="title">
-                    Work Force Management Ticketing Site
-                </h1>
+    <div class="hero-head">
+        <div class="card">
+            <div class="card-image">
+                {% load static %}
+                <figure class="image is-128x128">
+                    <img src="{% static 'images/taskus.png' %}" alt="Placeholder image">
+                </figure>
             </div>
-            <!--            <h2 class="subtitle">-->
-            <!--                Please select your entries and submit!-->
-            <!--            </h2>-->
-            {% block content %}{% endblock %}
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left">
+                        {% load static %}
+                        <figure class="image is-48x48">
+                            <img src="{% static 'images/download.png' %}" alt="Placeholder image">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <p class="title is-4"><strong>{{ user.username|default:'Welcome, seems like you are not logged in. Please login to continue' }}</strong>!</p>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="content has-text-centered">
+                        {% if user.is_authenticated %}
+                        <p><strong> Work Force Management Ticketing Site </strong></p>
+                        {% else %}
+                        <p>Please login here with your <a href="{% provider_login_url 'google' %}">TaskUs GMail account</a>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
+        <!--        <div class="container is-fluid">-->
+        <!--            {% load static %}-->
+        <!--            <figure class="image is-128x128">-->
+        <!--                <img src="{% static 'images/taskus.png' %}">-->
+        <!--            </figure>-->
+        <!--            <div class="content has-text-centered">-->
+        <!--                <h1 class="title">-->
+        <!--                    Work Force Management Ticketing Site-->
+        <!--                </h1>-->
+        <!--            </div>-->
+
+        <!--        </div>-->
+    </div>
+    <div class="hero-body">
+        {% block content %}{% endblock %}
     </div>
     <div class="hero-foot">
         <div class="content has-text-centered">
@@ -31,17 +64,7 @@
                 content is used only used internally.
             </p>
         </div>
-        <!--            <div class="container is-fluid>-->
-        <!--                <div class="content has-text-centered">-->
-        <!--                    <p>-->
-        <!--                        Powered by <strong>Digital</strong> team. <a href="https://taskus.com">TaskUs</a>. The website-->
-        <!--                        content is used only used internally.-->
-        <!--                    </p>-->
-        <!--                </div>-->
-        <!--            </div>-->
-
     </div>
 </section>
-
 </body>
 </html>
