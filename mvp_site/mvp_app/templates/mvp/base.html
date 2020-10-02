@@ -26,16 +26,16 @@
                         </figure>
                     </div>
                     <div class="media-content">
-                        <p class="title is-4">Welcome <strong>{{ user.username }}</strong>!</p>
+                        <p class="title is-4"><strong>{{ user.username|default:'Welcome, seems like you are not logged in. Please login to continue' }}</strong>!</p>
                     </div>
                 </div>
 
                 <div class="content">
                     <div class="content has-text-centered">
                         {% if user.is_authenticated %}
-                        <p> Work Force Management Ticketing Site </p>
+                        <p><strong> Work Force Management Ticketing Site </strong></p>
                         {% else %}
-                        <p>Please login with your <a href="{% provider_login_url 'google' %}">TaskUs GMail account</a>
+                        <p>Please login here with your <a href="{% provider_login_url 'google' %}">TaskUs GMail account</a>
                         </p>
                         {% endif %}
                     </div>
@@ -66,11 +66,5 @@
         </div>
     </div>
 </section>
-<script>
-
-
-
-
-</script>
 </body>
 </html>

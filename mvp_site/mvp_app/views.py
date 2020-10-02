@@ -20,9 +20,11 @@ def hello_mvp(request):
         # check whether it's valid:
 
         form.full_clean()
+        form.fields
         mvp_model = form.save()
         print(form.clean_req_type())
         if 'Single' in form.clean_user_req():
+
             if form.clean_req_type() == "OverTime":
                 return HttpResponseRedirect('/single/' + str(mvp_model.id) + '/OverTime')
             else:
@@ -39,13 +41,14 @@ def hello_mvp(request):
     # if a GET (or any other method) we'll create a blank form
     else:
         if request.user.is_authenticated:
-            username = request.user.username
-        print("in GET: " + username[2:])
+            username = "Hi " + request.user.username
+        else:
+            username = "Please login to continue"
         if not MvpForm(request.POST).is_valid():
             if "This field is required." in str(MvpForm(request.POST).errors):
-                messages.warning(request, "Please fill all the below fields", fail_silently=True)
+                messages.warning(request, username)
             else:
-                messages.warning(request, str(MvpForm(request.POST).errors), fail_silently=True)
+                messages.warning(request, str(MvpForm(request.POST).errors))
             form = MvpForm()
             context = {}
             context['form'] = form
@@ -54,12 +57,14 @@ def hello_mvp(request):
         form = MvpForm()
         context = {}
         context['form'] = form
+        Mvp.objects.filter(emp_ID=request.user.username).update(emp_ID=username)
         return render(request, "mvp/home.html", context)
 
     # return HttpResponse("Hi from MVP app!")
 
 
 def single_user(request, mvp_id, req):
+    global MESSAGE
     if req == "OverTime":
         if request.method == 'POST' and OverTimeUserRequestForm(request.POST).is_valid():
             print("IN HERE!!!")
@@ -68,6 +73,18 @@ def single_user(request, mvp_id, req):
             form.full_clean()
             mvp_model = form.save()
             context = {}
+            MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                form.cleaned_data['user_ID']) + " Name : " + str(
+                form.cleaned_data['Name']) + " Start Date : " + str(
+                form.cleaned_data['Start_Date']) + " Start time : " + str(
+                form.cleaned_data['Start_Time']) + " End Date : " + str(
+                form.cleaned_data['End_Date']) + " End Time : " + str(
+                form.cleaned_data['End_Time']) + " Activity : " + str(
+                form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                form.cleaned_data['Mul_Over'])
+            mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+            for mess in mess_split:
+                messages.success(request, mess)
             return render(request, "mvp/thanks.html", context)
         else:
             if not OverTimeUserRequestForm(request.POST).is_valid():
@@ -94,6 +111,18 @@ def single_user(request, mvp_id, req):
             form.full_clean()
             mvp_model = form.save()
             context = {}
+            MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                form.cleaned_data['user_ID']) + " Name : " + str(
+                form.cleaned_data['Name']) + " Start Date : " + str(
+                form.cleaned_data['Start_Date']) + " Start time : " + str(
+                form.cleaned_data['Start_Time']) + " End Date : " + str(
+                form.cleaned_data['End_Date']) + " End Time : " + str(
+                form.cleaned_data['End_Time']) + " Activity : " + str(
+                form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                form.cleaned_data['Mul_Over'])
+            mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+            for mess in mess_split:
+                messages.success(request, mess)
             return render(request, "mvp/thanks.html", context)
         else:
             if not TeleOptiUserRequestForm(request.POST).is_valid():
@@ -137,7 +166,9 @@ def multi_user(request, mvp_id, req):
                     form.cleaned_data['End_Time']) + " Activity : " + str(
                     form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
                     form.cleaned_data['Mul_Over'])
-                messages.success(request, MESSAGE.replace("Enter the values in the portal below", ""))
+                mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                for mess in mess_split:
+                    messages.success(request, mess)
 
                 return render(request, "mvp/multi.html", context)
             elif '_submit' in request.POST:
@@ -147,7 +178,19 @@ def multi_user(request, mvp_id, req):
                 form.full_clean()
                 mvp_model = form.save()
                 context = {}
-                messages.success(request, MESSAGE.replace("Enter the values in the portal below", ""))
+                MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                    form.cleaned_data['user_ID']) + " Name : " + str(
+                    form.cleaned_data['Name']) + " Start Date : " + str(
+                    form.cleaned_data['Start_Date']) + " Start time : " + str(
+                    form.cleaned_data['Start_Time']) + " End Date : " + str(
+                    form.cleaned_data['End_Date']) + " End Time : " + str(
+                    form.cleaned_data['End_Time']) + " Activity : " + str(
+                    form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                    form.cleaned_data['Mul_Over'])
+                mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                for mess in mess_split:
+                    messages.success(request, mess)
+                # messages.success(request, MESSAGE.replace("Enter the values in the portal below", ""))
                 return render(request, "mvp/thanks.html", context)
         else:
             if not OverTimeUserRequestForm(request.POST).is_valid():

@@ -65,22 +65,22 @@ TELEOPTI_OVERLAP = [('move_non', 'Move Non-Overwritable'), ('dont', 'Do Not Make
 
 
 class MvpForm(forms.ModelForm):
-    emp_ID = forms.CharField(label='Employee ID', required=True, widget=forms.TextInput(
-        attrs={'placeholder': 'Please give the employee ID of the requesting person'}))
-    emp_Name = forms.CharField(label='Employee Name', required=True, widget=forms.TextInput(
-        attrs={'placeholder': 'Please give the employee Name of the requesting person'}))
-
-    supervisor = forms.CharField(label='Supervisor Name', required=True, widget=forms.TextInput(
-        attrs={'placeholder': 'Please give the Supervisor ID of the requesting person'}))
-    email = forms.CharField(label='Email Address', required=True, widget=forms.TextInput(
-        attrs={'placeholder': 'Please give the employee email address of the requesting person'}))
-
-    role = forms.ChoiceField(label='Role', required=True, choices=ROLES)
-    site = forms.ChoiceField(label='Site', required=True, choices=SITE_NAMES)
-    campaign = forms.ChoiceField(label='Campaign', required=True, choices=CAMPAIGNS)
-    business_unit = forms.ChoiceField(label='Business Unit', required=True, choices=BUSINESS_UNITS)
-
-    location = forms.ChoiceField(label='Location', required=True, choices=LOCATIONS)
+    # emp_ID = forms.CharField(label='Employee ID', required=True, widget=forms.TextInput(
+    #     attrs={'placeholder': 'Please give the employee ID of the requesting person'}))
+    # emp_Name = forms.CharField(label='Employee Name', required=True, widget=forms.TextInput(
+    #     attrs={'placeholder': 'Please give the employee Name of the requesting person'}))
+    #
+    # supervisor = forms.CharField(label='Supervisor Name', required=True, widget=forms.TextInput(
+    #     attrs={'placeholder': 'Please give the Supervisor ID of the requesting person'}))
+    # email = forms.CharField(label='Email Address', required=True, widget=forms.TextInput(
+    #     attrs={'placeholder': 'Please give the employee email address of the requesting person'}))
+    #
+    # role = forms.ChoiceField(label='Role', required=True, choices=ROLES)
+    # site = forms.ChoiceField(label='Site', required=True, choices=SITE_NAMES)
+    # campaign = forms.ChoiceField(label='Campaign', required=True, choices=CAMPAIGNS)
+    # business_unit = forms.ChoiceField(label='Business Unit', required=True, choices=BUSINESS_UNITS)
+    #
+    # location = forms.ChoiceField(label='Location', required=True, choices=LOCATIONS)
     req_type = forms.ChoiceField(label='Request Type', required=True, choices=REQUEST_TYPES)
 
     user_req = forms.ChoiceField(
@@ -92,16 +92,16 @@ class MvpForm(forms.ModelForm):
     class Meta:
         model = Mvp
         fields = [
-            'emp_ID',
-            'emp_Name',
-            'location',
+            # 'emp_ID',
+            # 'emp_Name',
+            # 'location',
             'req_type',
-            'supervisor',
-            'email',
-            'role',
-            'site',
-            'campaign',
-            'business_unit',
+            # 'supervisor',
+            # 'email',
+            # 'role',
+            # 'site',
+            # 'campaign',
+            # 'business_unit',
             'user_req'
         ]
 
