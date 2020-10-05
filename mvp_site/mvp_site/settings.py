@@ -34,13 +34,15 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mvp_app',
     'allauth',
     'allauth.account',  # <--
     'allauth.socialaccount',  # <--
-    'allauth.socialaccount.providers.google',  # <--
+    'allauth.socialaccount.providers.google',
+
 ]
 
 MIDDLEWARE = [
@@ -72,8 +74,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mvp_site.wsgi.application'
-# SECURE_SSL_REDIRECT = False
-# SECURE_BROWSER_XSS_FILTER = True
+SECURE_SSL_REDIRECT = False
+# # SECURE_BROWSER_XSS_FILTER = True
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
 # X_FRAME_OPTIONS = 'DENY'
@@ -81,35 +83,35 @@ WSGI_APPLICATION = 'mvp_site.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'sql_server.pyodbc',
-#         'NAME': 'Django_Application',
-#         'USER': 'admin',
-#         'PASSWORD': 'Hello12345',
-#         'HOST': 'caawslp00dgtldb00.czstvmjg5rin.us-west-1.rds.amazonaws.com',
-#         'PORT': '1433',
-#         'OPTIONS': {
-#             'driver': 'ODBC Driver 17 for SQL Server'
-#         }
-#
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'STG_TVT_INT',
-        'USER': 'RPA_User',
-        'PASSWORD': 'Ar5!3Y@T0C2',
-        'HOST': 'PHRZLWP02DEV01',
+        'NAME': 'Django_Application',
+        'USER': 'admin',
+        'PASSWORD': 'Hello12345',
+        'HOST': 'caawslp00dgtldb00.czstvmjg5rin.us-west-1.rds.amazonaws.com',
         'PORT': '1433',
         'OPTIONS': {
-            'driver': 'ODBC Driver 13 for SQL Server'
+            'driver': 'ODBC Driver 17 for SQL Server'
         }
 
     }
 }
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'sql_server.pyodbc',
+#         'NAME': 'STG_TVT_INT',
+#         'USER': 'RPA_User',
+#         'PASSWORD': 'Ar5!3Y@T0C2',
+#         'HOST': 'PHRZLWP02DEV01',
+#         'PORT': '1433',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 13 for SQL Server'
+#         }
+#
+#     }
+# }
 
 # DATABASES = {
 #     'default': {
@@ -168,7 +170,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
-SITE_ID = 1
+SITE_ID = 13
 LOGIN_REDIRECT_URL = '/'
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
