@@ -45,37 +45,40 @@ def hello_mvp(request):
     # if a GET (or any other method) we'll create a blank form
     else:
         if request.user.is_authenticated:
-            username = "Hi " + request.user.username
+            username = str(request.user.email).replace("@", "%40")
         else:
             username = "Please login to continue"
 
         if not MvpForm(request.POST).is_valid():
             if "This field is required." in str(MvpForm(request.POST).errors):
                 if "Please" not in username:
-                    final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/"+"3054204"#username[5:]#3054204"
+                    final_url = "https://epmsapi.taskus.prv/v1/api/employees/email/" + username  # 3054204"
                     final_headers = {
                         "x-api-key": "lsUfB4oaUX"
                     }
                     try:
-                        #fin = requests.get(final_url, final_headers, False)
+                        # fin = requests.get(final_url, final_headers, False)
+                        print(username[5:])
                         fin = requests.get(final_url, headers=final_headers, verify=False)
-                    except ConnectionError:
+
+                        # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                        temp_data_json = json.loads(json.dumps(fin.json()))
+                        messages.warning(request, " ID : " + str(temp_data_json['id']))
+                        messages.warning(request, " First Name : " + str(temp_data_json['firstName']))
+                        messages.warning(request, " Last Name : " + str(temp_data_json['lastName']))
+                        messages.warning(request, " Email : " + str(temp_data_json['email']))
+                        messages.warning(request, " Supervisor Email : " + str(temp_data_json['supervisorEmployeeId']))
+                        messages.warning(request, " Position : " + str(temp_data_json['position']['name']))
+                        messages.warning(request, " Site : " + str(temp_data_json['site']['name']))
+                        messages.warning(request, " Country Code : " + str(temp_data_json['site']['countryCode']))
+                        messages.warning(request, " Location : " + str(temp_data_json['site']['location']))
+                        messages.warning(request, " Time Zone : " + str(temp_data_json['site']['timeZone']))
+                        messages.warning(request, " Campaign : " + str(temp_data_json['campaign']['name']))
+                    except ConnectionError and KeyError:
+                        messages.warning(request, " Couldn't identify your profile! " + str(username))
                         print("connection refused")
 
-                    # temp_data_json = json.loads(json.dumps(fin.json()))
-
-                    temp_data_json = json.loads(json.dumps(fin.json()))
-                    messages.warning(request, " ID : " + str(temp_data_json['id']))
-                    messages.warning(request, " First Name : " + str(temp_data_json['firstName']))
-                    messages.warning(request, " Last Name : " + str(temp_data_json['lastName']))
-                    messages.warning(request, " Email : " + str(temp_data_json['email']))
-                    messages.warning(request, " Supervisor Email : " + str(temp_data_json['supervisorEmployeeId']))
-                    messages.warning(request, " Position : " + str(temp_data_json['position']['name']))
-                    messages.warning(request, " Site : " + str(temp_data_json['site']['name']))
-                    messages.warning(request, " Country Code : " + str(temp_data_json['site']['countryCode']))
-                    messages.warning(request, " Location : " + str(temp_data_json['site']['location']))
-                    messages.warning(request, " Time Zone : " + str(temp_data_json['site']['timeZone']))
-                    messages.warning(request, " Campaign : " + str(temp_data_json['campaign']['name']))
                 else:
                     messages.warning(request, username)
 

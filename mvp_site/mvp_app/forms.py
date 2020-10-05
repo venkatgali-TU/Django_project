@@ -3,6 +3,7 @@ import re
 from .models import Mvp, MvpUserRequest
 from email.utils import parseaddr
 import re
+from datetime import datetime
 
 USERS_REQ_TYPE = [('single_user', 'Single User'), ('multi_user', 'Multiple Users')]
 SITE_NAMES = [('rgz', 'Rangreza'), ('liz_n', 'Lizzys Nook'), ('liz_l', 'LizardBear Lair'), ('htw', 'Home Teamwork'),
@@ -224,16 +225,18 @@ class MvpForm(forms.ModelForm):
 class OverTimeUserRequestForm(forms.ModelForm):
     # Start_Date = forms.DateTimeField()
     # End_Date = forms.DateTimeField()
-    # End_Time = forms.DateTimeField()
-    Start_Time = forms.CharField(label='Start_Time', required=True, widget=forms.TextInput(
-        attrs={'placeholder': '##:##'}))
+    # # End_Time = forms.DateTimeField()
+    # Start_Time = forms.CharField(label='Start_Time', required=True, widget=forms.TextInput(
+    #     attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}))
+    #
+    # End_Time = forms.CharField(label='End_Time', required=True, widget=forms.TextInput(
+    #     attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}))
 
-    End_Time = forms.CharField(label='End_Time', required=True, widget=forms.TextInput(
-        attrs={'placeholder': '##:##'}))
+    Activity = forms.ChoiceField(label='Activity', required=True, choices=OT_ACTIVITY,
+                                 widget=forms.Select(attrs={'class': 'select'}))
 
-    Activity = forms.ChoiceField(label='Activity', required=True, choices=OT_ACTIVITY)
-
-    Mul_Over = forms.ChoiceField(label='Multiplicator', required=True, choices=OT_MULTIPLICATOR)
+    Mul_Over = forms.ChoiceField(label='Multiplicator', required=True, choices=OT_MULTIPLICATOR,
+                                 widget=forms.Select(attrs={'class': 'select'}))
 
     class Meta:
         model = MvpUserRequest
@@ -250,19 +253,31 @@ class OverTimeUserRequestForm(forms.ModelForm):
         ]
         widgets = {
             'user_ID': forms.TextInput(
-                attrs={'placeholder': 'Please give the ID of  the requesting person'}),
+                attrs={'class': 'input is-primary', 'type': 'text',
+                       'placeholder': 'Please give the ID of  the requesting person'}),
             'Name': forms.TextInput(
-                attrs={'placeholder': 'Please give the Name of  the requesting person'}),
-            'Start_Date': forms.SelectDateWidget(years=YEAR_CHOICES),
-            # 'Start_Time': forms.TextInput(
-            #     attrs={'placeholder': '##:##'}),
-            'End_Date': forms.SelectDateWidget(years=YEAR_CHOICES),
-            # 'End_Time': forms.TextInput(
-            #     attrs={'placeholder': '##:##'}),
+                attrs={'class': 'input is-primary', 'type': 'text',
+                       'placeholder': 'Please give the Name of  the requesting person'}),
+            'Start_Date': forms.SelectDateWidget(years=YEAR_CHOICES, attrs={'class':
+                                                                                'select'}),
+            'Start_Time': forms.TextInput(
+                attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}),
+            'End_Date': forms.SelectDateWidget(years=YEAR_CHOICES, attrs={'class':
+                                                                              'select'}),
+            'End_Time': forms.TextInput(
+                attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}),
             'BreakTime': forms.TextInput(
-                attrs={'placeholder': 'Please give the Break Time email address of the requesting person'})
+                attrs={'class': 'input is-primary', 'type': 'text',
+                       'placeholder': 'Please give the Break Time'}),
+            # 'Activity': forms.Select(attrs={'class': 'select'})
             # 'Status': forms.TextInput(disabled=True)
 
+        }
+        labels = {
+            'user_ID': 'Employee ID',
+            'Name': 'Employee Name',
+            'Start_Time': 'Start Time',
+            'End_Time': 'End Time'
         }
 
         def clean_activity(self, *args, **kwargs):
@@ -294,6 +309,20 @@ class OverTimeUserRequestForm(forms.ModelForm):
             else:
                 raise forms.ValidationError("This is not a valid time format")
 
+        def clean_Start_Date(self):
+            date = self.cleaned_data['Start_Date']
+            print(date)
+            if date < datetime.date.today():
+                raise forms.ValidationError("The date cannot be in the past!")
+            return date
+
+        def clean_End_Date(self):
+            date = self.cleaned_data['End_Date']
+            print(date)
+            if date < datetime.date.today():
+                raise forms.ValidationError("The date cannot be in the past!")
+            return date
+
 
 class TeleOptiUserRequestForm(forms.ModelForm):
     # Start_Date = forms.DateTimeField()
@@ -301,14 +330,16 @@ class TeleOptiUserRequestForm(forms.ModelForm):
     # End_Time = forms.DateTimeField()
     # Start_Time = forms.DateTimeField()
     Start_Time = forms.CharField(label='Start_Time', required=True, widget=forms.TextInput(
-        attrs={'placeholder': '##:##'}))
+        attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}))
 
     End_Time = forms.CharField(label='End_Time', required=True, widget=forms.TextInput(
-        attrs={'placeholder': '##:##'}))
+        attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}))
 
-    Activity = forms.ChoiceField(label='Activity', required=True, choices=TELEOPTI_ACTIVITY)
+    Activity = forms.ChoiceField(label='Activity', required=True, choices=TELEOPTI_ACTIVITY,
+                                 widget=forms.Select(attrs={'class': 'select'}))
 
-    Mul_Over = forms.ChoiceField(label='OverLap Status', required=True, choices=TELEOPTI_OVERLAP)
+    Mul_Over = forms.ChoiceField(label='OverLap Status', required=True, choices=TELEOPTI_OVERLAP,
+                                 widget=forms.Select(attrs={'class': 'select'}))
 
     class Meta:
         model = MvpUserRequest
@@ -324,19 +355,31 @@ class TeleOptiUserRequestForm(forms.ModelForm):
         ]
         widgets = {
             'user_ID': forms.TextInput(
-                attrs={'placeholder': 'Please give the ID of  the requesting person'}),
+                attrs={'class': 'input is-primary', 'type': 'text',
+                       'placeholder': 'Please give the ID of  the requesting person'}),
             'Name': forms.TextInput(
-                attrs={'placeholder': 'Please give the Name of  the requesting person'}),
-            'Start_Date': forms.SelectDateWidget(years=YEAR_CHOICES),
-            # 'Start_Time': forms.TextInput(
-            #     attrs={'placeholder': '##:##'}),
-            'End_Date': forms.SelectDateWidget(years=YEAR_CHOICES),
-            # 'End_Time': forms.TextInput(
-            #     attrs={'placeholder': '##:##'}),
+                attrs={'class': 'input is-primary', 'type': 'text',
+                       'placeholder': 'Please give the Name of  the requesting person'}),
+            'Start_Date': forms.SelectDateWidget(years=YEAR_CHOICES, attrs={'class':
+                                                                                'select'}),
+            'Start_Time': forms.TextInput(
+                attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}),
+            'End_Date': forms.SelectDateWidget(years=YEAR_CHOICES, attrs={'class':
+                                                                              'select'}),
+            'End_Time': forms.TextInput(
+                attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}),
             'BreakTime': forms.TextInput(
-                attrs={'placeholder': 'Please give the Break Time email address of the requesting person'})
+                attrs={'class': 'input is-primary', 'type': 'text',
+                       'placeholder': 'Please give the Break Time'}),
+            # 'Activity': forms.Select(attrs={'class': 'select'})
             # 'Status': forms.TextInput(disabled=True)
 
+        }
+        labels = {
+            'user_ID': 'Employee ID',
+            'Name': 'Employee Name',
+            'Start_Time': 'Start Time',
+            'End_Time': 'End Time'
         }
 
         def clean_activity(self, *args, **kwargs):
@@ -368,3 +411,17 @@ class TeleOptiUserRequestForm(forms.ModelForm):
                 return time
             else:
                 raise forms.ValidationError("This is not a valid time format")
+
+        def clean_Start_Date(self):
+            date = self.cleaned_data['Start_Date']
+            print(date)
+            if date < datetime.date.today():
+                raise forms.ValidationError("The date cannot be in the past!")
+            return date
+
+        def clean_End_Date(self):
+            date = self.cleaned_data['End_Date']
+            print(date)
+            if date < datetime.date.today():
+                raise forms.ValidationError("The date cannot be in the past!")
+            return date
