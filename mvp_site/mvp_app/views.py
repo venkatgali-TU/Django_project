@@ -21,6 +21,16 @@ def hello_mvp(request):
     print(MvpForm(request.POST).errors)
     if request.method == 'POST' and MvpForm(request.POST).is_valid():
         # create a form instance and populate it with data from the request:
+        #############
+        if not request.user.is_authenticated:
+            form = MvpForm()
+            context = {}
+            context['form'] = form
+            messages.warning(request, " Please login to the Gmail accoun to continue")
+            return render(request, "mvp/home.html", context)
+
+        #############
+
         form = MvpForm(request.POST)
         # check whether it's valid:
 
@@ -84,19 +94,17 @@ def hello_mvp(request):
                     messages.warning(request, username)
 
             else:
-                messages.warning(request, str(MvpForm(request.POST).errors))
+                messages.warning(request, str(MvpForm(request.POST).errors),fail_silently=True)
             form = MvpForm()
             context = {}
             context['form'] = form
             return render(request, "mvp/home.html", context)
 
-        form = MvpForm()
-        context = {}
-        context['form'] = form
-        Mvp.objects.filter(emp_ID=request.user.username).update(emp_ID=username)
-        return render(request, "mvp/home.html", context)
-
-    # return HttpResponse("Hi from MVP app!")
+        # form = MvpForm()
+        # context = {}
+        # context['form'] = form
+        # Mvp.objects.filter(emp_ID=request.user.username).update(emp_ID=username)
+        # return render(request, "mvp/home.html", context)
 
 
 def single_user(request, mvp_id, req):
@@ -143,11 +151,7 @@ def single_user(request, mvp_id, req):
                 if "This field is required." in str(TeleOptiUserRequestForm(request.POST).errors):
                     messages.warning(request, "Please fill all the below fields", fail_silently=True)
                 else:
-                    mess = ""
-                    if "This field is required." in str(TeleOptiUserRequestForm(request.POST).errors):
-                        messages.warning(request, "Please fill all the required fields", fail_silently=True)
-                    else:
-                        messages.warning(request, str(TeleOptiUserRequestForm(request.POST).errors), fail_silently=True)
+                    messages.warning(request, str(TeleOptiUserRequestForm(request.POST).errors), fail_silently=True)
                     # messages.warning(request, re.search('<li>(.*)</li>', str(TeleOptiUserRequestForm(request.POST).errors).replace("__all__","")).group(1), fail_silently=True)
                 form = TeleOptiUserRequestForm()
                 context = {}

@@ -1,12 +1,9 @@
 from django import forms
-import re
-
 from django.core.exceptions import ValidationError
-
 from .models import Mvp, MvpUserRequest
 from email.utils import parseaddr
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 USERS_REQ_TYPE = [('single_user', 'Single User'), ('multi_user', 'Multiple Users')]
 SITE_NAMES = [('rgz', 'Rangreza'), ('liz_n', 'Lizzys Nook'), ('liz_l', 'LizardBear Lair'), ('htw', 'Home Teamwork'),
@@ -289,18 +286,64 @@ class OverTimeUserRequestForm(forms.ModelForm):
         name = cleaned_data.get("Name")
         str_time = cleaned_data.get('Start_Time')
         end_time = cleaned_data.get('End_Time')
+        str_date = cleaned_data.get('Start_Date')
+        end_date = cleaned_data.get('End_Date')
 
         if user_id and name and str_time and end_time:
             # Only do something if both fields are valid so far.
+            # print(type(str_date))
+            str_date = datetime.strptime(str_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+            past = datetime.now() - timedelta(days=7)
+
+            if str_date < past or end_date < past:
+                raise ValidationError("Please enter start/end date no later than 7 days from now")
+
+            if str_date > end_date:
+                raise ValidationError("Please enter start date less than end date")
+
             if len(user_id) != 7:
                 raise ValidationError(
                     "Please enter a valid ID (7 numbers)"
                 )
             if len(str_time) != 5 and ":" not in str_time:
                 raise ValidationError("please enter a valid start time")
+            else:
+                str_time_split = str_time.split(":")
+                str_hour = str_time_split[0]
+                str_min = str_time_split[1]
+                try:
+                    str_hour = int(str_hour)
+                    str_min = int(str_min)
+
+                    print(str(str_hour))
+                    print(str(str_min))
+                    if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
+                        raise ValidationError("please enter a valid start time")
+                except ValueError:
+                    raise ValidationError("please enter a valid start time")
 
             if len(end_time) != 5 and ":" not in end_time:
                 raise ValidationError("please enter a valid end time")
+            else:
+                end_time_split = end_time.split(":")
+                end_hour = end_time_split[0]
+                end_min = end_time_split[1]
+                try:
+                    end_hour = int(end_hour)
+                    end_min = int(end_min)
+                    if end_hour > 23 or end_hour < 0 or end_min > 59 or end_min < 0:
+                        raise ValidationError("please enter a valid end time")
+                except ValueError:
+                    raise ValidationError("please enter a valid end time")
+            try:
+                start_time_date = datetime.strptime(str_time, '%H:%M')
+                end_time_date = datetime.strptime(end_time, '%H:%M')
+                if start_time_date > end_time_date:
+                    raise ValidationError("Please enter start time less than end time")
+            except ValueError:
+                raise ValidationError("Please enter valid start/end time")
+
         else:
             raise ValidationError(
                 "Not a valid input, Please try again with correct input"
@@ -371,18 +414,65 @@ class TeleOptiUserRequestForm(forms.ModelForm):
         name = cleaned_data.get("Name")
         str_time = cleaned_data.get('Start_Time')
         end_time = cleaned_data.get('End_Time')
+        str_date = cleaned_data.get('Start_Date')
+        end_date = cleaned_data.get('End_Date')
 
         if user_id and name and str_time and end_time:
             # Only do something if both fields are valid so far.
+            # print(type(str_date))
+            str_date = datetime.strptime(str_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+            past = datetime.now() - timedelta(days=7)
+
+
+            if str_date < past or end_date < past:
+                raise ValidationError("Please enter start/end date no later than 7 days from now")
+
+            if str_date > end_date:
+                raise ValidationError("Please enter start date less than end date")
+
             if len(user_id) != 7:
                 raise ValidationError(
                     "Please enter a valid ID (7 numbers)"
                 )
             if len(str_time) != 5 and ":" not in str_time:
                 raise ValidationError("please enter a valid start time")
+            else:
+                str_time_split = str_time.split(":")
+                str_hour = str_time_split[0]
+                str_min = str_time_split[1]
+                try:
+                    str_hour = int(str_hour)
+                    str_min = int(str_min)
+
+                    print(str(str_hour))
+                    print(str(str_min))
+                    if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
+                        raise ValidationError("please enter a valid start time")
+                except ValueError:
+                    raise ValidationError("please enter a valid start time")
 
             if len(end_time) != 5 and ":" not in end_time:
                 raise ValidationError("please enter a valid end time")
+            else:
+                end_time_split = end_time.split(":")
+                end_hour = end_time_split[0]
+                end_min = end_time_split[1]
+                try:
+                    end_hour = int(end_hour)
+                    end_min = int(end_min)
+                    if end_hour > 23 or end_hour < 0 or end_min > 59 or end_min < 0:
+                        raise ValidationError("please enter a valid end time")
+                except ValueError:
+                    raise ValidationError("please enter a valid end time")
+            try:
+                start_time_date = datetime.strptime(str_time, '%H:%M')
+                end_time_date = datetime.strptime(end_time, '%H:%M')
+                if start_time_date > end_time_date:
+                    raise ValidationError("Please enter start time less than end time")
+            except ValueError:
+                raise ValidationError("Please enter valid start/end time")
+
         else:
             raise ValidationError(
                 "Not a valid input, Please try again with correct input"
