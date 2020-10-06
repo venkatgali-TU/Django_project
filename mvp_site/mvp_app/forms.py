@@ -1,5 +1,8 @@
 from django import forms
 import re
+
+from django.core.exceptions import ValidationError
+
 from .models import Mvp, MvpUserRequest
 from email.utils import parseaddr
 import re
@@ -280,48 +283,28 @@ class OverTimeUserRequestForm(forms.ModelForm):
             'End_Time': 'End Time'
         }
 
-        def clean_activity(self, *args, **kwargs):
-            act = self.cleaned_data.get("Activity")
-            for items in OT_ACTIVITY:
-                if act in items:
-                    new_act = items[1]
-            return new_act
+    def clean(self):
+        cleaned_data = super().clean()
+        user_id = cleaned_data.get("user_ID")
+        name = cleaned_data.get("Name")
+        str_time = cleaned_data.get('Start_Time')
+        end_time = cleaned_data.get('End_Time')
 
-        def clean_mul(self, *args, **kwargs):
-            mul = self.cleaned_data.get("Mul_Over")
-            for items in OT_MULTIPLICATOR:
-                if mul in items:
-                    new_mul = items[1]
-            return new_mul
+        if user_id and name and str_time and end_time:
+            # Only do something if both fields are valid so far.
+            if len(user_id) != 7:
+                raise ValidationError(
+                    "Please enter a valid ID (7 numbers)"
+                )
+            if len(str_time) != 5 and ":" not in str_time:
+                raise ValidationError("please enter a valid start time")
 
-        def clean_Start_Time(self, *args, **kwargs):
-            time = self.cleaned_data.get("Start_Time")
-            r = re.compile('.*:.*')
-            if ":" in time and int(time.split(":")[0]).isdecimal() and int(time.split(":")[1]).isdecimal():
-                return time
-            else:
-                raise forms.ValidationError("This is not a valid time format")
-
-        def clean_End_Time(self, *args, **kwargs):
-            time = self.cleaned_data.get("End_Time")
-            if ":" in time and int(time.split(":")[0]).isdecimal() and int(time.split(":")[1]).isdecimal():
-                return time
-            else:
-                raise forms.ValidationError("This is not a valid time format")
-
-        def clean_Start_Date(self):
-            date = self.cleaned_data['Start_Date']
-            print(date)
-            if date < datetime.date.today():
-                raise forms.ValidationError("The date cannot be in the past!")
-            return date
-
-        def clean_End_Date(self):
-            date = self.cleaned_data['End_Date']
-            print(date)
-            if date < datetime.date.today():
-                raise forms.ValidationError("The date cannot be in the past!")
-            return date
+            if len(end_time) != 5 and ":" not in end_time:
+                raise ValidationError("please enter a valid end time")
+        else:
+            raise ValidationError(
+                "Not a valid input, Please try again with correct input"
+            )
 
 
 class TeleOptiUserRequestForm(forms.ModelForm):
@@ -382,46 +365,25 @@ class TeleOptiUserRequestForm(forms.ModelForm):
             'End_Time': 'End Time'
         }
 
-        def clean_activity(self, *args, **kwargs):
-            act = self.cleaned_data.get("Activity")
-            for items in TELEOPTI_ACTIVITY:
-                if act in items:
-                    new_act = items[1]
-            return new_act
+    def clean(self):
+        cleaned_data = super().clean()
+        user_id = cleaned_data.get("user_ID")
+        name = cleaned_data.get("Name")
+        str_time = cleaned_data.get('Start_Time')
+        end_time = cleaned_data.get('End_Time')
 
-        def clean_mul(self, *args, **kwargs):
-            mul = self.cleaned_data.get("Mul_Over")
-            for items in TELEOPTI_OVERLAP:
-                if mul in items:
-                    new_mul = items[1]
-            return new_mul
+        if user_id and name and str_time and end_time:
+            # Only do something if both fields are valid so far.
+            if len(user_id) != 7:
+                raise ValidationError(
+                    "Please enter a valid ID (7 numbers)"
+                )
+            if len(str_time) != 5 and ":" not in str_time:
+                raise ValidationError("please enter a valid start time")
 
-        def clean_Start_Time(self, *args, **kwargs):
-            time = self.cleaned_data.get("Start_Time")
-            r = re.compile('.*:.*')
-            if ":" in time:
-                return time
-            else:
-                raise forms.ValidationError("This is not a valid time format")
-
-        def clean_End_Time(self, *args, **kwargs):
-            time = self.cleaned_data.get("End_Time")
-            r = re.compile('.*:.*')
-            if ":" in time:
-                return time
-            else:
-                raise forms.ValidationError("This is not a valid time format")
-
-        def clean_Start_Date(self):
-            date = self.cleaned_data['Start_Date']
-            print(date)
-            if date < datetime.date.today():
-                raise forms.ValidationError("The date cannot be in the past!")
-            return date
-
-        def clean_End_Date(self):
-            date = self.cleaned_data['End_Date']
-            print(date)
-            if date < datetime.date.today():
-                raise forms.ValidationError("The date cannot be in the past!")
-            return date
+            if len(end_time) != 5 and ":" not in end_time:
+                raise ValidationError("please enter a valid end time")
+        else:
+            raise ValidationError(
+                "Not a valid input, Please try again with correct input"
+            )

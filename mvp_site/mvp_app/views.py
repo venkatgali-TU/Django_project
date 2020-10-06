@@ -9,6 +9,7 @@ import argparse
 import json
 import requests
 import simplejson as json
+import re
 
 CRITICAL = 50
 MESSAGE = "Enter the values in the portal below"
@@ -58,7 +59,7 @@ def hello_mvp(request):
                     }
                     try:
                         # fin = requests.get(final_url, final_headers, False)
-                        print(username[5:])
+                        # print(username[5:])
                         fin = requests.get(final_url, headers=final_headers, verify=False)
 
                         # temp_data_json = json.loads(json.dumps(fin.json()))
@@ -100,18 +101,20 @@ def hello_mvp(request):
 
 def single_user(request, mvp_id, req):
     if req == "OverTime":
-        if request.method == 'POST' and OverTimeUserRequestForm(request.POST).is_valid():
-            print("IN HERE!!!")
-            form = OverTimeUserRequestForm(request.POST)
-            # check whether it's valid:
-            form.full_clean()
-            mvp_model = form.save()
-            context = {}
-            return render(request, "mvp/thanks.html", context)
-        else:
-            if not OverTimeUserRequestForm(request.POST).is_valid():
+        if request.method == 'POST':  # and OverTimeUserRequestForm(request.POST).is_valid():
+            if OverTimeUserRequestForm(request.POST).is_valid():
+                print("IN HERE!!!")
+                form = OverTimeUserRequestForm(request.POST)
+                # check whether it's valid:
+                form.full_clean()
+                mvp_model = form.save()
+                context = {}
+                return render(request, "mvp/thanks.html", context)
+            else:
+                result = "Invalid form"
+
                 if "This field is required." in str(OverTimeUserRequestForm(request.POST).errors):
-                    messages.warning(request, "Please fill all the below fields", fail_silently=True)
+                    messages.warning(request, "Please fill all the required fields", fail_silently=True)
                 else:
                     messages.warning(request, str(OverTimeUserRequestForm(request.POST).errors), fail_silently=True)
                 form = OverTimeUserRequestForm()
@@ -119,6 +122,7 @@ def single_user(request, mvp_id, req):
                 context['form'] = form
                 return render(request, "mvp/single.html", context)
 
+        else:
             mvp_model = Mvp.objects.get(id=mvp_id)
             form = OverTimeUserRequestForm()
             context = {}
@@ -126,25 +130,31 @@ def single_user(request, mvp_id, req):
 
             return render(request, "mvp/single.html", context)
     else:
-        if request.method == 'POST' and TeleOptiUserRequestForm(request.POST).is_valid():
-            print("IN HERE!!!")
-            form = TeleOptiUserRequestForm(request.POST)
-            # check whether it's valid:
-            form.full_clean()
-            mvp_model = form.save()
-            context = {}
-            return render(request, "mvp/thanks.html", context)
-        else:
-            if not TeleOptiUserRequestForm(request.POST).is_valid():
+        if request.method == 'POST':  # and TeleOptiUserRequestForm(request.POST).is_valid():
+            if TeleOptiUserRequestForm(request.POST).is_valid():
+                print("IN HERE!!!")
+                form = TeleOptiUserRequestForm(request.POST)
+                # check whether it's valid:
+                form.full_clean()
+                mvp_model = form.save()
+                context = {}
+                return render(request, "mvp/thanks.html", context)
+            else:
                 if "This field is required." in str(TeleOptiUserRequestForm(request.POST).errors):
                     messages.warning(request, "Please fill all the below fields", fail_silently=True)
                 else:
-                    messages.warning(request, str(TeleOptiUserRequestForm(request.POST).errors), fail_silently=True)
+                    mess = ""
+                    if "This field is required." in str(TeleOptiUserRequestForm(request.POST).errors):
+                        messages.warning(request, "Please fill all the required fields", fail_silently=True)
+                    else:
+                        messages.warning(request, str(TeleOptiUserRequestForm(request.POST).errors), fail_silently=True)
+                    # messages.warning(request, re.search('<li>(.*)</li>', str(TeleOptiUserRequestForm(request.POST).errors).replace("__all__","")).group(1), fail_silently=True)
                 form = TeleOptiUserRequestForm()
                 context = {}
                 context['form'] = form
                 return render(request, "mvp/single.html", context)
 
+        else:
             mvp_model = Mvp.objects.get(id=mvp_id)
             form = TeleOptiUserRequestForm()
             context = {}
