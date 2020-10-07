@@ -4,12 +4,14 @@ from django.shortcuts import render
 
 # Create your views here.
 from .forms import MvpForm, TeleOptiUserRequestForm, OverTimeUserRequestForm
-from .models import Mvp
+from .models import Mvp, MvpUserRequest
 import argparse
 import json
 import requests
 import simplejson as json
 import re
+from rest_framework import viewsets
+from .serializers import MvpSerializer
 
 CRITICAL = 50
 MESSAGE = "Enter the values in the portal below"
@@ -94,7 +96,7 @@ def hello_mvp(request):
                     messages.warning(request, username)
 
             else:
-                messages.warning(request, str(MvpForm(request.POST).errors),fail_silently=True)
+                messages.warning(request, str(MvpForm(request.POST).errors), fail_silently=True)
             form = MvpForm()
             context = {}
             context['form'] = form
@@ -299,3 +301,8 @@ def multi_user(request, mvp_id, req):
             context['form'] = form
             messages.info(request, MESSAGE, fail_silently=True)
             return render(request, "mvp/multi.html", context)
+
+
+class MvpViewSet(viewsets.ModelViewSet):
+    queryset = MvpUserRequest.objects.all().order_by('user_ID')
+    serializer_class = MvpSerializer
