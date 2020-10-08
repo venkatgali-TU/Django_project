@@ -113,13 +113,27 @@ def single_user(request, mvp_id, req):
     if req == "OverTime":
         if request.method == 'POST':  # and OverTimeUserRequestForm(request.POST).is_valid():
             if OverTimeUserRequestForm(request.POST).is_valid():
+
                 print("IN HERE!!!")
                 form = OverTimeUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
-                mvp_model = form.save()
-                context = {}
-                return render(request, "mvp/thanks.html", context)
+                form.for_Name()
+
+                if "Please" in form.clean_user_number():
+                    messages.warning(request, "Please enter a valid employee number", fail_silently=True)
+                    form = OverTimeUserRequestForm()
+
+                    context = {}
+                    context['form'] = form
+                    return render(request, "mvp/single.html", context)
+                else:
+                    up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
+                    mvp_model = form.save()
+                    context = {}
+                    return render(request, "mvp/thanks.html", context)
+
+
             else:
                 result = "Invalid form"
 
@@ -146,9 +160,20 @@ def single_user(request, mvp_id, req):
                 form = TeleOptiUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
-                mvp_model = form.save()
-                context = {}
-                return render(request, "mvp/thanks.html", context)
+                form.for_Name()
+
+                if "Please" in form.clean_user_number():
+                    messages.warning(request, "Please enter a valid employee number", fail_silently=True)
+                    form = TeleOptiUserRequestForm()
+
+                    context = {}
+                    context['form'] = form
+                    return render(request, "mvp/single.html", context)
+                else:
+                    up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
+                    mvp_model = form.save()
+                    context = {}
+                    return render(request, "mvp/thanks.html", context)
             else:
                 if "This field is required." in str(TeleOptiUserRequestForm(request.POST).errors):
                     messages.warning(request, "Please fill all the below fields", fail_silently=True)
@@ -304,5 +329,5 @@ def multi_user(request, mvp_id, req):
 
 
 class MvpViewSet(viewsets.ModelViewSet):
-    queryset = MvpUserRequest.objects.all().order_by('user_ID')
+    queryset = MvpUserRequest.objects.all()#
     serializer_class = MvpSerializer

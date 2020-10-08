@@ -4,6 +4,9 @@ from .models import Mvp, MvpUserRequest
 from email.utils import parseaddr
 import re
 from datetime import datetime, timedelta
+import json
+import requests
+import simplejson as json
 
 USERS_REQ_TYPE = [('single_user', 'Single User'), ('multi_user', 'Multiple Users')]
 SITE_NAMES = [('rgz', 'Rangreza'), ('liz_n', 'Lizzys Nook'), ('liz_l', 'LizardBear Lair'), ('htw', 'Home Teamwork'),
@@ -242,7 +245,6 @@ class OverTimeUserRequestForm(forms.ModelForm):
         model = MvpUserRequest
         fields = [
             'user_ID',
-            'Name',
             'Start_Date',
             'Start_Time',
             'End_Date',
@@ -280,6 +282,50 @@ class OverTimeUserRequestForm(forms.ModelForm):
             'End_Time': 'End Time'
         }
 
+    def clean_user_number(self, *args, **kwargs):
+        u_id = self.cleaned_data.get("user_ID")
+        if len(u_id) != 7:
+            raise ValidationError("Please enter valid employee ID")
+        else:
+
+            final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(u_id)  # 3054204"
+            final_headers = {
+                "x-api-key": "lsUfB4oaUX"
+            }
+            try:
+                # fin = requests.get(final_url, final_headers, False)
+                # print(username[5:])
+                fin = requests.get(final_url, headers=final_headers, verify=False)
+
+                # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                temp_data_json = json.loads(json.dumps(fin.json()))
+                return str(temp_data_json['id'])
+            except ConnectionError and KeyError:
+                return "Please enter a valid employee number"
+
+    def for_Name(self, *args, **kwargs):
+        u_id = self.cleaned_data.get("user_ID")
+        if len(u_id) != 7:
+            raise ValidationError("Please enter valid employee ID")
+        else:
+
+            final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(u_id)  # 3054204"
+            final_headers = {
+                "x-api-key": "lsUfB4oaUX"
+            }
+            try:
+                # fin = requests.get(final_url, final_headers, False)
+                # print(username[5:])
+                fin = requests.get(final_url, headers=final_headers, verify=False)
+
+                # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                temp_data_json = json.loads(json.dumps(fin.json()))
+                return str(temp_data_json['firstName'])
+            except ConnectionError and KeyError:
+                return "Please enter a valid employee number"
+
     def clean(self):
         cleaned_data = super().clean()
         user_id = cleaned_data.get("user_ID")
@@ -289,7 +335,7 @@ class OverTimeUserRequestForm(forms.ModelForm):
         str_date = cleaned_data.get('Start_Date')
         end_date = cleaned_data.get('End_Date')
 
-        if user_id and name and str_time and end_time:
+        if user_id and str_time and end_time:
             # Only do something if both fields are valid so far.
             # print(type(str_date))
             str_date = datetime.strptime(str_date, '%Y-%m-%d')
@@ -371,7 +417,6 @@ class TeleOptiUserRequestForm(forms.ModelForm):
         model = MvpUserRequest
         fields = [
             'user_ID',
-            'Name',
             'Start_Date',
             'Start_Time',
             'End_Date',
@@ -408,6 +453,28 @@ class TeleOptiUserRequestForm(forms.ModelForm):
             'End_Time': 'End Time'
         }
 
+    def clean_user_number(self, *args, **kwargs):
+        u_id = self.cleaned_data.get("user_ID")
+        if len(u_id) != 7:
+            raise ValidationError("Please enter valid employee ID")
+        else:
+
+            final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(u_id)  # 3054204"
+            final_headers = {
+                "x-api-key": "lsUfB4oaUX"
+            }
+            try:
+                # fin = requests.get(final_url, final_headers, False)
+                # print(username[5:])
+                fin = requests.get(final_url, headers=final_headers, verify=False)
+
+                # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                temp_data_json = json.loads(json.dumps(fin.json()))
+                return str(temp_data_json['id'])
+            except ConnectionError and KeyError:
+                return "Please enter a valid employee number"
+
     def clean(self):
         cleaned_data = super().clean()
         user_id = cleaned_data.get("user_ID")
@@ -423,7 +490,6 @@ class TeleOptiUserRequestForm(forms.ModelForm):
             str_date = datetime.strptime(str_date, '%Y-%m-%d')
             end_date = datetime.strptime(end_date, '%Y-%m-%d')
             past = datetime.now() - timedelta(days=7)
-
 
             if str_date < past or end_date < past:
                 raise ValidationError("Please enter start/end date no later than 7 days from now")

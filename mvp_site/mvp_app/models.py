@@ -29,4 +29,17 @@ class MvpUserRequest(models.Model):
     Mul_Over = models.CharField(max_length=100, blank=False, null=False)
     Timezone = models.CharField(max_length=100, blank=False, null=False)
     BreakTime = models.CharField(max_length=100, blank=False, null=False)
-    Status = models.CharField(max_length=70, blank=False, null=False)
+    Status = models.CharField(max_length=100, blank=False, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def campaign(self):
+        return "stuff"
+
+    @property
+    def business_unit(self):
+        return "stuff"
+
+    @property
+    def timeZone(self):
+        return "stuff"
