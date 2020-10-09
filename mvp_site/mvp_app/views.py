@@ -118,6 +118,7 @@ def single_user(request, mvp_id, req):
                 form = OverTimeUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
+                form.clean()
                 form.for_Name()
 
                 if "Please" in form.clean_user_number():
@@ -128,7 +129,7 @@ def single_user(request, mvp_id, req):
                     context['form'] = form
                     return render(request, "mvp/single.html", context)
                 else:
-                    up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
+                    #up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
                     mvp_model = form.save()
                     context = {}
                     return render(request, "mvp/thanks.html", context)
@@ -160,6 +161,7 @@ def single_user(request, mvp_id, req):
                 form = TeleOptiUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
+                form.clean()
                 form.for_Name()
 
                 if "Please" in form.clean_user_number():
@@ -170,7 +172,7 @@ def single_user(request, mvp_id, req):
                     context['form'] = form
                     return render(request, "mvp/single.html", context)
                 else:
-                    up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
+                    #up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
                     mvp_model = form.save()
                     context = {}
                     return render(request, "mvp/thanks.html", context)
@@ -203,46 +205,103 @@ def multi_user(request, mvp_id, req):
                 form = OverTimeUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
-                mvp_model = form.save()
-                context = {}
+                form.clean()
 
-                new_form = OverTimeUserRequestForm()
-                context['form'] = new_form
-                MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
-                    form.cleaned_data['user_ID']) + " Name : " + str(
-                    form.cleaned_data['Name']) + " Start Date : " + str(
-                    form.cleaned_data['Start_Date']) + " Start time : " + str(
-                    form.cleaned_data['Start_Time']) + " End Date : " + str(
-                    form.cleaned_data['End_Date']) + " End Time : " + str(
-                    form.cleaned_data['End_Time']) + " Activity : " + str(
-                    form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
-                    form.cleaned_data['Mul_Over'])
-                mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
-                for mess in mess_split:
-                    messages.success(request, mess)
+                ############
 
-                return render(request, "mvp/multi.html", context)
+                form.for_Name()
+
+                if "Please" in form.clean_user_number():
+                    messages.warning(request, "Please enter a valid employee number", fail_silently=True)
+                    new_form = OverTimeUserRequestForm()
+                    context = {}
+                    context['form'] = new_form
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                        form.cleaned_data['user_ID']) + " Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " End Date : " + str(
+                        form.cleaned_data['End_Date']) + " End Time : " + str(
+                        form.cleaned_data['End_Time']) + " Activity : " + str(
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                        form.cleaned_data['Mul_Over'])
+                    mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    for mess in mess_split:
+                        messages.success(request, mess)
+
+                    return render(request, "mvp/multi.html", context)
+                else:
+                    mvp_model = form.save()
+                    context = {}
+
+                    new_form = OverTimeUserRequestForm()
+                    context['form'] = new_form
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                        form.cleaned_data['user_ID']) + " Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " End Date : " + str(
+                        form.cleaned_data['End_Date']) + " End Time : " + str(
+                        form.cleaned_data['End_Time']) + " Activity : " + str(
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                        form.cleaned_data['Mul_Over'])
+                    mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    for mess in mess_split:
+                        messages.success(request, mess)
+
+                    return render(request, "mvp/multi.html", context)
+
+                #################
+
+
             elif '_submit' in request.POST:
 
                 form = OverTimeUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
-                mvp_model = form.save()
-                context = {}
-                MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
-                    form.cleaned_data['user_ID']) + " Name : " + str(
-                    form.cleaned_data['Name']) + " Start Date : " + str(
-                    form.cleaned_data['Start_Date']) + " Start time : " + str(
-                    form.cleaned_data['Start_Time']) + " End Date : " + str(
-                    form.cleaned_data['End_Date']) + " End Time : " + str(
-                    form.cleaned_data['End_Time']) + " Activity : " + str(
-                    form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
-                    form.cleaned_data['Mul_Over'])
-                mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
-                for mess in mess_split:
-                    messages.success(request, mess)
-                # messages.success(request, MESSAGE.replace("Enter the values in the portal below", ""))
-                return render(request, "mvp/thanks.html", context)
+                form.clean()
+
+                ############
+
+                form.for_Name()
+
+                if "Please" in form.clean_user_number():
+                    messages.warning(request, "Please enter a valid employee number", fail_silently=True)
+                    new_form = OverTimeUserRequestForm()
+                    context = {}
+                    context['form'] = new_form
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                        form.cleaned_data['user_ID']) + " Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " End Date : " + str(
+                        form.cleaned_data['End_Date']) + " End Time : " + str(
+                        form.cleaned_data['End_Time']) + " Activity : " + str(
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                        form.cleaned_data['Mul_Over'])
+                    mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    for mess in mess_split:
+                        messages.success(request, mess)
+
+                    return render(request, "mvp/multi.html", context)
+                else:
+                    mvp_model = form.save()
+                    context = {}
+
+                    new_form = OverTimeUserRequestForm()
+                    context['form'] = new_form
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                        form.cleaned_data['user_ID']) + " Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " End Date : " + str(
+                        form.cleaned_data['End_Date']) + " End Time : " + str(
+                        form.cleaned_data['End_Time']) + " Activity : " + str(
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                        form.cleaned_data['Mul_Over'])
+                    mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    for mess in mess_split:
+                        messages.success(request, mess)
+
+                    return render(request, "mvp/thanks.html", context)
+
+                #################
         else:
             if not OverTimeUserRequestForm(request.POST).is_valid():
                 if "This field is required." in str(OverTimeUserRequestForm(request.POST).errors):
@@ -270,45 +329,100 @@ def multi_user(request, mvp_id, req):
                 form = TeleOptiUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
-                mvp_model = form.save()
-                context = {}
+                form.clean()
 
-                new_form = TeleOptiUserRequestForm()
-                context['form'] = new_form
-                MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
-                    form.cleaned_data['user_ID']) + " Name : " + str(
-                    form.cleaned_data['Name']) + " Start Date : " + str(
-                    form.cleaned_data['Start_Date']) + " Start time : " + str(
-                    form.cleaned_data['Start_Time']) + " End Date : " + str(
-                    form.cleaned_data['End_Date']) + " End Time : " + str(
-                    form.cleaned_data['End_Time']) + " Activity : " + str(
-                    form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
-                    form.cleaned_data['Mul_Over'])
-                mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
-                for mess in mess_split:
-                    messages.success(request, mess)
+                ############
 
-                return render(request, "mvp/multi.html", context)
+                form.for_Name()
+
+                if "Please" in form.clean_user_number():
+                    messages.warning(request, "Please enter a valid employee number", fail_silently=True)
+                    new_form = TeleOptiUserRequestForm()
+                    context = {}
+                    context['form'] = new_form
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                        form.cleaned_data['user_ID']) + " Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " End Date : " + str(
+                        form.cleaned_data['End_Date']) + " End Time : " + str(
+                        form.cleaned_data['End_Time']) + " Activity : " + str(
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                        form.cleaned_data['Mul_Over'])
+                    mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    for mess in mess_split:
+                        messages.success(request, mess)
+
+                    return render(request, "mvp/multi.html", context)
+                else:
+                    mvp_model = form.save()
+                    context = {}
+
+                    new_form = TeleOptiUserRequestForm()
+                    context['form'] = new_form
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                        form.cleaned_data['user_ID']) + " Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " End Date : " + str(
+                        form.cleaned_data['End_Date']) + " End Time : " + str(
+                        form.cleaned_data['End_Time']) + " Activity : " + str(
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                        form.cleaned_data['Mul_Over'])
+                    mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    for mess in mess_split:
+                        messages.success(request, mess)
+
+                    return render(request, "mvp/multi.html", context)
+
+                #################
             elif '_submit' in request.POST:
                 form = TeleOptiUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
-                mvp_model = form.save()
-                context = {}
-                MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
-                    form.cleaned_data['user_ID']) + " Name : " + str(
-                    form.cleaned_data['Name']) + " Start Date : " + str(
-                    form.cleaned_data['Start_Date']) + " Start time : " + str(
-                    form.cleaned_data['Start_Time']) + " End Date : " + str(
-                    form.cleaned_data['End_Date']) + " End Time : " + str(
-                    form.cleaned_data['End_Time']) + " Activity : " + str(
-                    form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
-                    form.cleaned_data['Mul_Over'])
-                mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
-                for mess in mess_split:
-                    messages.success(request, mess)
+                form.clean()
 
-                return render(request, "mvp/thanks.html", context)
+                ############
+
+                form.for_Name()
+
+                if "Please" in form.clean_user_number():
+                    messages.warning(request, "Please enter a valid employee number", fail_silently=True)
+                    new_form = TeleOptiUserRequestForm()
+                    context = {}
+                    context['form'] = new_form
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                        form.cleaned_data['user_ID']) + " Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " End Date : " + str(
+                        form.cleaned_data['End_Date']) + " End Time : " + str(
+                        form.cleaned_data['End_Time']) + " Activity : " + str(
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                        form.cleaned_data['Mul_Over'])
+                    mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    for mess in mess_split:
+                        messages.success(request, mess)
+
+                    return render(request, "mvp/multi.html", context)
+                else:
+                    mvp_model = form.save()
+                    context = {}
+
+                    new_form = TeleOptiUserRequestForm()
+                    context['form'] = new_form
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                        form.cleaned_data['user_ID']) + " Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " End Date : " + str(
+                        form.cleaned_data['End_Date']) + " End Time : " + str(
+                        form.cleaned_data['End_Time']) + " Activity : " + str(
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                        form.cleaned_data['Mul_Over'])
+                    mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    for mess in mess_split:
+                        messages.success(request, mess)
+
+                    return render(request, "mvp/thanks.html", context)
+
+                #################
         else:
             if not TeleOptiUserRequestForm(request.POST).is_valid():
                 if "This field is required." in str(TeleOptiUserRequestForm(request.POST).errors):
@@ -329,5 +443,5 @@ def multi_user(request, mvp_id, req):
 
 
 class MvpViewSet(viewsets.ModelViewSet):
-    queryset = MvpUserRequest.objects.all()#
+    queryset = MvpUserRequest.objects.all()  #
     serializer_class = MvpSerializer

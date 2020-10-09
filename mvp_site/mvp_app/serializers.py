@@ -12,9 +12,9 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
     business_unit = serializers.SerializerMethodField('business_name')
     timeZone = serializers.SerializerMethodField('timezone')
 
-    def campaign_name(self, foo):
+    def campaign_name(self, obj):
         field_name = 'user_ID'
-        obj = MvpUserRequest.objects.first()
+        #obj = MvpUserRequest.objects.all().latest('id')
         field_value = getattr(obj, field_name)
 
         final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(field_value)  # 3054204"
@@ -33,9 +33,9 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
         except ConnectionError and KeyError:
             return "Couldnt find the correct campaign name"
 
-    def business_name(self, foo):
+    def business_name(self, obj):
         field_name = 'user_ID'
-        obj = MvpUserRequest.objects.first()
+        #obj = MvpUserRequest.objects.first()
         field_value = getattr(obj, field_name)
         final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(field_value)  # 3054204"
         final_headers = {
@@ -53,9 +53,9 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
         except ConnectionError and KeyError:
             return "Couldnt find the correct business name"
 
-    def timezone(self, foo):
+    def timezone(self, obj):
         field_name = 'user_ID'
-        obj = MvpUserRequest.objects.first()
+        #obj = MvpUserRequest.objects.first()
         field_value = getattr(obj, field_name)
         final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(field_value)  # 3054204"
         final_headers = {
@@ -83,7 +83,6 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
                   'End_Time',
                   'Activity',
                   'Mul_Over',
-                  'Timezone',
                   'BreakTime',
                   'Status',
                   'campaign',

@@ -53,6 +53,7 @@ ROLES = [('tl_etl', 'Team Leader of interim Team Leader'), ('sme', 'SME'), ('opm
          ('sup', 'Support department (Non Operations)')]
 BUSINESS_UNITS = [('san', 'San Antonio'), ('tij', 'Tijuana'), ('ind', 'India')]
 REQUEST_TYPES = [('ot', 'OverTime'), ('tel', 'TeleOpti plotting')]
+OT_TYPES = [('part_ot', 'Partial Over Time'), ('full_ot', 'Full Day OT')]
 LOCATIONS = [('nam', 'NAM'), ('mxc', 'Mexico'), ('ind', 'India')]
 YEAR_CHOICES = ['2020', '2021', '2022']
 OT_ACTIVITY = [('prdtime', 'Productive Time'), ('prdtime_15', 'Productive Time 15 mins'),
@@ -66,6 +67,8 @@ TELEOPTI_ACTIVITY = [('c&d', 'Coaching and Development'), ('daily_su', 'Daily St
                      ('vto', 'Voluntary Time Off'), ('ct', 'Client Training')]
 TELEOPTI_OVERLAP = [('move_non', 'Move Non-Overwritable'), ('dont', 'Do Not Make Changes'), ('override', 'Override'),
                     ('keep_non', 'Keep non-overwritable'), ('na', 'N/A - only for VTO Code')]
+BREAK = [('15min', '15 mins'), ('lunch_15', 'Lunch + 15 min'), ('lunch_30', 'Lunch + 30 min'),
+         ('lunch_45', 'Lunch + 45 min'), ('lunch_60', 'Lunch + 60min'), ('no', 'No Break')]
 
 
 class MvpForm(forms.ModelForm):
@@ -241,6 +244,256 @@ class OverTimeUserRequestForm(forms.ModelForm):
     Mul_Over = forms.ChoiceField(label='Multiplicator', required=True, choices=OT_MULTIPLICATOR,
                                  widget=forms.Select(attrs={'class': 'select'}))
 
+    Name = forms.ChoiceField(label='Type of OT', required=True, choices=OT_TYPES,
+                             widget=forms.Select(attrs={'class': 'select'}))
+    BreakTime = forms.ChoiceField(label='Choose Break Time', required=True, choices=BREAK,
+                                  widget=forms.Select(attrs={'class': 'select'}))
+
+    class Meta:
+        model = MvpUserRequest
+        fields = [
+            'user_ID',
+            'Name',
+            'Start_Date',
+            'Start_Time',
+            'End_Date',
+            'End_Time',
+            'Activity',
+            'Mul_Over',
+            'BreakTime'
+        ]
+        widgets = {
+            'user_ID': forms.TextInput(
+                attrs={'class': 'input is-primary', 'type': 'text',
+                       'placeholder': 'Please give the ID of  the requesting person'}),
+            # 'Name': forms.RadioSelect,
+            'Start_Date': forms.SelectDateWidget(years=YEAR_CHOICES, attrs={'class':
+                                                                                'select'}),
+            'Start_Time': forms.TextInput(
+                attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}),
+            'End_Date': forms.SelectDateWidget(years=YEAR_CHOICES, attrs={'class':
+                                                                              'select'}),
+            'End_Time': forms.TextInput(
+                attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}),
+            # 'BreakTime': forms.TextInput(
+            # attrs={'class': 'input is-primary', 'type': 'text',
+            #        'placeholder': 'Please give the Break Time'}),
+            # 'Activity': forms.Select(attrs={'class': 'select'})
+            # 'Status': forms.TextInput(disabled=True)
+
+        }
+        labels = {
+            'user_ID': 'Employee ID',
+            # 'Name': 'Type of OT',
+            'Start_Time': 'Start Time',
+            'End_Time': 'End Time'
+        }
+
+    def clean_user_number(self, *args, **kwargs):
+        u_id = self.cleaned_data.get("user_ID")
+        if len(u_id) != 7:
+            raise ValidationError("Please enter valid employee ID")
+        else:
+
+            final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(u_id)  # 3054204"
+            final_headers = {
+                "x-api-key": "lsUfB4oaUX"
+            }
+            try:
+                # fin = requests.get(final_url, final_headers, False)
+                # print(username[5:])
+                fin = requests.get(final_url, headers=final_headers, verify=False)
+
+                # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                temp_data_json = json.loads(json.dumps(fin.json()))
+                return str(temp_data_json['id'])
+            except ConnectionError and KeyError:
+                return "Please enter a valid employee number"
+
+    def for_Name(self, *args, **kwargs):
+        u_id = self.cleaned_data.get("user_ID")
+        if len(u_id) != 7:
+            raise ValidationError("Please enter valid employee ID")
+        else:
+
+            final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(u_id)  # 3054204"
+            final_headers = {
+                "x-api-key": "lsUfB4oaUX"
+            }
+            try:
+                # fin = requests.get(final_url, final_headers, False)
+                # print(username[5:])
+                fin = requests.get(final_url, headers=final_headers, verify=False)
+
+                # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                temp_data_json = json.loads(json.dumps(fin.json()))
+                return str(temp_data_json['firstName'])
+            except ConnectionError and KeyError:
+                return "Please enter a valid employee number"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        user_id = cleaned_data.get("user_ID")
+        name = cleaned_data.get("Name")
+        str_time = cleaned_data.get('Start_Time')
+        end_time = cleaned_data.get('End_Time')
+        str_date = cleaned_data.get('Start_Date')
+        end_date = cleaned_data.get('End_Date')
+        breaktime = cleaned_data.get('BreakTime')
+
+        if user_id and str_time and end_time:
+            # Only do something if both fields are valid so far.
+            # print(type(str_date))
+            str_date = datetime.strptime(str_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+            past = datetime.now() - timedelta(days=7)
+
+            if str_date < past or end_date < past:
+                raise ValidationError("Please enter start/end date no later than 7 days from now")
+
+            if str_date > end_date:
+                raise ValidationError("Please enter start date less than end date")
+
+            if len(user_id) != 7:
+                raise ValidationError(
+                    "Please enter a valid ID (7 numbers)"
+                )
+            if len(str_time) != 5 and ":" not in str_time:
+                raise ValidationError("please enter a valid start time")
+            else:
+                str_time_split = str_time.split(":")
+                str_hour = str_time_split[0]
+                str_min = str_time_split[1]
+                try:
+                    str_hour = int(str_hour)
+                    str_min = int(str_min)
+
+                    print(str(str_hour))
+                    print(str(str_min))
+                    if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
+                        raise ValidationError("please enter a valid start time")
+                except ValueError:
+                    raise ValidationError("please enter a valid start time")
+
+            if len(end_time) != 5 and ":" not in end_time:
+                raise ValidationError("please enter a valid end time")
+            else:
+                end_time_split = end_time.split(":")
+                end_hour = end_time_split[0]
+                end_min = end_time_split[1]
+                try:
+                    end_hour = int(end_hour)
+                    end_min = int(end_min)
+                    if end_hour > 23 or end_hour < 0 or end_min > 59 or end_min < 0:
+                        raise ValidationError("please enter a valid end time")
+                except ValueError:
+                    raise ValidationError("please enter a valid end time")
+            try:
+                start_time_date = datetime.strptime(str_time, '%H:%M')
+                end_time_date = datetime.strptime(end_time, '%H:%M')
+                if start_time_date > end_time_date:
+                    raise ValidationError("Please enter start time less than end time")
+            except ValueError:
+                raise ValidationError("Please enter valid start/end time")
+
+            ##############################
+            u_id = self.cleaned_data.get("user_ID")
+            if len(u_id) != 7:
+                raise ValidationError("Please enter valid employee ID")
+            else:
+
+                final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(u_id)  # 3054204"
+                final_headers = {
+                    "x-api-key": "lsUfB4oaUX"
+                }
+                try:
+                    # fin = requests.get(final_url, final_headers, False)
+                    # print(username[5:])
+                    fin = requests.get(final_url, headers=final_headers, verify=False)
+
+                    # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                    temp_data_json = json.loads(json.dumps(fin.json()))
+                    country = str(temp_data_json['site']['countryCode'])
+
+                    if "full" in name and ((((end_time_date - start_time_date)).seconds / 60) / 60) < 9:
+                        raise ValidationError(
+                            "Please enter valid start/end time : For a full day OT please choose 9 hrs")
+                    elif "full" not in name and country == 'IND' and (
+                            (end_time_date - start_time_date)).seconds < 3600:
+                        raise ValidationError("Please enter valid start/end time : Given OT to plot is " + str((((
+                                end_time_date - start_time_date)).seconds) / 60) + " mins, minimum is one hour")
+                    if "full" in name and "lunch_45" != breaktime:
+                        raise ValidationError(
+                            "Please select appropriate break time : full day should have lunch and 45 mins break")
+                    if "full" not in name and ((((
+                            end_time_date - start_time_date)).seconds / 60) / 60) == 8 and "lunch_30" not in breaktime:
+                        raise ValidationError(
+                            "Please select appropriate break time : 8 hrs a day should have lunch and 30 mins break")
+                    if "full" not in name and (
+                            (((
+                                    end_time_date - start_time_date)).seconds / 60) / 60) == 7 and "lunch_15" not in breaktime:
+                        raise ValidationError(
+                            "Please select appropriate break time : 7 hrs a day should have lunch and 15 mins break")
+                    if "full" not in name and (
+                            (((end_time_date - start_time_date)).seconds / 60) / 60) == 6 or (
+                            (((
+                                    end_time_date - start_time_date)).seconds / 60) / 60) == 5 and "lunch_15" not in breaktime:
+                        raise ValidationError(
+                            "Please select appropriate break time : 6 or 5 hrs a day should have lunch and 15 mins break")
+                    if "full" not in name and ((((end_time_date - start_time_date)).seconds / 60) / 60) == 4 or (
+                            (((end_time_date - start_time_date)).seconds / 60) / 60) == 3 or (
+                            (((end_time_date - start_time_date)).seconds / 60) / 60) == 2 and "15min" not in breaktime:
+                        raise ValidationError(
+                            "Please select appropriate break time : 2 or 3 or 4  hrs a day should have lunch and 15 mins break")
+                    if "full" not in name and (
+                            (((end_time_date - start_time_date)).seconds / 60) / 60) == 1 and "no" not in breaktime:
+                        raise ValidationError(
+                            "Please select appropriate break time : 1 hrs a day should not have break time")
+
+                except ConnectionError and KeyError:
+                    return "Please enter a valid employee number"
+                    #####################################
+
+        else:
+            raise ValidationError(
+                "Not a valid input, Please try again with correct input"
+            )
+
+    def clean_activity(self, *args, **kwargs):
+        activity = self.cleaned_data.get("Activity")
+        for items in OT_ACTIVITY:
+            if activity in items:
+                new_activity = items[1]
+        return new_activity
+
+    def clean_mul_over(self, *args, **kwargs):
+        mul = self.cleaned_data.get("Mul_Over")
+        for items in OT_MULTIPLICATOR:
+            if mul in items:
+                new_mul = items[1]
+        return new_mul
+
+
+class TeleOptiUserRequestForm(forms.ModelForm):
+    # Start_Date = forms.DateTimeField()
+    # End_Date = forms.DateTimeField()
+    # End_Time = forms.DateTimeField()
+    # Start_Time = forms.DateTimeField()
+    Start_Time = forms.CharField(label='Start_Time', required=True, widget=forms.TextInput(
+        attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}))
+
+    End_Time = forms.CharField(label='End_Time', required=True, widget=forms.TextInput(
+        attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}))
+
+    Activity = forms.ChoiceField(label='Activity', required=True, choices=TELEOPTI_ACTIVITY,
+                                 widget=forms.Select(attrs={'class': 'select'}))
+
+    Mul_Over = forms.ChoiceField(label='OverLap Status', required=True, choices=TELEOPTI_OVERLAP,
+                                 widget=forms.Select(attrs={'class': 'select'}))
+
     class Meta:
         model = MvpUserRequest
         fields = [
@@ -250,8 +503,7 @@ class OverTimeUserRequestForm(forms.ModelForm):
             'End_Date',
             'End_Time',
             'Activity',
-            'Mul_Over',
-            'BreakTime'
+            'Mul_Over'
         ]
         widgets = {
             'user_ID': forms.TextInput(
@@ -390,156 +642,21 @@ class OverTimeUserRequestForm(forms.ModelForm):
             except ValueError:
                 raise ValidationError("Please enter valid start/end time")
 
-        else:
-            raise ValidationError(
-                "Not a valid input, Please try again with correct input"
-            )
+        # else:
+        #     raise ValidationError(
+        #         "Not a valid input, Please try again with correct input"
+        #     )
 
+    def clean_activity(self, *args, **kwargs):
+        activity = self.cleaned_data.get("Activity")
+        for items in TELEOPTI_ACTIVITY:
+            if activity in items:
+                new_activity = items[1]
+        return new_activity
 
-class TeleOptiUserRequestForm(forms.ModelForm):
-    # Start_Date = forms.DateTimeField()
-    # End_Date = forms.DateTimeField()
-    # End_Time = forms.DateTimeField()
-    # Start_Time = forms.DateTimeField()
-    Start_Time = forms.CharField(label='Start_Time', required=True, widget=forms.TextInput(
-        attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}))
-
-    End_Time = forms.CharField(label='End_Time', required=True, widget=forms.TextInput(
-        attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}))
-
-    Activity = forms.ChoiceField(label='Activity', required=True, choices=TELEOPTI_ACTIVITY,
-                                 widget=forms.Select(attrs={'class': 'select'}))
-
-    Mul_Over = forms.ChoiceField(label='OverLap Status', required=True, choices=TELEOPTI_OVERLAP,
-                                 widget=forms.Select(attrs={'class': 'select'}))
-
-    class Meta:
-        model = MvpUserRequest
-        fields = [
-            'user_ID',
-            'Start_Date',
-            'Start_Time',
-            'End_Date',
-            'End_Time',
-            'Activity',
-            'Mul_Over'
-        ]
-        widgets = {
-            'user_ID': forms.TextInput(
-                attrs={'class': 'input is-primary', 'type': 'text',
-                       'placeholder': 'Please give the ID of  the requesting person'}),
-            'Name': forms.TextInput(
-                attrs={'class': 'input is-primary', 'type': 'text',
-                       'placeholder': 'Please give the Name of  the requesting person'}),
-            'Start_Date': forms.SelectDateWidget(years=YEAR_CHOICES, attrs={'class':
-                                                                                'select'}),
-            'Start_Time': forms.TextInput(
-                attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}),
-            'End_Date': forms.SelectDateWidget(years=YEAR_CHOICES, attrs={'class':
-                                                                              'select'}),
-            'End_Time': forms.TextInput(
-                attrs={'class': 'input is-primary', 'type': 'text', 'placeholder': '##:##'}),
-            'BreakTime': forms.TextInput(
-                attrs={'class': 'input is-primary', 'type': 'text',
-                       'placeholder': 'Please give the Break Time'}),
-            # 'Activity': forms.Select(attrs={'class': 'select'})
-            # 'Status': forms.TextInput(disabled=True)
-
-        }
-        labels = {
-            'user_ID': 'Employee ID',
-            'Name': 'Employee Name',
-            'Start_Time': 'Start Time',
-            'End_Time': 'End Time'
-        }
-
-    def clean_user_number(self, *args, **kwargs):
-        u_id = self.cleaned_data.get("user_ID")
-        if len(u_id) != 7:
-            raise ValidationError("Please enter valid employee ID")
-        else:
-
-            final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(u_id)  # 3054204"
-            final_headers = {
-                "x-api-key": "lsUfB4oaUX"
-            }
-            try:
-                # fin = requests.get(final_url, final_headers, False)
-                # print(username[5:])
-                fin = requests.get(final_url, headers=final_headers, verify=False)
-
-                # temp_data_json = json.loads(json.dumps(fin.json()))
-
-                temp_data_json = json.loads(json.dumps(fin.json()))
-                return str(temp_data_json['id'])
-            except ConnectionError and KeyError:
-                return "Please enter a valid employee number"
-
-    def clean(self):
-        cleaned_data = super().clean()
-        user_id = cleaned_data.get("user_ID")
-        name = cleaned_data.get("Name")
-        str_time = cleaned_data.get('Start_Time')
-        end_time = cleaned_data.get('End_Time')
-        str_date = cleaned_data.get('Start_Date')
-        end_date = cleaned_data.get('End_Date')
-
-        if user_id and name and str_time and end_time:
-            # Only do something if both fields are valid so far.
-            # print(type(str_date))
-            str_date = datetime.strptime(str_date, '%Y-%m-%d')
-            end_date = datetime.strptime(end_date, '%Y-%m-%d')
-            past = datetime.now() - timedelta(days=7)
-
-            if str_date < past or end_date < past:
-                raise ValidationError("Please enter start/end date no later than 7 days from now")
-
-            if str_date > end_date:
-                raise ValidationError("Please enter start date less than end date")
-
-            if len(user_id) != 7:
-                raise ValidationError(
-                    "Please enter a valid ID (7 numbers)"
-                )
-            if len(str_time) != 5 and ":" not in str_time:
-                raise ValidationError("please enter a valid start time")
-            else:
-                str_time_split = str_time.split(":")
-                str_hour = str_time_split[0]
-                str_min = str_time_split[1]
-                try:
-                    str_hour = int(str_hour)
-                    str_min = int(str_min)
-
-                    print(str(str_hour))
-                    print(str(str_min))
-                    if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
-                        raise ValidationError("please enter a valid start time")
-                except ValueError:
-                    raise ValidationError("please enter a valid start time")
-
-            if len(end_time) != 5 and ":" not in end_time:
-                raise ValidationError("please enter a valid end time")
-            else:
-                end_time_split = end_time.split(":")
-                end_hour = end_time_split[0]
-                end_min = end_time_split[1]
-                try:
-                    end_hour = int(end_hour)
-                    end_min = int(end_min)
-                    if end_hour > 23 or end_hour < 0 or end_min > 59 or end_min < 0:
-                        raise ValidationError("please enter a valid end time")
-                except ValueError:
-                    raise ValidationError("please enter a valid end time")
-            try:
-                start_time_date = datetime.strptime(str_time, '%H:%M')
-                end_time_date = datetime.strptime(end_time, '%H:%M')
-                if start_time_date > end_time_date:
-                    raise ValidationError("Please enter start time less than end time")
-            except ValueError:
-                raise ValidationError("Please enter valid start/end time")
-
-        else:
-            raise ValidationError(
-                "Not a valid input, Please try again with correct input"
-            )
+    def clean_mul_over(self, *args, **kwargs):
+        mul = self.cleaned_data.get("Mul_Over")
+        for items in TELEOPTI_OVERLAP:
+            if mul in items:
+                new_mul = items[1]
+        return new_mul
