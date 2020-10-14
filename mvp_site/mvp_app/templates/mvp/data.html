@@ -1,0 +1,116 @@
+{% extends "mvp/base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+{% load static %}
+
+{% for listerd in lister %}
+<div class="card">
+    <div class="card-content">
+        <p class="title">
+            {% for temp in listerd %}
+            <div class="card">
+                <div class="card-content">
+        <p class="title">
+<!--        {% if forloop.first %}-->
+<!--        {{ "ID" }} : {{"WFM-IRA"}}{{ temp }}-->
+<!--        {% endif %}-->
+
+           {{ "ID" }} : {{ temp }}
+
+        </p>
+    </div>
+</div>
+{% endfor %}
+</p>
+</div>
+</div>
+{% endfor %}
+
+<!--{% for post in posts %}-->
+<!--<div class="card">-->
+<!--    <div class="card-content">-->
+<!--        <p class="title">-->
+<!--            {{ post }}-->
+<!--            {{ id }}-->
+<!--        </p>-->
+<!--    </div>-->
+<!--</div>-->
+<!--{%endfor%}-->
+
+<!--<table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">-->
+<!--    <ul>-->
+<!--        <div class = 'columns'>-->
+<!--        {% for post in posts %}-->
+<!--        <li>-->
+<!--            <>-->
+<!--            {{ post }}-->
+<!--        </li>-->
+<!--        {% endfor %}-->
+<!--    </ul>-->
+<!--</table>-->
+
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+
+    {% if lister.paginator.num_pages > 1 %}
+
+    {% if lister.has_previous %}
+
+    <a class="pagination-previous" href="?page={{ lister.previous_page_number }}">Previous</a>
+
+    {% endif %}
+
+<!--    <ul class="pagination-list">-->
+<!--        {% if posts.number != 1 %}-->
+<!--        <li>-->
+<!--            <a class="pagination-link is-current" aria-label="Page current" aria-current="page" href="?page={{ posts.posts.number }}">{{posts.number}}</a>-->
+<!--        </li>-->
+
+<!--        {% else %}-->
+<!--        <li>-->
+<!--            <a class="pagination-link" aria-label="Goto page 1" href="?page={{ 1 }}">1</a>-->
+<!--        </li>-->
+
+<!--        {% endif %}-->
+
+
+<!--        {% if posts.number != posts.paginator.num_pages %}-->
+<!--        {% if posts.number != 1 %}-->
+<!--        <li>-->
+<!--            <span class="pagination-ellipsis">&hellip;</span>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <a class="pagination-link is-current" aria-label="Page current" aria-current="page" href="?page={{ posts.posts.number }}">{{posts.number}}</a>-->
+<!--        </li>-->
+<!--        <li>-->
+<!--            <span class="pagination-ellipsis">&hellip;</span>-->
+<!--        </li>-->
+<!--        {% endif %}-->
+<!--        {% endif %}-->
+
+<!--        {% if posts.number == posts.paginator.num_pages %}-->
+
+<!--        <li>-->
+<!--            <a class="pagination-link is-current" aria-label="Page current" aria-current="page" href="?page={{ posts.paginator.num_pages }}">{{posts.paginator.num_pages}}</a>-->
+<!--        </li>-->
+<!--        {% else %}-->
+
+<!--        <li>-->
+<!--            <a class="pagination-link" aria-label="Goto page last page" href="?page={{ posts.number }}">{{posts.number}}</a>-->
+<!--        </li>-->
+<!--        {% endif %}-->
+
+<!--    </ul>-->
+
+
+    {% if lister.has_next %}
+
+    <a class="pagination-next" href="?page={{ lister.next_page_number }}">Next</a>
+
+    {% endif %}
+
+    {% endif %}
+</nav>
+
+{% endblock %}

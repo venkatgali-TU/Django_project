@@ -12,6 +12,8 @@ import simplejson as json
 import re
 from rest_framework import viewsets
 from .serializers import MvpSerializer
+from django.core.paginator import Paginator
+from django.shortcuts import render
 
 CRITICAL = 50
 MESSAGE = "Enter the values in the portal below"
@@ -109,6 +111,16 @@ def hello_mvp(request):
         # return render(request, "mvp/home.html", context)
 
 
+def data_view(request):
+    all_objects = MvpUserRequest.objects.all()
+    lister = MvpUserRequest.objects.values_list()
+    paginator = Paginator(lister, 5)
+    page = request.GET.get('page')
+    posts = paginator.get_page(page)
+
+    return render(request, 'mvp/data.html', { 'lister': lister})
+
+
 def single_user(request, mvp_id, req):
     if req == "OverTime":
         if request.method == 'POST':  # and OverTimeUserRequestForm(request.POST).is_valid():
@@ -129,7 +141,7 @@ def single_user(request, mvp_id, req):
                     context['form'] = form
                     return render(request, "mvp/single.html", context)
                 else:
-                    #up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
+                    # up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
                     mvp_model = form.save()
                     context = {}
                     return render(request, "mvp/thanks.html", context)
@@ -172,7 +184,7 @@ def single_user(request, mvp_id, req):
                     context['form'] = form
                     return render(request, "mvp/single.html", context)
                 else:
-                    #up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
+                    # up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
                     mvp_model = form.save()
                     context = {}
                     return render(request, "mvp/thanks.html", context)
