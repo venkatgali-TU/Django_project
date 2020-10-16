@@ -11,6 +11,7 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
     campaign = serializers.SerializerMethodField('campaign_name')
     business_unit = serializers.SerializerMethodField('business_name')
     timeZone = serializers.SerializerMethodField('timezone')
+    req_id = serializers.SerializerMethodField('requestid')
 
     def campaign_name(self, obj):
         field_name = 'user_ID'
@@ -86,18 +87,15 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
         except ConnectionError and KeyError:
             return "Couldnt find the correct timezone"
 
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `Snippet` instance, given the validated data.
-        """
-        instance.Status = validated_data.get('Status', instance.Status)
+    def req_id(self, obj):
+        field_name = 'Status'
+        field_value = getattr(obj,field_name)
+        return  str(field_value)
 
-        instance.save()
-        return instance
 
     class Meta:
         model = MvpUserRequest
-        fields = ('id',
+        fields = ('req_id',
                   'user_ID',
                   'Name',
                   'Start_Date',
@@ -113,12 +111,5 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
                   'created_at',
                   'timeZone')
 
-    def update(self, instance, validated_data):
-        print
-        'this - here'
-        demo = MvpUserRequest.objects.get(pk=instance.id)
-        MvpUserRequest.objects.filter(pk=instance.id) \
-            .update(**validated_data)
-        return demo
 
 

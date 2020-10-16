@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.core.mail import  send_mail
+from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
@@ -113,7 +113,7 @@ def hello_mvp(request):
 
 
 def data_view(request):
-    all_objects = MvpUserRequest.objects.all()
+    all_objects = MvpUserRequest.objects.all().order_by('-id')[:10]
     lister = MvpUserRequest.objects.values_list()
     paginator = Paginator(all_objects, 5)
     page = request.GET.get('page')
@@ -145,8 +145,10 @@ def single_user(request, mvp_id, req):
                     context['form'] = form
                     return render(request, "mvp/single.html", context)
                 else:
-                    # up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
                     mvp_model = form.save()
+                    print('mvp_id is :'+ str(MvpUserRequest.objects.latest('id').id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(Status='WFM-IRA-SOT-' + str(mvp_id))
+
                     MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
                         form.cleaned_data['user_ID']) + " Start Date : " + str(
                         form.cleaned_data['Start_Date']) + " Start time : " + str(
@@ -210,8 +212,10 @@ def single_user(request, mvp_id, req):
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
                     for mess in mess_split:
                         messages.success(request, mess)
-                    # up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
                     mvp_model = form.save()
+                    print('mvp_id is :' + str(MvpUserRequest.objects.latest('id').id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Status='WFM-IRA-STEL-' + str(mvp_id))
                     context = {'user_ID': 'WFM-IRA-STEL-' + str(mvp_id)}
                     return render(request, "mvp/thanks.html", context)
             else:
@@ -269,6 +273,8 @@ def multi_user(request, mvp_id, req):
                     return render(request, "mvp/multi.html", context)
                 else:
                     mvp_model = form.save()
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Status='WFM-IRA-MOT-S-' + str(mvp_id))
                     context = {}
 
                     new_form = OverTimeUserRequestForm()
@@ -321,9 +327,9 @@ def multi_user(request, mvp_id, req):
                     return render(request, "mvp/multi.html", context)
                 else:
                     mvp_model = form.save()
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Status='WFM-IRA-MOT-E' + str(mvp_id))
                     context = {}
-                    lister = MvpUserRequest.objects.values_list()
-                    temp_ID = "WFMIRA" + str(lister[len(lister) - 1][0])
 
                     new_form = OverTimeUserRequestForm()
                     context['form'] = new_form
@@ -396,6 +402,9 @@ def multi_user(request, mvp_id, req):
                     return render(request, "mvp/multi.html", context)
                 else:
                     mvp_model = form.save()
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Status='WFM-IRA-MTEL-S' + str(mvp_id))
+
                     context = {}
 
                     new_form = TeleOptiUserRequestForm()
@@ -445,6 +454,8 @@ def multi_user(request, mvp_id, req):
                     return render(request, "mvp/multi.html", context)
                 else:
                     mvp_model = form.save()
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Status='WFM-IRA-MTEL-E' + str(mvp_id))
                     context = {}
 
                     MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(

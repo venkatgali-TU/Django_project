@@ -19,9 +19,10 @@
         <p class="title">
         <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
 
+
             <tr>
                 <th>{{ "Request ID" }}</th>
-                <td>{{ post.id }}</td>
+                <td>{{ post.Status }}</td>
             </tr>
             <tr>
                 <th>{{ "User ID" }}</th>
@@ -45,35 +46,28 @@
             </tr>
             <tr>
                 <th>{{ "Activity" }}</th>
-                <td>{{ post.Activity }}</td>
+                <td>{{ post.Activity|default:"-" }}</td>
             </tr>
             <tr>
                 <th>{{ "Multiplicator / OverTime" }}</th>
-                <td>{{ post.Mul_Over }}</td>
+                <td>{{ post.Mul_Over|default:"-" }}</td>
             </tr>
             <tr>
                 <th>{{ "Break Time" }}</th>
-                <td>{{ post.BreakTime }}</td>
+                <td>{{ post.BreakTime|default:"-" }}</td>
             </tr>
             <tr>
                 <th>{{ "Status" }}</th>
-                <td>{{ post.Status }}</td>
+                <td>{{ "InProgress" }}</td>
             </tr>
             <tr>
                 <th>{{ "Campaign" }}</th>
-                <td>{{ post.Campaign }}</td>
+                <td>{{ post.Campaign|default:"-" }}</td>
             </tr>
-            <tr>
-                <th>{{ "Business Unit" }}</th>
-                <td>{{ post.business_unit }}</td>
-            </tr>
+
             <tr>
                 <th>{{ "Created At" }}</th>
                 <td>{{ post.created_at }}</td>
-            </tr>
-            <tr>
-                <th>{{ "Time Zone" }}</th>
-                <td>{{ post.timezone }}</td>
             </tr>
 
 

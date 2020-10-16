@@ -43,3 +43,7 @@ class MvpUserRequest(models.Model):
     @property
     def timeZone(self):
         return "stuff"
+
+    @property
+    def req_id(self):
+        return str(MvpUserRequest.Status)
