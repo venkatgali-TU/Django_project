@@ -49,7 +49,20 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
             # temp_data_json = json.loads(json.dumps(fin.json()))
 
             temp_data_json = json.loads(json.dumps(fin.json()))
-            return str(temp_data_json['site']['location'])
+            result_bus = ""
+            if "San Antonio" in str(temp_data_json['site']['location']):
+                result_bus = "San Antonio"
+            elif "Tijuana" in str(temp_data_json['site']['location']):
+                result_bus = "Tijuana"
+            elif "New Braunfels" in str(temp_data_json['site']['location']):
+                result_bus = "San Antonio"
+            elif "Indore" in str(temp_data_json['site']['location']):
+                result_bus = "India"
+            elif "Greece" in str(temp_data_json['site']['location']):
+                result_bus = "Greece"
+            elif "Ireland" in str(temp_data_json['site']['location']):
+                result_bus = "Ireland"
+            return result_bus
         except ConnectionError and KeyError:
             return "Couldnt find the correct business name"
 
@@ -72,6 +85,16 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
             return str(temp_data_json['site']['timeZone'])
         except ConnectionError and KeyError:
             return "Couldnt find the correct timezone"
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `Snippet` instance, given the validated data.
+        """
+        instance.Status = validated_data.get('Status', instance.Status)
+
+        instance.save()
+        return instance
+
     class Meta:
         model = MvpUserRequest
         fields = ('id',
@@ -89,3 +112,13 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
                   'business_unit',
                   'created_at',
                   'timeZone')
+
+    def update(self, instance, validated_data):
+        print
+        'this - here'
+        demo = MvpUserRequest.objects.get(pk=instance.id)
+        MvpUserRequest.objects.filter(pk=instance.id) \
+            .update(**validated_data)
+        return demo
+
+

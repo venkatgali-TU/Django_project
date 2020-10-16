@@ -35,18 +35,42 @@
         {% endfor %}
     </ul>
     {% endif %}
+    <nav>
+        <div class="level-left">
+            <p class="level-item"><a href="{% url 'hello_mvp'  %}">Go back to Home page</a></p>
+        </div>
+        <div class="level-right">
+            <p class="level-item"><a href="{% url 'data_view'  %}">Go to completed tasks</a></p>
+        </div>
+    </nav>
     <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
         {% for field in form.visible_fields %}
         <tr>
             <th>{{ field.label_tag }}</th>
             <td>
-                {% if field.errors %}
-                <ul>
-                    {% for error in field.errors %}
-                    <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
+                {% for error in field.errors %}
+                <li>
+                    {% if field != '__all__' %}
+                    <strong>{{ field.label }}:</strong>
+                    {% endif %}
+                    {{ error }}
+                </li>
+                {% endfor %}
+                <!--                -->
+                <!--                {% if field.errors %}-->
+                <!--                <ul>-->
+                <!--                    {% for error in field.errors %}-->
+                <!--                    <li>{{ error }}</li>-->
+                <!--                    {% endfor %}-->
+                <!--                </ul>-->
+                <!--                {% endif %}-->
+                <!--                {% if form.non_field_errors %}-->
+                <!--                <div class="non-field-errors">-->
+                <!--                    {% for err in form.non_field_errors %}-->
+                <!--                    <p class="form-error">{{ err }}</p>-->
+                <!--                    {% endfor %}-->
+                <!--                </div>-->
+                <!--                {% endif %}-->
                 {{ field }}
                 {% if field.help_text %}
                 <br/>{{ field.help_text }}
@@ -55,9 +79,14 @@
         </tr>
         {% endfor %}
     </table>
-    <div class="content has-text-centered">
-        <button class="button is-info is-rounded">Submit</button>
+    <div class="field is-grouped is-grouped-centered">
+        <p class="control">
+        <div class="content has-text-centered">
+            <button class="button is-info is-rounded">Submit</button>
+        </div>
+        </p>
     </div>
+
 
 </form>
 {% endblock %}

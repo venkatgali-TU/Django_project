@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core.mail import  send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
@@ -114,19 +115,22 @@ def hello_mvp(request):
 def data_view(request):
     all_objects = MvpUserRequest.objects.all()
     lister = MvpUserRequest.objects.values_list()
-    paginator = Paginator(lister, 5)
+    paginator = Paginator(all_objects, 5)
     page = request.GET.get('page')
     posts = paginator.get_page(page)
+    send_mail('subject', 'body of the message', 'svc.aacr@taskus.com',
+              ['venkat.gali@taskus.com'])
 
-    return render(request, 'mvp/data.html', { 'lister': lister})
+    return render(request, 'mvp/data.html', {'posts': posts})
 
 
 def single_user(request, mvp_id, req):
+    global MESSAGE
     if req == "OverTime":
         if request.method == 'POST':  # and OverTimeUserRequestForm(request.POST).is_valid():
             if OverTimeUserRequestForm(request.POST).is_valid():
 
-                print("IN HERE!!!")
+                # print("IN HERE!!!")
                 form = OverTimeUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
@@ -143,7 +147,18 @@ def single_user(request, mvp_id, req):
                 else:
                     # up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
                     mvp_model = form.save()
-                    context = {}
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                        form.cleaned_data['user_ID']) + " Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " End Date : " + str(
+                        form.cleaned_data['End_Date']) + " End Time : " + str(
+                        form.cleaned_data['End_Time']) + " Activity : " + str(
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                        form.cleaned_data['Mul_Over'])
+                    mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    for mess in mess_split:
+                        messages.success(request, mess)
+                    context = {'user_ID': 'WFM-IRA-SOT-' + str(mvp_id)}
                     return render(request, "mvp/thanks.html", context)
 
 
@@ -154,7 +169,7 @@ def single_user(request, mvp_id, req):
                     messages.warning(request, "Please fill all the required fields", fail_silently=True)
                 else:
                     messages.warning(request, str(OverTimeUserRequestForm(request.POST).errors), fail_silently=True)
-                form = OverTimeUserRequestForm()
+                form = OverTimeUserRequestForm(request.POST)
                 context = {}
                 context['form'] = form
                 return render(request, "mvp/single.html", context)
@@ -184,9 +199,20 @@ def single_user(request, mvp_id, req):
                     context['form'] = form
                     return render(request, "mvp/single.html", context)
                 else:
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
+                        form.cleaned_data['user_ID']) + " Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " End Date : " + str(
+                        form.cleaned_data['End_Date']) + " End Time : " + str(
+                        form.cleaned_data['End_Time']) + " Activity : " + str(
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                        form.cleaned_data['Mul_Over'])
+                    mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    for mess in mess_split:
+                        messages.success(request, mess)
                     # up_model = MvpUserRequest.objects.filter(user_ID="3054204").update(Name="triple success")
                     mvp_model = form.save()
-                    context = {}
+                    context = {'user_ID': 'WFM-IRA-STEL-' + str(mvp_id)}
                     return render(request, "mvp/thanks.html", context)
             else:
                 if "This field is required." in str(TeleOptiUserRequestForm(request.POST).errors):
@@ -194,7 +220,7 @@ def single_user(request, mvp_id, req):
                 else:
                     messages.warning(request, str(TeleOptiUserRequestForm(request.POST).errors), fail_silently=True)
                     # messages.warning(request, re.search('<li>(.*)</li>', str(TeleOptiUserRequestForm(request.POST).errors).replace("__all__","")).group(1), fail_silently=True)
-                form = TeleOptiUserRequestForm()
+                form = TeleOptiUserRequestForm(request.POST)
                 context = {}
                 context['form'] = form
                 return render(request, "mvp/single.html", context)
@@ -296,6 +322,8 @@ def multi_user(request, mvp_id, req):
                 else:
                     mvp_model = form.save()
                     context = {}
+                    lister = MvpUserRequest.objects.values_list()
+                    temp_ID = "WFMIRA" + str(lister[len(lister) - 1][0])
 
                     new_form = OverTimeUserRequestForm()
                     context['form'] = new_form
@@ -310,28 +338,29 @@ def multi_user(request, mvp_id, req):
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
                     for mess in mess_split:
                         messages.success(request, mess)
-
+                    context = {'user_ID': 'WFM-IRA-MOT-' + str(mvp_id)}
                     return render(request, "mvp/thanks.html", context)
 
                 #################
         else:
-            if not OverTimeUserRequestForm(request.POST).is_valid():
+            if not OverTimeUserRequestForm(request.POST).is_valid() and request.method == 'POST':
                 if "This field is required." in str(OverTimeUserRequestForm(request.POST).errors):
                     messages.warning(request, "Please fill all the below fields", fail_silently=True)
                 else:
                     messages.warning(request, str(OverTimeUserRequestForm(request.POST).errors), fail_silently=True)
-                form = OverTimeUserRequestForm()
+                form = OverTimeUserRequestForm(request.POST)
                 context = {}
                 context['form'] = form
                 return render(request, "mvp/multi.html", context)
+            else:
+                mvp_model = Mvp.objects.get(id=mvp_id)
+                form = OverTimeUserRequestForm()
+                context = {}
+                context['form'] = form
+                messages.info(request, MESSAGE, fail_silently=True)
 
-            mvp_model = Mvp.objects.get(id=mvp_id)
-            form = OverTimeUserRequestForm()
-            context = {}
-            context['form'] = form
-            messages.info(request, MESSAGE, fail_silently=True)
+                return render(request, "mvp/multi.html", context)
 
-            return render(request, "mvp/multi.html", context)
     else:
         if request.method == 'POST' and TeleOptiUserRequestForm(request.POST).is_valid():
 
@@ -418,8 +447,6 @@ def multi_user(request, mvp_id, req):
                     mvp_model = form.save()
                     context = {}
 
-                    new_form = TeleOptiUserRequestForm()
-                    context['form'] = new_form
                     MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
                         form.cleaned_data['user_ID']) + " Start Date : " + str(
                         form.cleaned_data['Start_Date']) + " Start time : " + str(
@@ -431,29 +458,32 @@ def multi_user(request, mvp_id, req):
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
                     for mess in mess_split:
                         messages.success(request, mess)
+                    context = {'user_ID': 'WFM-IRA-MTEL-' + str(mvp_id)}
 
                     return render(request, "mvp/thanks.html", context)
 
                 #################
         else:
-            if not TeleOptiUserRequestForm(request.POST).is_valid():
+            if not TeleOptiUserRequestForm(request.POST).is_valid() and request.method == 'POST':
                 if "This field is required." in str(TeleOptiUserRequestForm(request.POST).errors):
                     messages.warning(request, "Please fill all the below fields", fail_silently=True)
                 else:
                     messages.warning(request, str(TeleOptiUserRequestForm(request.POST).errors), fail_silently=True)
-                form = TeleOptiUserRequestForm()
+                form = TeleOptiUserRequestForm(request.POST)
                 context = {}
                 context['form'] = form
                 return render(request, "mvp/multi.html", context)
-
-            mvp_model = Mvp.objects.get(id=mvp_id)
-            form = TeleOptiUserRequestForm()
-            context = {}
-            context['form'] = form
-            messages.info(request, MESSAGE, fail_silently=True)
-            return render(request, "mvp/multi.html", context)
+            else:
+                mvp_model = Mvp.objects.get(id=mvp_id)
+                form = TeleOptiUserRequestForm()
+                context = {}
+                context['form'] = form
+                messages.info(request, MESSAGE, fail_silently=True)
+                return render(request, "mvp/multi.html", context)
 
 
 class MvpViewSet(viewsets.ModelViewSet):
-    queryset = MvpUserRequest.objects.all()  #
+    queryset = MvpUserRequest.objects.all().order_by('-id')[:10]
+    # last_ten_in_ascending_order = reversed(last_ten)
+    # queryset = MvpUserRequest.objects.reverse()[:2]
     serializer_class = MvpSerializer

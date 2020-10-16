@@ -334,7 +334,7 @@ class OverTimeUserRequestForm(forms.ModelForm):
                 return "Please enter a valid employee number"
 
     def clean(self):
-        cleaned_data = super().clean()
+        cleaned_data = super(OverTimeUserRequestForm, self).clean()
         user_id = cleaned_data.get("user_ID")
         name = cleaned_data.get("Name")
         str_time = cleaned_data.get('Start_Time')
@@ -349,118 +349,163 @@ class OverTimeUserRequestForm(forms.ModelForm):
             str_date = datetime.strptime(str_date, '%Y-%m-%d')
             end_date = datetime.strptime(end_date, '%Y-%m-%d')
             past = datetime.now() - timedelta(days=7)
-
-            if str_date < past or end_date < past:
-                raise ValidationError("Please enter start/end date no later than 7 days from now")
-
-            if str_date > end_date:
-                raise ValidationError("Please enter start date less than end date")
-
             if len(user_id) != 7:
-                raise ValidationError(
-                    "Please enter a valid ID (7 numbers)"
-                )
-            if len(str_time) != 5 and ":" not in str_time:
-                raise ValidationError("please enter a valid start time")
+                # self.add_error('user_ID', forms.ValidationError("neekenduku"))
+                raise forms.ValidationError({'user_ID': 'Please enter a valid ID (7 numbers)'})
             else:
-                str_time_split = str_time.split(":")
-                str_hour = str_time_split[0]
-                str_min = str_time_split[1]
-                try:
-                    str_hour = int(str_hour)
-                    str_min = int(str_min)
+                if str_date < past or end_date < past:
+                    self.errors['Start_Date'] = ["Please select a date no later tham 7 days from current day"]
+                    self.errors['End_Date'] = ["Please select a date no later tham 7 days from current day"]
+                    # raise ValidationError("Please enter start/end date no later than 7 days from now")
+                else:
+                    if str_date > end_date:
+                        self.errors['Start Date'] = [u'Enter valid start ID, it should be less than start date']
+                        # raise ValidationError("Please enter start date less than end date")
+                    else:
+                        if len(str_time) != 5 and ":" not in str_time:
+                            self.errors['Start_Time'] = [u'Enter valid start time']
+                        else:
+                            str_time_split = str_time.split(":")
+                            str_hour = str_time_split[0]
+                            str_min = str_time_split[1]
+                            try:
+                                str_hour = int(str_hour)
+                                str_min = int(str_min)
 
-                    print(str(str_hour))
-                    print(str(str_min))
-                    if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
-                        raise ValidationError("please enter a valid start time")
-                except ValueError:
-                    raise ValidationError("please enter a valid start time")
+                                print(str(str_hour))
+                                print(str(str_min))
+                                if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
+                                    self.errors['Start_Time'] = [u'Enter valid start time']
+                                else:
+                                    if len(end_time) != 5 and ":" not in end_time:
+                                        self.errors['End_Time'] = [u'Enter valid end time']
+                                    else:
+                                        end_time_split = end_time.split(":")
+                                        end_hour = end_time_split[0]
+                                        end_min = end_time_split[1]
+                                        try:
+                                            end_hour = int(end_hour)
+                                            end_min = int(end_min)
+                                            if end_hour > 23 or end_hour < 0 or end_min > 59 or end_min < 0:
+                                                self.errors['End_Time'] = [u'Enter valid end time']
+                                            else:
+                                                try:
+                                                    start_time_date = datetime.strptime(str_time, '%H:%M')
+                                                    end_time_date = datetime.strptime(end_time, '%H:%M')
+                                                    if start_time_date > end_time_date:
+                                                        self.errors['Start_Time'] = [
+                                                            u'Please enter valid start time & end time, Start time should be less than end time']
+                                                        self.errors['End_Time'] = [
+                                                            u'Please enter valid start time & end time, Start time should be less than end time']
+                                                except ValueError:
+                                                    self.errors['Start_Time'] = [
+                                                        u'Please enter valid start time & end time, Start time should be less than end time']
+                                                    self.errors['End_Time'] = [
+                                                        u'Please enter valid start time & end time, Start time should be less than end time']
 
-            if len(end_time) != 5 and ":" not in end_time:
-                raise ValidationError("please enter a valid end time")
-            else:
-                end_time_split = end_time.split(":")
-                end_hour = end_time_split[0]
-                end_min = end_time_split[1]
-                try:
-                    end_hour = int(end_hour)
-                    end_min = int(end_min)
-                    if end_hour > 23 or end_hour < 0 or end_min > 59 or end_min < 0:
-                        raise ValidationError("please enter a valid end time")
-                except ValueError:
-                    raise ValidationError("please enter a valid end time")
-            try:
-                start_time_date = datetime.strptime(str_time, '%H:%M')
-                end_time_date = datetime.strptime(end_time, '%H:%M')
-                if start_time_date > end_time_date:
-                    raise ValidationError("Please enter start time less than end time")
-            except ValueError:
-                raise ValidationError("Please enter valid start/end time")
+                                                    ##############################
+                                                u_id = self.cleaned_data.get("user_ID")
+                                                if len(u_id) != 7:
+                                                    self.errors['user_ID'] = [
+                                                        u'Please enter valid user ID']
+                                                else:
 
-            ##############################
-            u_id = self.cleaned_data.get("user_ID")
-            if len(u_id) != 7:
-                raise ValidationError("Please enter valid employee ID")
-            else:
+                                                    final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(
+                                                        u_id)  # 3054204"
+                                                    final_headers = {
+                                                        "x-api-key": "lsUfB4oaUX"
+                                                    }
+                                                    try:
+                                                        # fin = requests.get(final_url, final_headers, False)
+                                                        # print(username[5:])
+                                                        fin = requests.get(final_url, headers=final_headers,
+                                                                           verify=False)
 
-                final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(u_id)  # 3054204"
-                final_headers = {
-                    "x-api-key": "lsUfB4oaUX"
-                }
-                try:
-                    # fin = requests.get(final_url, final_headers, False)
-                    # print(username[5:])
-                    fin = requests.get(final_url, headers=final_headers, verify=False)
+                                                        # temp_data_json = json.loads(json.dumps(fin.json()))
 
-                    # temp_data_json = json.loads(json.dumps(fin.json()))
+                                                        temp_data_json = json.loads(json.dumps(fin.json()))
+                                                        country = str(temp_data_json['site']['countryCode'])
+                                                        if "full" in name and (
+                                                                (((
+                                                                        end_time_date - start_time_date)).seconds / 60) / 60) < 9:
+                                                            raise ValidationError({
+                                                                'Start_Time': 'Please enter valid start/end time : For a full day OT please choose 9 hrs'})
+                                                        elif "full" not in name and (
+                                                                (end_time_date - start_time_date)).seconds < 3600:
+                                                            raise ValidationError({'Start_Time':
+                                                                                       'Please enter valid start/end time : Given OT to plot is ' + str(
+                                                                                           (((
+                                                                                                   end_time_date - start_time_date)).seconds) / 60) + ' mins, minimum is one hour'})
+                                                        if "full" in name and "lunch_45" != breaktime:
+                                                            raise ValidationError({'BreakTime':
+                                                                                       'Please select appropriate '
+                                                                                       'break time : full day should '
+                                                                                       'have lunch and 45 mins break'})
+                                                        if "full" not in name and ((((
+                                                                end_time_date - start_time_date)).seconds / 60) / 60) == 8 and "lunch_30" not in breaktime:
+                                                            raise ValidationError({'BreakTime':
+                                                                                       'Please select appropriate break time : 8 hrs a day should have lunch and 30 mins break'})
+                                                        if "full" not in name and (
+                                                                (((
+                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 7 and "lunch_15" not in breaktime:
+                                                            raise ValidationError({'BreakTime':
+                                                                                       'Please select appropriate break time : 7 hrs a day should have lunch and 15 mins break'})
+                                                        if "full" not in name and (
+                                                                (((
+                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 5 and "lunch_15" not in breaktime:
+                                                            raise ValidationError({'BreakTime':
+                                                                                       "Please select appropriate break time : 5 hrs a day should have lunch and 15 mins break"})
+                                                        if "full" not in name and (
+                                                                (((
+                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 6 and "lunch_15" not in breaktime:
+                                                            raise ValidationError({'BreakTime':
+                                                                                       "Please select appropriate break time : 6 hrs a day should have lunch and 15 mins break"})
 
-                    temp_data_json = json.loads(json.dumps(fin.json()))
-                    country = str(temp_data_json['site']['countryCode'])
+                                                        if "full" not in name and (
+                                                                (((
+                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 4 and "15min" not in breaktime:
+                                                            raise ValidationError({'BreakTime':
+                                                                                       '4 hrs a day should have 15 mins break'})
+                                                        if "full" not in name and (
+                                                                (((
+                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 2 and "15min" not in breaktime:
+                                                            raise ValidationError({'BreakTime':
+                                                                                       '2 hrs a day should have 15 mins break'})
+                                                        if "full" not in name and (
+                                                                (((
+                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 3 and "15min" not in breaktime:
+                                                            raise ValidationError({'BreakTime':
+                                                                                       '3 hrs a day should have 15 mins break'})
+                                                        if "full" not in name and (
+                                                                (((
+                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 1 and "no" not in breaktime:
+                                                            raise ValidationError({'BreakTime':
+                                                                                       '1 hrs a day should not have break time'})
 
-                    if "full" in name and ((((end_time_date - start_time_date)).seconds / 60) / 60) < 9:
-                        raise ValidationError(
-                            "Please enter valid start/end time : For a full day OT please choose 9 hrs")
-                    elif "full" not in name and country == 'IND' and (
-                            (end_time_date - start_time_date)).seconds < 3600:
-                        raise ValidationError("Please enter valid start/end time : Given OT to plot is " + str((((
-                                end_time_date - start_time_date)).seconds) / 60) + " mins, minimum is one hour")
-                    if "full" in name and "lunch_45" != breaktime:
-                        raise ValidationError(
-                            "Please select appropriate break time : full day should have lunch and 45 mins break")
-                    if "full" not in name and ((((
-                            end_time_date - start_time_date)).seconds / 60) / 60) == 8 and "lunch_30" not in breaktime:
-                        raise ValidationError(
-                            "Please select appropriate break time : 8 hrs a day should have lunch and 30 mins break")
-                    if "full" not in name and (
-                            (((
-                                    end_time_date - start_time_date)).seconds / 60) / 60) == 7 and "lunch_15" not in breaktime:
-                        raise ValidationError(
-                            "Please select appropriate break time : 7 hrs a day should have lunch and 15 mins break")
-                    if "full" not in name and (
-                            (((end_time_date - start_time_date)).seconds / 60) / 60) == 6 or (
-                            (((
-                                    end_time_date - start_time_date)).seconds / 60) / 60) == 5 and "lunch_15" not in breaktime:
-                        raise ValidationError(
-                            "Please select appropriate break time : 6 or 5 hrs a day should have lunch and 15 mins break")
-                    if "full" not in name and ((((end_time_date - start_time_date)).seconds / 60) / 60) == 4 or (
-                            (((end_time_date - start_time_date)).seconds / 60) / 60) == 3 or (
-                            (((end_time_date - start_time_date)).seconds / 60) / 60) == 2 and "15min" not in breaktime:
-                        raise ValidationError(
-                            "Please select appropriate break time : 2 or 3 or 4  hrs a day should have lunch and 15 mins break")
-                    if "full" not in name and (
-                            (((end_time_date - start_time_date)).seconds / 60) / 60) == 1 and "no" not in breaktime:
-                        raise ValidationError(
-                            "Please select appropriate break time : 1 hrs a day should not have break time")
+                                                        # if country == 'IND':
 
-                except ConnectionError and KeyError:
-                    return "Please enter a valid employee number"
-                    #####################################
+                                                    except ConnectionError and KeyError:
+                                                        self.errors['user_ID'] = [
+                                                            u'Please enter valid user ID']
+
+                                        except ValueError:
+                                            self.errors['End_Time'] = [u'Enter valid end time']
+
+
+                            except ValueError:
+                                self.errors['Start_Time'] = [u'Enter valid start time']
+
+                                #####################################
+
+
 
         else:
-            raise ValidationError(
-                "Not a valid input, Please try again with correct input"
-            )
+            self.errors['user_ID'] = [
+                u'Please enter valid user ID']
+            # raise ValidationError(
+            #     "Not a valid input, Please try again with correct input"
+            # )
+        return cleaned_data
 
     def clean_activity(self, *args, **kwargs):
         activity = self.cleaned_data.get("Activity")
@@ -579,13 +624,14 @@ class TeleOptiUserRequestForm(forms.ModelForm):
                 return "Please enter a valid employee number"
 
     def clean(self):
-        cleaned_data = super().clean()
+        cleaned_data = super(TeleOptiUserRequestForm, self).clean()
         user_id = cleaned_data.get("user_ID")
-        name = cleaned_data.get("Name")
+        # name = cleaned_data.get("Name")
         str_time = cleaned_data.get('Start_Time')
         end_time = cleaned_data.get('End_Time')
         str_date = cleaned_data.get('Start_Date')
         end_date = cleaned_data.get('End_Date')
+        # breaktime = cleaned_data.get('BreakTime')
 
         if user_id and str_time and end_time:
             # Only do something if both fields are valid so far.
@@ -593,59 +639,105 @@ class TeleOptiUserRequestForm(forms.ModelForm):
             str_date = datetime.strptime(str_date, '%Y-%m-%d')
             end_date = datetime.strptime(end_date, '%Y-%m-%d')
             past = datetime.now() - timedelta(days=7)
-
-            if str_date < past or end_date < past:
-                raise ValidationError("Please enter start/end date no later than 7 days from now")
-
-            if str_date > end_date:
-                raise ValidationError("Please enter start date less than end date")
-
             if len(user_id) != 7:
-                raise ValidationError(
-                    "Please enter a valid ID (7 numbers)"
-                )
-            if len(str_time) != 5 and ":" not in str_time:
-                raise ValidationError("please enter a valid start time")
+                # self.add_error('user_ID', forms.ValidationError("neekenduku"))
+                raise forms.ValidationError({'user_ID': 'Please enter a valid ID (7 numbers)'})
             else:
-                str_time_split = str_time.split(":")
-                str_hour = str_time_split[0]
-                str_min = str_time_split[1]
-                try:
-                    str_hour = int(str_hour)
-                    str_min = int(str_min)
+                if str_date < past or end_date < past:
+                    self.errors['Start_Date'] = ["Please select a date no later tham 7 days from current day"]
+                    self.errors['End_Date'] = ["Please select a date no later tham 7 days from current day"]
+                    # raise ValidationError("Please enter start/end date no later than 7 days from now")
+                else:
+                    if str_date > end_date:
+                        self.errors['Start Date'] = [u'Enter valid start ID, it should be less than start date']
+                        # raise ValidationError("Please enter start date less than end date")
+                    else:
+                        if len(str_time) != 5 and ":" not in str_time:
+                            self.errors['Start_Time'] = [u'Enter valid start time']
+                        else:
+                            str_time_split = str_time.split(":")
+                            str_hour = str_time_split[0]
+                            str_min = str_time_split[1]
+                            try:
+                                str_hour = int(str_hour)
+                                str_min = int(str_min)
 
-                    print(str(str_hour))
-                    print(str(str_min))
-                    if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
-                        raise ValidationError("please enter a valid start time")
-                except ValueError:
-                    raise ValidationError("please enter a valid start time")
+                                print(str(str_hour))
+                                print(str(str_min))
+                                if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
+                                    self.errors['Start_Time'] = [u'Enter valid start time']
+                                else:
+                                    if len(end_time) != 5 and ":" not in end_time:
+                                        self.errors['End_Time'] = [u'Enter valid end time']
+                                    else:
+                                        end_time_split = end_time.split(":")
+                                        end_hour = end_time_split[0]
+                                        end_min = end_time_split[1]
+                                        try:
+                                            end_hour = int(end_hour)
+                                            end_min = int(end_min)
+                                            if end_hour > 23 or end_hour < 0 or end_min > 59 or end_min < 0:
+                                                self.errors['End_Time'] = [u'Enter valid end time']
+                                            else:
+                                                try:
+                                                    start_time_date = datetime.strptime(str_time, '%H:%M')
+                                                    end_time_date = datetime.strptime(end_time, '%H:%M')
+                                                    if start_time_date > end_time_date:
+                                                        self.errors['Start_Time'] = [
+                                                            u'Please enter valid start time & end time, Start time should be less than end time']
+                                                        self.errors['End_Time'] = [
+                                                            u'Please enter valid start time & end time, Start time should be less than end time']
+                                                except ValueError:
+                                                    self.errors['Start_Time'] = [
+                                                        u'Please enter valid start time & end time, Start time should be less than end time']
+                                                    self.errors['End_Time'] = [
+                                                        u'Please enter valid start time & end time, Start time should be less than end time']
 
-            if len(end_time) != 5 and ":" not in end_time:
-                raise ValidationError("please enter a valid end time")
-            else:
-                end_time_split = end_time.split(":")
-                end_hour = end_time_split[0]
-                end_min = end_time_split[1]
-                try:
-                    end_hour = int(end_hour)
-                    end_min = int(end_min)
-                    if end_hour > 23 or end_hour < 0 or end_min > 59 or end_min < 0:
-                        raise ValidationError("please enter a valid end time")
-                except ValueError:
-                    raise ValidationError("please enter a valid end time")
-            try:
-                start_time_date = datetime.strptime(str_time, '%H:%M')
-                end_time_date = datetime.strptime(end_time, '%H:%M')
-                if start_time_date > end_time_date:
-                    raise ValidationError("Please enter start time less than end time")
-            except ValueError:
-                raise ValidationError("Please enter valid start/end time")
+                                                    ##############################
+                                                u_id = self.cleaned_data.get("user_ID")
+                                                if len(u_id) != 7:
+                                                    self.errors['user_ID'] = [
+                                                        u'Please enter valid user ID']
+                                                else:
 
-        # else:
-        #     raise ValidationError(
-        #         "Not a valid input, Please try again with correct input"
-        #     )
+                                                    final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(
+                                                        u_id)  # 3054204"
+                                                    final_headers = {
+                                                        "x-api-key": "lsUfB4oaUX"
+                                                    }
+                                                    try:
+                                                        # fin = requests.get(final_url, final_headers, False)
+                                                        # print(username[5:])
+                                                        fin = requests.get(final_url, headers=final_headers,
+                                                                           verify=False)
+
+                                                        # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                                                        temp_data_json = json.loads(json.dumps(fin.json()))
+                                                        country = str(temp_data_json['site']['countryCode'])
+
+                                                    except ConnectionError and KeyError:
+                                                        self.errors['user_ID'] = [
+                                                            u'Please enter valid user ID']
+
+                                        except ValueError:
+                                            self.errors['End_Time'] = [u'Enter valid end time']
+
+
+                            except ValueError:
+                                self.errors['Start_Time'] = [u'Enter valid start time']
+
+                                #####################################
+
+
+
+        else:
+            self.errors['user_ID'] = [
+                u'Please enter valid user ID']
+            # raise ValidationError(
+            #     "Not a valid input, Please try again with correct input"
+            # )
+        return cleaned_data
 
     def clean_activity(self, *args, **kwargs):
         activity = self.cleaned_data.get("Activity")

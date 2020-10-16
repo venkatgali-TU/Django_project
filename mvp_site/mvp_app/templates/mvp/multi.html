@@ -45,16 +45,24 @@
         {% endfor %}
     </ul>
     {% endif %}
-<!--    <div class="content has-text-centered">-->
-<!--        <input type="date">-->
-<!--        {{MvpUserFormRequest.Start_Date}}-->
-<!--        <input type="date">-->
-<!--        {{MvpUserFormRequest.Start_Time}}-->
-<!--        <input type="date">-->
-<!--        {{MvpUserFormRequest.End_Date}}-->
-<!--        <input type="date">-->
-<!--        {{MvpUserFormRequest.End_Time}}-->
-<!--    </div>-->
+    <!--    <div class="content has-text-centered">-->
+    <!--        <input type="date">-->
+    <!--        {{MvpUserFormRequest.Start_Date}}-->
+    <!--        <input type="date">-->
+    <!--        {{MvpUserFormRequest.Start_Time}}-->
+    <!--        <input type="date">-->
+    <!--        {{MvpUserFormRequest.End_Date}}-->
+    <!--        <input type="date">-->
+    <!--        {{MvpUserFormRequest.End_Time}}-->
+    <!--    </div>-->
+    <nav>
+        <div class="level-left">
+            <p class="level-item"><a href="{% url 'hello_mvp'  %}">Go back to Home page</a></p>
+        </div>
+        <div class="level-right">
+            <p class="level-item"><a href="{% url 'data_view'  %}">Go to completed tasks</a></p>
+        </div>
+    </nav>
     <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
         {% for field in form.visible_fields %}
         <tr>
