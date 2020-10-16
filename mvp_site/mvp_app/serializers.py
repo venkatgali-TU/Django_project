@@ -90,7 +90,7 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
     def req_id(self, obj):
         field_name = 'Status'
         field_value = getattr(obj,field_name)
-        return  str(field_value)
+        return str(field_value)
 
 
     class Meta:

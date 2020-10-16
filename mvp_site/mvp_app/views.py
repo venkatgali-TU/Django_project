@@ -15,9 +15,35 @@ from rest_framework import viewsets
 from .serializers import MvpSerializer
 from django.core.paginator import Paginator
 from django.shortcuts import render
+import json
+import json
 
+import gspread
+import requests
+import simplejson as json
+from oauth2client.service_account import ServiceAccountCredentials
 CRITICAL = 50
 MESSAGE = "Enter the values in the portal below"
+
+def login(json_key):
+    scope = ['https://spreadsheets.google.com/feeds']
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(json_key, scope)
+    gc = gspread.authorize(credentials)
+    return gc
+
+
+def Sheets_Update(params):
+    gc = login(r'C:\Users\vg3054204\Downloads\rpachatbot-283314-3f167aa77833.json')
+
+    worksheet = gc.open_by_key("1pGHWuiQR8GmdByKY-PFhb3-xvg8UOnk_6kCm7SkvQ4o")
+    to_get_count = worksheet.values_get(range='San Antonio!K1:K100000', params=None)['values']
+    row_num = len(to_get_count)
+    lister = []
+    for obj in to_get_count:
+        lister.append(obj)
+    lister.pop(0)
+
+    return lister
 
 
 def hello_mvp(request):
@@ -113,11 +139,36 @@ def hello_mvp(request):
 
 
 def data_view(request):
-    all_objects = MvpUserRequest.objects.all().order_by('-id')[:10]
-    lister = MvpUserRequest.objects.values_list()
+    all_objects = MvpUserRequest.objects.all().order_by('-id')[:1]
+    lister = Sheets_Update("s")
+    print(lister[0])
+    if ":::" not in lister[0][0]:
+        paginator = Paginator(all_objects, 5)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+        print(Sheets_Update("s"))
+        send_mail('subject', 'body of the message', 'svc.aacr@taskus.com',
+                  ['venkat.gali@taskus.com'])
+
+        return render(request, 'mvp/data.html', {'posts': posts})
+    else:
+        paginator = Paginator(all_objects, 5)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+        print(Sheets_Update("s"))
+        send_mail('subject', 'body of the message', 'svc.aacr@taskus.com',
+                  ['venkat.gali@taskus.com'])
+
+        return render(request, 'mvp/success_data.html', {'posts': posts})
+
+
+
+
+
     paginator = Paginator(all_objects, 5)
     page = request.GET.get('page')
     posts = paginator.get_page(page)
+    print(Sheets_Update("s"))
     send_mail('subject', 'body of the message', 'svc.aacr@taskus.com',
               ['venkat.gali@taskus.com'])
 
