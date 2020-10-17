@@ -139,10 +139,28 @@ def hello_mvp(request):
 
 
 def data_view(request):
-    all_objects = MvpUserRequest.objects.all().order_by('-id')[:1]
+    all_objects = MvpUserRequest.objects.all().order_by('-id')[:5]
     lister = Sheets_Update("s")
-    print(lister[0])
-    if ":::" not in lister[0][0]:
+    try:
+        if ":::" not in lister[0][0]:
+            paginator = Paginator(all_objects, 5)
+            page = request.GET.get('page')
+            posts = paginator.get_page(page)
+            print(Sheets_Update("s"))
+            send_mail('subject', 'body of the message', 'svc.aacr@taskus.com',
+                      ['venkat.gali@taskus.com'])
+
+            return render(request, 'mvp/data.html', {'posts': posts})
+        else:
+            paginator = Paginator(all_objects, 5)
+            page = request.GET.get('page')
+            posts = paginator.get_page(page)
+            print(Sheets_Update("s"))
+            send_mail('subject', 'body of the message', 'svc.aacr@taskus.com',
+                      ['venkat.gali@taskus.com'])
+
+            return render(request, 'mvp/success_data.html', {'posts': posts})
+    except IndexError:
         paginator = Paginator(all_objects, 5)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
@@ -151,18 +169,6 @@ def data_view(request):
                   ['venkat.gali@taskus.com'])
 
         return render(request, 'mvp/data.html', {'posts': posts})
-    else:
-        paginator = Paginator(all_objects, 5)
-        page = request.GET.get('page')
-        posts = paginator.get_page(page)
-        print(Sheets_Update("s"))
-        send_mail('subject', 'body of the message', 'svc.aacr@taskus.com',
-                  ['venkat.gali@taskus.com'])
-
-        return render(request, 'mvp/success_data.html', {'posts': posts})
-
-
-
 
 
     paginator = Paginator(all_objects, 5)
@@ -212,6 +218,9 @@ def single_user(request, mvp_id, req):
                     for mess in mess_split:
                         messages.success(request, mess)
                     context = {'user_ID': 'WFM-IRA-SOT-' + str(mvp_id)}
+                    send_mail('WFM - Plotting website submissions: ',
+                              MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                              ['venkat.gali@taskus.com'])
                     return render(request, "mvp/thanks.html", context)
 
 
@@ -268,6 +277,9 @@ def single_user(request, mvp_id, req):
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-STEL-' + str(mvp_id))
                     context = {'user_ID': 'WFM-IRA-STEL-' + str(mvp_id)}
+                    send_mail('WFM - Plotting website submissions: ',
+                              MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                              ['venkat.gali@taskus.com'])
                     return render(request, "mvp/thanks.html", context)
             else:
                 if "This field is required." in str(TeleOptiUserRequestForm(request.POST).errors):
@@ -393,6 +405,9 @@ def multi_user(request, mvp_id, req):
                         form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
                         form.cleaned_data['Mul_Over'])
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    send_mail('WFM - Plotting website submissions: ', MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                              ['venkat.gali@taskus.com'])
+
                     for mess in mess_split:
                         messages.success(request, mess)
                     context = {'user_ID': 'WFM-IRA-MOT-' + str(mvp_id)}
@@ -521,6 +536,9 @@ def multi_user(request, mvp_id, req):
                     for mess in mess_split:
                         messages.success(request, mess)
                     context = {'user_ID': 'WFM-IRA-MTEL-' + str(mvp_id)}
+                    send_mail('WFM - Plotting website submissions: ',
+                              MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                              ['venkat.gali@taskus.com'])
 
                     return render(request, "mvp/thanks.html", context)
 
@@ -545,7 +563,7 @@ def multi_user(request, mvp_id, req):
 
 
 class MvpViewSet(viewsets.ModelViewSet):
-    queryset = MvpUserRequest.objects.all().order_by('-id')[:10]
+    queryset = MvpUserRequest.objects.all().order_by('-id')[:3]
     # last_ten_in_ascending_order = reversed(last_ten)
     # queryset = MvpUserRequest.objects.reverse()[:2]
     serializer_class = MvpSerializer

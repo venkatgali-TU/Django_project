@@ -425,64 +425,65 @@ class OverTimeUserRequestForm(forms.ModelForm):
 
                                                         temp_data_json = json.loads(json.dumps(fin.json()))
                                                         country = str(temp_data_json['site']['countryCode'])
-                                                        if "full" in name and (
-                                                                (((
-                                                                        end_time_date - start_time_date)).seconds / 60) / 60) < 9:
-                                                            raise ValidationError({
-                                                                'Start_Time': 'Please enter valid start/end time : For a full day OT please choose 9 hrs'})
-                                                        elif "full" not in name and (
-                                                                (end_time_date - start_time_date)).seconds < 3600:
-                                                            raise ValidationError({'Start_Time':
-                                                                                       'Please enter valid start/end time : Given OT to plot is ' + str(
-                                                                                           (((
-                                                                                                   end_time_date - start_time_date)).seconds) / 60) + ' mins, minimum is one hour'})
-                                                        if "full" in name and "lunch_45" != breaktime:
-                                                            raise ValidationError({'BreakTime':
-                                                                                       'Please select appropriate '
-                                                                                       'break time : full day should '
-                                                                                       'have lunch and 45 mins break'})
-                                                        if "full" not in name and ((((
-                                                                end_time_date - start_time_date)).seconds / 60) / 60) == 8 and "lunch_30" not in breaktime:
-                                                            raise ValidationError({'BreakTime':
-                                                                                       'Please select appropriate break time : 8 hrs a day should have lunch and 30 mins break'})
-                                                        if "full" not in name and (
-                                                                (((
-                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 7 and "lunch_15" not in breaktime:
-                                                            raise ValidationError({'BreakTime':
-                                                                                       'Please select appropriate break time : 7 hrs a day should have lunch and 15 mins break'})
-                                                        if "full" not in name and (
-                                                                (((
-                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 5 and "lunch_15" not in breaktime:
-                                                            raise ValidationError({'BreakTime':
-                                                                                       "Please select appropriate break time : 5 hrs a day should have lunch and 15 mins break"})
-                                                        if "full" not in name and (
-                                                                (((
-                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 6 and "lunch_15" not in breaktime:
-                                                            raise ValidationError({'BreakTime':
-                                                                                       "Please select appropriate break time : 6 hrs a day should have lunch and 15 mins break"})
 
-                                                        if "full" not in name and (
-                                                                (((
-                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 4 and "15min" not in breaktime:
-                                                            raise ValidationError({'BreakTime':
-                                                                                       '4 hrs a day should have 15 mins break'})
-                                                        if "full" not in name and (
-                                                                (((
-                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 2 and "15min" not in breaktime:
-                                                            raise ValidationError({'BreakTime':
-                                                                                       '2 hrs a day should have 15 mins break'})
-                                                        if "full" not in name and (
-                                                                (((
-                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 3 and "15min" not in breaktime:
-                                                            raise ValidationError({'BreakTime':
-                                                                                       '3 hrs a day should have 15 mins break'})
-                                                        if "full" not in name and (
-                                                                (((
-                                                                        end_time_date - start_time_date)).seconds / 60) / 60) == 1 and "no" not in breaktime:
-                                                            raise ValidationError({'BreakTime':
-                                                                                       '1 hrs a day should not have break time'})
+                                                        if country == 'IND':
+                                                            if "full" in name and (
+                                                                    (((
+                                                                            end_time_date - start_time_date)).seconds / 60) / 60) < 9:
+                                                                raise ValidationError({
+                                                                    'Start_Time': 'Please enter valid start/end time : For a full day OT please choose 9 hrs'})
+                                                            elif "full" not in name and (
+                                                                    (end_time_date - start_time_date)).seconds < 3600:
+                                                                raise ValidationError({'Start_Time':
+                                                                                           'Please enter valid start/end time : Given OT to plot is ' + str(
+                                                                                               (((
+                                                                                                       end_time_date - start_time_date)).seconds) / 60) + ' mins, minimum is one hour'})
+                                                            if "full" in name and "lunch_45" != breaktime:
+                                                                raise ValidationError({'BreakTime':
+                                                                                           'Please select appropriate '
+                                                                                           'break time : full day should '
+                                                                                           'have lunch and 45 mins break'})
+                                                            if "full" not in name and ((((
+                                                                    end_time_date - start_time_date)).seconds / 60) / 60) == 8 and "lunch_30" not in breaktime:
+                                                                raise ValidationError({'BreakTime':
+                                                                                           'Please select appropriate break time : 8 hrs a day should have lunch and 30 mins break'})
+                                                            if "full" not in name and (
+                                                                    (((
+                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 7 and "lunch_15" not in breaktime:
+                                                                raise ValidationError({'BreakTime':
+                                                                                           'Please select appropriate break time : 7 hrs a day should have lunch and 15 mins break'})
+                                                            if "full" not in name and (
+                                                                    (((
+                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 5 and "lunch_15" not in breaktime:
+                                                                raise ValidationError({'BreakTime':
+                                                                                           "Please select appropriate break time : 5 hrs a day should have lunch and 15 mins break"})
+                                                            if "full" not in name and (
+                                                                    (((
+                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 6 and "lunch_15" not in breaktime:
+                                                                raise ValidationError({'BreakTime':
+                                                                                           "Please select appropriate break time : 6 hrs a day should have lunch and 15 mins break"})
 
-                                                        # if country == 'IND':
+                                                            if "full" not in name and (
+                                                                    (((
+                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 4 and "15min" not in breaktime:
+                                                                raise ValidationError({'BreakTime':
+                                                                                           '4 hrs a day should have 15 mins break'})
+                                                            if "full" not in name and (
+                                                                    (((
+                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 2 and "15min" not in breaktime:
+                                                                raise ValidationError({'BreakTime':
+                                                                                           '2 hrs a day should have 15 mins break'})
+                                                            if "full" not in name and (
+                                                                    (((
+                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 3 and "15min" not in breaktime:
+                                                                raise ValidationError({'BreakTime':
+                                                                                           '3 hrs a day should have 15 mins break'})
+                                                            if "full" not in name and (
+                                                                    (((
+                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 1 and "no" not in breaktime:
+                                                                raise ValidationError({'BreakTime':
+                                                                                           '1 hrs a day should not have break time'})
+
 
                                                     except ConnectionError and KeyError:
                                                         self.errors['user_ID'] = [
