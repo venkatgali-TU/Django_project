@@ -164,3 +164,9 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'svc.aacr@taskus.com'
 EMAIL_HOST_PASSWORD = 'L3Ti5H@En6iN3!CaL'
 EMAIL_USE_TLS = True
+#######REST FRAMEWORK##############
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES':
+        ['rest_framework.permissions.AllowAny'],
+    'PAGE_SIZE': 10
+}

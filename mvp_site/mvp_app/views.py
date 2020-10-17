@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from rest_framework import status, generics, mixins
 
 # Create your views here.
 from .forms import MvpForm, TeleOptiUserRequestForm, OverTimeUserRequestForm
@@ -22,8 +23,16 @@ import gspread
 import requests
 import simplejson as json
 from oauth2client.service_account import ServiceAccountCredentials
+
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from .serializers import *
+
 CRITICAL = 50
 MESSAGE = "Enter the values in the portal below"
+
 
 def login(json_key):
     scope = ['https://spreadsheets.google.com/feeds']
@@ -170,7 +179,6 @@ def data_view(request):
 
         return render(request, 'mvp/data.html', {'posts': posts})
 
-
     paginator = Paginator(all_objects, 5)
     page = request.GET.get('page')
     posts = paginator.get_page(page)
@@ -203,8 +211,9 @@ def single_user(request, mvp_id, req):
                     return render(request, "mvp/single.html", context)
                 else:
                     mvp_model = form.save()
-                    print('mvp_id is :'+ str(MvpUserRequest.objects.latest('id').id))
-                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(Status='WFM-IRA-SOT-' + str(mvp_id))
+                    print('mvp_id is :' + str(MvpUserRequest.objects.latest('id').id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Status='WFM-IRA-SOT-' + str(mvp_id))
 
                     MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
                         form.cleaned_data['user_ID']) + " Start Date : " + str(
@@ -405,7 +414,8 @@ def multi_user(request, mvp_id, req):
                         form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
                         form.cleaned_data['Mul_Over'])
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
-                    send_mail('WFM - Plotting website submissions: ', MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                    send_mail('WFM - Plotting website submissions: ',
+                              MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
                               ['venkat.gali@taskus.com'])
 
                     for mess in mess_split:
@@ -562,8 +572,60 @@ def multi_user(request, mvp_id, req):
                 return render(request, "mvp/multi.html", context)
 
 
-class MvpViewSet(viewsets.ModelViewSet):
+@api_view(['GET', 'POST'])
+def request_list(request):
+    """
+    List all products, or create a new product.
+    """
+    if request.method == 'GET':
+        products = MvpUserRequest.objects.all().order_by('-id')[:3]
+        serializer = MvpSerializer(products,context={'request': request} ,many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = MvpSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def request_detail(request, pk):
+    """
+    Retrieve, update or delete a product instance.
+    """
+    try:
+        product = MvpUserRequest.objects.get(pk=pk)
+    except MvpUserRequest.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = MvpSerializer(product, context={'request': request})
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = MvpSerializer(product, data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MvpViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin,
+                 generics.GenericAPIView):  # viewsets.ModelViewSet):
     queryset = MvpUserRequest.objects.all().order_by('-id')[:3]
     # last_ten_in_ascending_order = reversed(last_ten)
     # queryset = MvpUserRequest.objects.reverse()[:2]
     serializer_class = MvpSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
