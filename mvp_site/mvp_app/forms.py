@@ -8,6 +8,10 @@ import json
 import requests
 import simplejson as json
 
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 USERS_REQ_TYPE = [('single_user', 'Single User'), ('multi_user', 'Multiple Users')]
 SITE_NAMES = [('rgz', 'Rangreza'), ('liz_n', 'Lizzys Nook'), ('liz_l', 'LizardBear Lair'), ('htw', 'Home Teamwork'),
               ('fe', 'Fort Excellence'),
@@ -56,19 +60,19 @@ REQUEST_TYPES = [('ot', 'OverTime'), ('tel', 'TeleOpti plotting')]
 OT_TYPES = [('part_ot', 'Partial Over Time'), ('full_ot', 'Full Day OT')]
 LOCATIONS = [('nam', 'NAM'), ('mxc', 'Mexico'), ('ind', 'India')]
 YEAR_CHOICES = ['2020', '2021', '2022']
-OT_ACTIVITY = [('prdtime', 'Productive Time'), ('prdtime_15', 'Productive Time 15 mins'),
-               ('prdtime_30mins', 'Productive Time 30 mins'),
-               ('email', 'Email'), ('email_30mins', 'Email 30 mins'), ('chat', 'Chat'),
-               ('sup_hour', 'Supplementary Hour')]
+OT_ACTIVITY = [('Productive Time', 'Productive Time'), ('Productive Time 15 mins', 'Productive Time 15 mins'),
+               ('Productive Time 30 mins', 'Productive Time 30 mins'),
+               ('Email', 'Email'), ('Email 30 mins', 'Email 30 mins'), ('Chat', 'Chat'),
+               ('Supplementary Hour', 'Supplementary Hour')]
 
-OT_MULTIPLICATOR = [('ot', 'OverTime'), ('bil_ot', 'Billable OverTime'), ('nonbil_OT', 'Non-Billable OverTime')]
-TELEOPTI_ACTIVITY = [('c&d', 'Coaching and Development'), ('daily_su', 'Daily Stand Up'),
-                     ('teammeetings', 'Team Meetings'),
-                     ('vto', 'Voluntary Time Off'), ('ct', 'Client Training')]
-TELEOPTI_OVERLAP = [('move_non', 'Move Non-Overwritable'), ('dont', 'Do Not Make Changes'), ('override', 'Override'),
-                    ('keep_non', 'Keep non-overwritable'), ('na', 'N/A - only for VTO Code')]
-BREAK = [('15min', '15 mins'), ('lunch_15', 'Lunch + 15 min'), ('lunch_30', 'Lunch + 30 min'),
-         ('lunch_45', 'Lunch + 45 min'), ('lunch_60', 'Lunch + 60min'), ('no', 'No Break')]
+OT_MULTIPLICATOR = [('OverTime', 'OverTime'), ('Billable OverTime', 'Billable OverTime'), ('Non-Billable OverTime', 'Non-Billable OverTime')]
+TELEOPTI_ACTIVITY = [('Coaching and Development', 'Coaching and Development'), ('Daily Stand Up', 'Daily Stand Up'),
+                     ('Team Meetings', 'Team Meetings'),
+                     ('Voluntary Time Off', 'Voluntary Time Off'), ('Client Training', 'Client Training')]
+TELEOPTI_OVERLAP = [('Move Non-Overwritable', 'Move Non-Overwritable'), ('Do Not Make Changes', 'Do Not Make Changes'), ('Override', 'Override'),
+                    ('Keep non-overwritable', 'Keep non-overwritable'), ('N/A - only for VTO Code', 'N/A - only for VTO Code')]
+BREAK = [('15 mins', '15 mins'), ('Lunch + 15 min', 'Lunch + 15 min'), ('Lunch + 30 min', 'Lunch + 30 min'),
+         ('Lunch + 45 min', 'Lunch + 45 min'), ('Lunch + 60min', 'Lunch + 60min'), ('No Break', 'No Break')]
 
 
 class MvpForm(forms.ModelForm):
@@ -289,6 +293,27 @@ class OverTimeUserRequestForm(forms.ModelForm):
             'End_Time': 'End Time'
         }
 
+    def clean_activity(self, *args, **kwargs):
+        activity = self.cleaned_data.get("Activity")
+        for items in OT_ACTIVITY:
+            if activity in items:
+                new_activity = items[1]
+        return new_activity
+
+    def clean_mul_over(self, *args, **kwargs):
+        mul = self.cleaned_data.get("Mul_Over")
+        for items in OT_MULTIPLICATOR:
+            if mul in items:
+                new_mul = items[1]
+        return new_mul
+
+    def clean_break_time(self, *args, **kwargs):
+        mul = self.cleaned_data.get("BreakTime")
+        for items in BREAK:
+            if mul in items:
+                new_mul = items[1]
+        return new_mul
+
     def clean_user_number(self, *args, **kwargs):
         u_id = self.cleaned_data.get("user_ID")
         if len(u_id) != 7:
@@ -342,6 +367,11 @@ class OverTimeUserRequestForm(forms.ModelForm):
         str_date = cleaned_data.get('Start_Date')
         end_date = cleaned_data.get('End_Date')
         breaktime = cleaned_data.get('BreakTime')
+        activity = cleaned_data.get('Activity')
+        for items in OT_ACTIVITY:
+            if activity in items:
+                activity = items[1]
+        print(activity)
 
         if user_id and str_time and end_time:
             # Only do something if both fields are valid so far.
@@ -508,19 +538,7 @@ class OverTimeUserRequestForm(forms.ModelForm):
             # )
         return cleaned_data
 
-    def clean_activity(self, *args, **kwargs):
-        activity = self.cleaned_data.get("Activity")
-        for items in OT_ACTIVITY:
-            if activity in items:
-                new_activity = items[1]
-        return new_activity
 
-    def clean_mul_over(self, *args, **kwargs):
-        mul = self.cleaned_data.get("Mul_Over")
-        for items in OT_MULTIPLICATOR:
-            if mul in items:
-                new_mul = items[1]
-        return new_mul
 
 
 class TeleOptiUserRequestForm(forms.ModelForm):
@@ -742,14 +760,21 @@ class TeleOptiUserRequestForm(forms.ModelForm):
 
     def clean_activity(self, *args, **kwargs):
         activity = self.cleaned_data.get("Activity")
-        for items in TELEOPTI_ACTIVITY:
+        for items in OT_ACTIVITY:
             if activity in items:
                 new_activity = items[1]
         return new_activity
 
     def clean_mul_over(self, *args, **kwargs):
         mul = self.cleaned_data.get("Mul_Over")
-        for items in TELEOPTI_OVERLAP:
+        for items in OT_MULTIPLICATOR:
+            if mul in items:
+                new_mul = items[1]
+        return new_mul
+
+    def clean_break_time(self, *args, **kwargs):
+        mul = self.cleaned_data.get("BreakTime")
+        for items in BREAK:
             if mul in items:
                 new_mul = items[1]
         return new_mul

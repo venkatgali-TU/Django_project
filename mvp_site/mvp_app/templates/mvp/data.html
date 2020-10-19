@@ -28,7 +28,18 @@
 
             <tr>
                 <th>{{ "Request ID" }}</th>
-                <td>{{ post.Status }}</td>
+
+                {% if 'omplete' in post.Status%}
+                <td>
+                    {{complete}}
+                </td>
+                {% else %}
+                <td>
+                    {{post.Status}}
+                </td>
+                {% endif%}
+
+                <!--                <td>{{ post.Status|slice:"0:17" }}</td>-->
             </tr>
             <tr>
                 <th>{{ "User ID" }}</th>
@@ -64,7 +75,12 @@
             </tr>
             <tr>
                 <th>{{ "Status" }}</th>
-                <td>{{ "InProgress" }}</td>
+                {% if 'omplete' in post.Status %}
+                <td>Complete</td>
+                >
+                {% else %}
+                <td>In Progress</td>
+                {% endif %}
             </tr>
             <tr>
                 <th>{{ "Campaign" }}</th>

@@ -18,6 +18,9 @@ from django.core.paginator import Paginator
 from django.shortcuts import render
 import json
 import json
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 import gspread
 import requests
@@ -32,27 +35,6 @@ from .serializers import *
 
 CRITICAL = 50
 MESSAGE = "Enter the values in the portal below"
-
-
-def login(json_key):
-    scope = ['https://spreadsheets.google.com/feeds']
-    credentials = ServiceAccountCredentials.from_json_keyfile_name(json_key, scope)
-    gc = gspread.authorize(credentials)
-    return gc
-
-
-def Sheets_Update(params):
-    gc = login(r'C:\Users\vg3054204\Downloads\rpachatbot-283314-3f167aa77833.json')
-
-    worksheet = gc.open_by_key("1pGHWuiQR8GmdByKY-PFhb3-xvg8UOnk_6kCm7SkvQ4o")
-    to_get_count = worksheet.values_get(range='San Antonio!K1:K100000', params=None)['values']
-    row_num = len(to_get_count)
-    lister = []
-    for obj in to_get_count:
-        lister.append(obj)
-    lister.pop(0)
-
-    return lister
 
 
 def hello_mvp(request):
@@ -148,43 +130,10 @@ def hello_mvp(request):
 
 
 def data_view(request):
-    all_objects = MvpUserRequest.objects.all().order_by('-id')[:5]
-    lister = Sheets_Update("s")
-    try:
-        if ":::" not in lister[0][0]:
-            paginator = Paginator(all_objects, 5)
-            page = request.GET.get('page')
-            posts = paginator.get_page(page)
-            print(Sheets_Update("s"))
-            send_mail('subject', 'body of the message', 'svc.aacr@taskus.com',
-                      ['venkat.gali@taskus.com'])
-
-            return render(request, 'mvp/data.html', {'posts': posts})
-        else:
-            paginator = Paginator(all_objects, 5)
-            page = request.GET.get('page')
-            posts = paginator.get_page(page)
-            print(Sheets_Update("s"))
-            send_mail('subject', 'body of the message', 'svc.aacr@taskus.com',
-                      ['venkat.gali@taskus.com'])
-
-            return render(request, 'mvp/success_data.html', {'posts': posts})
-    except IndexError:
-        paginator = Paginator(all_objects, 5)
-        page = request.GET.get('page')
-        posts = paginator.get_page(page)
-        print(Sheets_Update("s"))
-        send_mail('subject', 'body of the message', 'svc.aacr@taskus.com',
-                  ['venkat.gali@taskus.com'])
-
-        return render(request, 'mvp/data.html', {'posts': posts})
-
+    all_objects = MvpUserRequest.objects.all().order_by('-id')
     paginator = Paginator(all_objects, 5)
     page = request.GET.get('page')
     posts = paginator.get_page(page)
-    print(Sheets_Update("s"))
-    send_mail('subject', 'body of the message', 'svc.aacr@taskus.com',
-              ['venkat.gali@taskus.com'])
 
     return render(request, 'mvp/data.html', {'posts': posts})
 
@@ -230,6 +179,7 @@ def single_user(request, mvp_id, req):
                     send_mail('WFM - Plotting website submissions: ',
                               MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
                               ['venkat.gali@taskus.com'])
+                    MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
 
 
@@ -289,6 +239,7 @@ def single_user(request, mvp_id, req):
                     send_mail('WFM - Plotting website submissions: ',
                               MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
                               ['venkat.gali@taskus.com'])
+                    MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
             else:
                 if "This field is required." in str(TeleOptiUserRequestForm(request.POST).errors):
@@ -420,6 +371,7 @@ def multi_user(request, mvp_id, req):
 
                     for mess in mess_split:
                         messages.success(request, mess)
+                    MESSAGE = ""
                     context = {'user_ID': 'WFM-IRA-MOT-' + str(mvp_id)}
                     return render(request, "mvp/thanks.html", context)
 
@@ -549,6 +501,7 @@ def multi_user(request, mvp_id, req):
                     send_mail('WFM - Plotting website submissions: ',
                               MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
                               ['venkat.gali@taskus.com'])
+                    MESSAGE = ""
 
                     return render(request, "mvp/thanks.html", context)
 
@@ -578,8 +531,8 @@ def request_list(request):
     List all products, or create a new product.
     """
     if request.method == 'GET':
-        products = MvpUserRequest.objects.all().order_by('-id')[:3]
-        serializer = MvpSerializer(products,context={'request': request} ,many=True)
+        products = MvpUserRequest.objects.all().exclude(Status__contains='omplete').order_by('-id')[:15]
+        serializer = MvpSerializer(products, context={'request': request}, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
         serializer = MvpSerializer(data=request.data)
@@ -587,6 +540,7 @@ def request_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def request_detail(request, pk):
@@ -616,7 +570,7 @@ def request_detail(request, pk):
 
 class MvpViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin,
                  generics.GenericAPIView):  # viewsets.ModelViewSet):
-    queryset = MvpUserRequest.objects.all().order_by('-id')[:3]
+    queryset = MvpUserRequest.objects.all().order_by('-id')[:20]
     # last_ten_in_ascending_order = reversed(last_ten)
     # queryset = MvpUserRequest.objects.reverse()[:2]
     serializer_class = MvpSerializer

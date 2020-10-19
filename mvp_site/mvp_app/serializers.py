@@ -6,6 +6,10 @@ import json
 import requests
 import simplejson as json
 
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 class MvpSerializer(serializers.HyperlinkedModelSerializer):
     campaign = serializers.SerializerMethodField('campaign_name')
@@ -15,7 +19,7 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
 
     def campaign_name(self, obj):
         field_name = 'user_ID'
-        #obj = MvpUserRequest.objects.all().latest('id')
+        # obj = MvpUserRequest.objects.all().latest('id')
         field_value = getattr(obj, field_name)
 
         final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(field_value)  # 3054204"
@@ -36,7 +40,7 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
 
     def business_name(self, obj):
         field_name = 'user_ID'
-        #obj = MvpUserRequest.objects.first()
+        # obj = MvpUserRequest.objects.first()
         field_value = getattr(obj, field_name)
         final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(field_value)  # 3054204"
         final_headers = {
@@ -69,7 +73,7 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
 
     def timezone(self, obj):
         field_name = 'user_ID'
-        #obj = MvpUserRequest.objects.first()
+        # obj = MvpUserRequest.objects.first()
         field_value = getattr(obj, field_name)
         final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(field_value)  # 3054204"
         final_headers = {
@@ -89,13 +93,13 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
 
     def req_id(self, obj):
         field_name = 'Status'
-        field_value = getattr(obj,field_name)
+        field_value = getattr(obj, field_name)
         return str(field_value)
-
 
     class Meta:
         model = MvpUserRequest
-        fields = ('req_id',
+        fields = ('id',
+                  'req_id',
                   'user_ID',
                   'Name',
                   'Start_Date',
@@ -110,6 +114,3 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
                   'business_unit',
                   'created_at',
                   'timeZone')
-
-
-
