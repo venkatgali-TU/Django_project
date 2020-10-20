@@ -130,16 +130,27 @@ def hello_mvp(request):
 
 
 def data_view(request):
-    all_objects = MvpUserRequest.objects.all().order_by('-id')
-    paginator = Paginator(all_objects, 5)
-    page = request.GET.get('page')
-    posts = paginator.get_page(page)
+    if request.method == "POST":
+        key = request.POST['key']
+        print(" success data : " + request.POST['key'])
+        all_objects = MvpUserRequest.objects.filter(Status__contains=key)
+        paginator = Paginator(all_objects, 5)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
 
-    return render(request, 'mvp/data.html', {'posts': posts})
+        return render(request, 'mvp/data.html', {'posts': posts})
+    else:
+        all_objects = MvpUserRequest.objects.all().order_by('-id')
+        paginator = Paginator(all_objects, 5)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+
+        return render(request, 'mvp/data.html', {'posts': posts})
 
 
 def single_user(request, mvp_id, req):
     global MESSAGE
+    # print("req is :" + req)
     if req == "OverTime":
         if request.method == 'POST':  # and OverTimeUserRequestForm(request.POST).is_valid():
             if OverTimeUserRequestForm(request.POST).is_valid():
