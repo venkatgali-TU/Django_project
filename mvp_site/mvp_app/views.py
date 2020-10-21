@@ -237,6 +237,8 @@ def single_user(request, mvp_id, req):
                     print('mvp_id is :' + str(MvpUserRequest.objects.latest('id').id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-STEL-' + str(mvp_id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Name='WFM-IRA-SOT-' + str(mvp_id))
                     context = {'user_ID': 'WFM-IRA-STEL-' + str(mvp_id)}
                     send_mail('WFM - Plotting website submissions: ',
                               MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
@@ -317,7 +319,7 @@ def multi_user(request, mvp_id, req):
                     for mess in mess_split:
                         messages.success(request, mess)
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
-                        Name='WFM-IRA-SOT-' + str(mvp_id))
+                        Name='WFM-IRA-MOT-S-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         BreakTime=breaktime)
 
@@ -380,9 +382,9 @@ def multi_user(request, mvp_id, req):
                     for mess in mess_split:
                         messages.success(request, mess)
                     MESSAGE = ""
-                    context = {'user_ID': 'WFM-IRA-MOT-' + str(mvp_id)}
+                    context = {'user_ID': 'WFM-IRA-MOT-E' + str(mvp_id)}
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
-                        Name='WFM-IRA-SOT-' + str(mvp_id))
+                        Name='WFM-IRA-MOT-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         BreakTime=breaktime)
                     return render(request, "mvp/thanks.html", context)
@@ -444,6 +446,8 @@ def multi_user(request, mvp_id, req):
                     mvp_model = form.save()
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-MTEL-S' + str(mvp_id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Name='WFM-IRA-MTEL-S' + str(mvp_id))
 
                     context = {}
 
@@ -496,6 +500,8 @@ def multi_user(request, mvp_id, req):
                     mvp_model = form.save()
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-MTEL-E' + str(mvp_id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Name='WFM-IRA-MTEL-E' + str(mvp_id))
                     context = {}
 
                     MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(

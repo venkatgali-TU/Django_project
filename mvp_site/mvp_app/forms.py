@@ -194,47 +194,6 @@ class MvpForm(forms.ModelForm):
         return new_site
 
 
-# class MvpUserRequestForm(forms.ModelForm):
-#     # Start_Date = forms.DateTimeField()
-#     # End_Date = forms.DateTimeField()
-#     # End_Time = forms.DateTimeField()
-#     # Start_Time = forms.DateTimeField()
-#     class Meta:
-#         model = MvpUserRequest
-#         fields = [
-#             'user_ID',
-#             'Name',
-#             'Start_Date',
-#             'Start_Time',
-#             'End_Date',
-#             'End_Time',
-#             'Activity',
-#             'Mul_Over',
-#             'BreakTime'
-#         ]
-#         widgets = {
-#             'user_ID': forms.TextInput(
-#                 attrs={'placeholder': 'Please give the ID of  the requesting person'}),
-#             'Name': forms.TextInput(
-#                 attrs={'placeholder': 'Please give the Name of  the requesting person'}),
-#             'Start_Date': forms.SelectDateWidget(years=YEAR_CHOICES),
-#             'Start_Time': forms.TextInput(
-#                 attrs={'placeholder': '##:##'}),
-#             'End_Date': forms.SelectDateWidget(years=YEAR_CHOICES),
-#             'End_Time': forms.TextInput(
-#                 attrs={'placeholder': '##:##'}),
-#             'Activity': forms.TextInput(
-#                 attrs={'placeholder': 'Select an activity'}),
-#             'Mul_Over': forms.TextInput(
-#                 attrs={'placeholder': 'Multiplicator Or Overlap time?'}),
-#             # 'Timezone': forms.TextInput(disabled=True),
-#             'BreakTime': forms.TextInput(
-#                 attrs={'placeholder': 'Please give the Break Time email address of the requesting person'})
-#             # 'Status': forms.TextInput(disabled=True)
-#
-#         }
-
-
 class OverTimeUserRequestForm(forms.ModelForm):
     # Start_Date = forms.DateTimeField()
     # End_Date = forms.DateTimeField()
@@ -383,94 +342,65 @@ class OverTimeUserRequestForm(forms.ModelForm):
                 breaktime = ""
 
                 if country == 'US':
-                    if (((
-                                 end_time_date - start_time_date).seconds / 60) / 60) == 9:
+                    temp_time = (((end_time_date - start_time_date).seconds / 60) / 60)
+                    if temp_time == 9:
                         breaktime = 'lunch(30) + 15 + 15 + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
+                    elif temp_time < 9 and temp_time >= 8:
                         breaktime = 'lunch(30) + 15 + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
+                    elif temp_time < 8 and temp_time >= 7:
                         breaktime = 'lunch(30) + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
+                    elif temp_time < 7 and temp_time >= 6:
                         breaktime = 'lunch(30) + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
+                    elif temp_time < 6 and temp_time >= 5:
                         breaktime = 'lunch(30) + 15'
 
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 4 or (((
-                                                                                                          end_time_date - start_time_date).seconds / 60) / 60) == 3 or (
-                            ((
-                                     end_time_date - start_time_date).seconds / 60) / 60) == 2:
+                    elif temp_time < 5 and temp_time >= 2:
                         breaktime = '15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
+                    elif temp_time < 2 and temp_time >= 1:
                         breaktime = 'No break'
 
                 elif country == 'PH':
-                    if (((
-                                 end_time_date - start_time_date).seconds / 60) / 60) == 12:
+                    temp_time = (((end_time_date - start_time_date).seconds / 60) / 60)
+                    if temp_time == 12:
                         breaktime = '15 + 15 + 15 + lunch(60)'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 11:
+                    elif temp_time < 12 and temp_time >= 11:
                         breaktime = '15 + 15 + 11 + lunch(60)'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 10:
+                    elif temp_time < 11 and temp_time >= 10:
                         breaktime = '15 + 15 + 7 + lunch(60)'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 9:
+                    elif temp_time < 10 and temp_time >= 9:
                         breaktime = '15 + 15 + 5 + lunch(60)'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
+                    elif temp_time < 9 and temp_time >= 8:
                         breaktime = '15 + 15 + lunch(30)'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
+                    elif temp_time < 8 and temp_time >= 7:
                         breaktime = '15 + 11'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
+                    elif temp_time < 7 and temp_time >= 6:
                         breaktime = '15 + 7'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
+                    elif temp_time < 6 and temp_time >= 5:
                         breaktime = '15 + 5'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 4:
+                    elif temp_time < 5 and temp_time >= 4:
                         breaktime = '15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 3:
+                    elif temp_time < 4 and temp_time >= 3:
                         breaktime = '11'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 2:
+                    elif temp_time < 3 and temp_time >= 2:
                         breaktime = '7'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
+                    elif temp_time < 2 and temp_time >= 1:
                         breaktime = 'No break'
                 else:
-                    if (((
-                                 end_time_date - start_time_date).seconds / 60) / 60) == 9:
+                    temp_time = (((end_time_date - start_time_date).seconds / 60) / 60)
+                    if temp_time == 9:
                         breaktime = 'lunch(30) + 15 + 15 + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
+                    elif temp_time < 9 and temp_time >= 8:
                         breaktime = 'lunch(30) + 15 + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
+                    elif temp_time < 8 and temp_time >= 7:
                         breaktime = 'lunch(30) + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
+                    elif temp_time < 7 and temp_time >= 6:
                         breaktime = 'lunch(30) + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
+                    elif temp_time < 6 and temp_time >= 5:
                         breaktime = 'lunch(30) + 15'
 
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 4 or (((
-                                                                                                          end_time_date - start_time_date).seconds / 60) / 60) == 3 or (
-                            ((
-                                     end_time_date - start_time_date).seconds / 60) / 60) == 2:
+                    elif temp_time < 5 and temp_time >= 2:
                         breaktime = '15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
+                    elif temp_time < 2 and temp_time >= 1:
                         breaktime = 'No break'
 
                 return breaktime
@@ -722,132 +652,6 @@ class TeleOptiUserRequestForm(forms.ModelForm):
 
                 temp_data_json = json.loads(json.dumps(fin.json()))
                 return str(temp_data_json['firstName'])
-            except ConnectionError and KeyError:
-                return "Please enter a valid employee number"
-
-    def for_break(self, *args, **kwargs):
-        u_id = self.cleaned_data.get("user_ID")
-        if len(u_id) != 7:
-            raise ValidationError("Please enter valid employee ID")
-        else:
-
-            final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(u_id)  # 3054204"
-            final_headers = {
-                "x-api-key": "lsUfB4oaUX"
-            }
-            try:
-                # fin = requests.get(final_url, final_headers, False)
-                # print(username[5:])
-                fin = requests.get(final_url, headers=final_headers, verify=False)
-
-                # temp_data_json = json.loads(json.dumps(fin.json()))
-
-                temp_data_json = json.loads(json.dumps(fin.json()))
-                country = str(temp_data_json['site']['countryCode'])
-                breaktime = ""
-
-                if country == 'US':
-                    if (((
-                                 end_time_date - start_time_date).seconds / 60) / 60) == 9:
-                        breaktime = 'lunch(30) + 15 + 15 + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
-                        breaktime = 'lunch(30) + 15 + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
-                        breaktime = 'lunch(30) + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
-                        breaktime = 'lunch(30) + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
-                        breaktime = 'lunch(30) + 15'
-
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 4 or (((
-                                                                                                          end_time_date - start_time_date).seconds / 60) / 60) == 3 or (
-                            ((
-                                     end_time_date - start_time_date).seconds / 60) / 60) == 2:
-                        breaktime = '15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
-                        breaktime = 'No break'
-                    else:
-                        raise ValidationError({
-                            'Start_Time': 'Please enter valid start/end time : OT can be between 1 - 9 hrs'})
-                elif country == 'PH':
-                    if (((
-                                 end_time_date - start_time_date).seconds / 60) / 60) == 12:
-                        breaktime = '15 + 15 + 15 + lunch(60)'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 11:
-                        breaktime = '15 + 15 + 11 + lunch(60)'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 10:
-                        breaktime = '15 + 15 + 7 + lunch(60)'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 9:
-                        breaktime = '15 + 15 + 5 + lunch(60)'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
-                        breaktime = '15 + 15 + lunch(30)'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
-                        breaktime = '15 + 11'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
-                        breaktime = '15 + 7'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
-                        breaktime = '15 + 5'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 4:
-                        breaktime = '15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 3:
-                        breaktime = '11'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 2:
-                        breaktime = '7'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
-                        breaktime = 'No break'
-
-
-                    else:
-                        raise ValidationError({
-                            'Start_Time': 'Please enter valid start/end time : OT can be between 1 - 12 hrs'})
-                else:
-                    if (((
-                                 end_time_date - start_time_date).seconds / 60) / 60) == 9:
-                        breaktime = 'lunch(30) + 15 + 15 + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
-                        breaktime = 'lunch(30) + 15 + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
-                        breaktime = 'lunch(30) + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
-                        breaktime = 'lunch(30) + 15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
-                        breaktime = 'lunch(30) + 15'
-
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 4 or (((
-                                                                                                          end_time_date - start_time_date).seconds / 60) / 60) == 3 or (
-                            ((
-                                     end_time_date - start_time_date).seconds / 60) / 60) == 2:
-                        breaktime = '15'
-                    elif (((
-                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
-                        breaktime = 'No break'
-                    else:
-                        raise ValidationError({
-                            'Start_Time': 'Please enter valid start/end time : OT can be between 1 - 9 hrs'})
-
-                return breaktime
             except ConnectionError and KeyError:
                 return "Please enter a valid employee number"
 
