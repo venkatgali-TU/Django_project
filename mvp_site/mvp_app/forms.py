@@ -65,12 +65,15 @@ OT_ACTIVITY = [('Productive Time', 'Productive Time'), ('Productive Time 15 mins
                ('Email', 'Email'), ('Email 30 mins', 'Email 30 mins'), ('Chat', 'Chat'),
                ('Supplementary Hour', 'Supplementary Hour')]
 
-OT_MULTIPLICATOR = [('OverTime', 'OverTime'), ('Billable OverTime', 'Billable OverTime'), ('Non-Billable OverTime', 'Non-Billable OverTime')]
+OT_MULTIPLICATOR = [('OverTime', 'OverTime'), ('Billable OverTime', 'Billable OverTime'),
+                    ('Non-Billable OverTime', 'Non-Billable OverTime')]
 TELEOPTI_ACTIVITY = [('Coaching and Development', 'Coaching and Development'), ('Daily Stand Up', 'Daily Stand Up'),
                      ('Team Meetings', 'Team Meetings'),
                      ('Voluntary Time Off', 'Voluntary Time Off'), ('Client Training', 'Client Training')]
-TELEOPTI_OVERLAP = [('Move Non-Overwritable', 'Move Non-Overwritable'), ('Do Not Make Changes', 'Do Not Make Changes'), ('Override', 'Override'),
-                    ('Keep non-overwritable', 'Keep non-overwritable'), ('N/A - only for VTO Code', 'N/A - only for VTO Code')]
+TELEOPTI_OVERLAP = [('Move Non-Overwritable', 'Move Non-Overwritable'), ('Do Not Make Changes', 'Do Not Make Changes'),
+                    ('Override', 'Override'),
+                    ('Keep non-overwritable', 'Keep non-overwritable'),
+                    ('N/A - only for VTO Code', 'N/A - only for VTO Code')]
 BREAK = [('15 mins', '15 mins'), ('Lunch + 15 min', 'Lunch + 15 min'), ('Lunch + 30 min', 'Lunch + 30 min'),
          ('Lunch + 45 min', 'Lunch + 45 min'), ('Lunch + 60min', 'Lunch + 60min'), ('No Break', 'No Break')]
 
@@ -248,23 +251,23 @@ class OverTimeUserRequestForm(forms.ModelForm):
     Mul_Over = forms.ChoiceField(label='Multiplicator', required=True, choices=OT_MULTIPLICATOR,
                                  widget=forms.Select(attrs={'class': 'select'}))
 
-    Name = forms.ChoiceField(label='Type of OT', required=True, choices=OT_TYPES,
-                             widget=forms.Select(attrs={'class': 'select'}))
-    BreakTime = forms.ChoiceField(label='Choose Break Time', required=True, choices=BREAK,
-                                  widget=forms.Select(attrs={'class': 'select'}))
+    # Name = forms.ChoiceField(label='Type of OT', required=True, choices=OT_TYPES,
+    #                          widget=forms.Select(attrs={'class': 'select'}))
+    # BreakTime = forms.ChoiceField(label='Choose Break Time', required=True, choices=BREAK,
+    #                               widget=forms.Select(attrs={'class': 'select'}))
 
     class Meta:
         model = MvpUserRequest
         fields = [
             'user_ID',
-            'Name',
+            # 'Name',
             'Start_Date',
             'Start_Time',
             'End_Date',
             'End_Time',
             'Activity',
             'Mul_Over',
-            'BreakTime'
+            # 'BreakTime'
         ]
         widgets = {
             'user_ID': forms.TextInput(
@@ -358,7 +361,124 @@ class OverTimeUserRequestForm(forms.ModelForm):
             except ConnectionError and KeyError:
                 return "Please enter a valid employee number"
 
+    def for_break(self, *args, **kwargs):
+        u_id = self.cleaned_data.get("user_ID")
+        if len(u_id) != 7:
+            raise ValidationError("Please enter valid employee ID")
+        else:
+
+            final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(u_id)  # 3054204"
+            final_headers = {
+                "x-api-key": "lsUfB4oaUX"
+            }
+            try:
+                # fin = requests.get(final_url, final_headers, False)
+                # print(username[5:])
+                fin = requests.get(final_url, headers=final_headers, verify=False)
+
+                # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                temp_data_json = json.loads(json.dumps(fin.json()))
+                country = str(temp_data_json['site']['countryCode'])
+                breaktime = ""
+
+                if country == 'US':
+                    if (((
+                                 end_time_date - start_time_date).seconds / 60) / 60) == 9:
+                        breaktime = 'lunch(30) + 15 + 15 + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
+                        breaktime = 'lunch(30) + 15 + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
+                        breaktime = 'lunch(30) + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
+                        breaktime = 'lunch(30) + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
+                        breaktime = 'lunch(30) + 15'
+
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 4 or (((
+                                                                                                          end_time_date - start_time_date).seconds / 60) / 60) == 3 or (
+                            ((
+                                     end_time_date - start_time_date).seconds / 60) / 60) == 2:
+                        breaktime = '15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
+                        breaktime = 'No break'
+
+                elif country == 'PH':
+                    if (((
+                                 end_time_date - start_time_date).seconds / 60) / 60) == 12:
+                        breaktime = '15 + 15 + 15 + lunch(60)'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 11:
+                        breaktime = '15 + 15 + 11 + lunch(60)'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 10:
+                        breaktime = '15 + 15 + 7 + lunch(60)'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 9:
+                        breaktime = '15 + 15 + 5 + lunch(60)'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
+                        breaktime = '15 + 15 + lunch(30)'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
+                        breaktime = '15 + 11'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
+                        breaktime = '15 + 7'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
+                        breaktime = '15 + 5'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 4:
+                        breaktime = '15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 3:
+                        breaktime = '11'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 2:
+                        breaktime = '7'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
+                        breaktime = 'No break'
+                else:
+                    if (((
+                                 end_time_date - start_time_date).seconds / 60) / 60) == 9:
+                        breaktime = 'lunch(30) + 15 + 15 + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
+                        breaktime = 'lunch(30) + 15 + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
+                        breaktime = 'lunch(30) + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
+                        breaktime = 'lunch(30) + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
+                        breaktime = 'lunch(30) + 15'
+
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 4 or (((
+                                                                                                          end_time_date - start_time_date).seconds / 60) / 60) == 3 or (
+                            ((
+                                     end_time_date - start_time_date).seconds / 60) / 60) == 2:
+                        breaktime = '15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
+                        breaktime = 'No break'
+
+                return breaktime
+            except ConnectionError and KeyError:
+                return "Please enter a valid employee number"
+
     def clean(self):
+        global start_time_date, end_time_date
         cleaned_data = super(OverTimeUserRequestForm, self).clean()
         user_id = cleaned_data.get("user_ID")
         name = cleaned_data.get("Name")
@@ -427,6 +547,56 @@ class OverTimeUserRequestForm(forms.ModelForm):
                                                             u'Please enter valid start time & end time, Start time should be less than end time']
                                                         self.errors['End_Time'] = [
                                                             u'Please enter valid start time & end time, Start time should be less than end time']
+                                                    else:
+                                                        u_id = self.cleaned_data.get("user_ID")
+                                                        if len(u_id) != 7:
+                                                            self.errors['user_ID'] = [
+                                                                u'Please enter valid user ID']
+
+                                                        final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(
+                                                            u_id)  # 3054204"
+                                                        final_headers = {
+                                                            "x-api-key": "lsUfB4oaUX"
+                                                        }
+                                                        try:
+                                                            # fin = requests.get(final_url, final_headers, False)
+                                                            # print(username[5:])
+                                                            fin = requests.get(final_url, headers=final_headers,
+                                                                               verify=False)
+
+                                                            # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                                                            temp_data_json = json.loads(json.dumps(fin.json()))
+                                                            country = str(temp_data_json['site']['countryCode'])
+                                                            if country == 'US':
+                                                                if (((
+                                                                             end_time_date - start_time_date).seconds / 60) / 60) < 1 or (
+                                                                        ((
+                                                                                 end_time_date - start_time_date).seconds / 60) / 60) > 9:
+                                                                    self.errors['Start_Time'] = [
+                                                                        u'Please choose OT between 1 - 9 hrs']
+                                                            elif country == 'PH':
+                                                                if (((
+                                                                             end_time_date - start_time_date).seconds / 60) / 60) < 1 or (
+                                                                        ((
+                                                                                 end_time_date - start_time_date).seconds / 60) / 60) > 12:
+                                                                    self.errors['Start_Time'] = [
+                                                                        u'Please choose OT between 1 - 12 hrs']
+                                                            else:
+                                                                if (((
+                                                                             end_time_date - start_time_date).seconds / 60) / 60) < 1 or (
+                                                                        ((
+                                                                                 end_time_date - start_time_date).seconds / 60) / 60) > 9:
+                                                                    self.errors['Start_Time'] = [
+                                                                        u'Please choose OT between 1 - 9 hrs']
+
+
+
+
+                                                        except ConnectionError and KeyError:
+                                                            self.errors['user_ID'] = [
+                                                                u'Please enter valid user ID']
+
                                                 except ValueError:
                                                     self.errors['Start_Time'] = [
                                                         u'Please enter valid start time & end time, Start time should be less than end time']
@@ -434,101 +604,16 @@ class OverTimeUserRequestForm(forms.ModelForm):
                                                         u'Please enter valid start time & end time, Start time should be less than end time']
 
                                                     ##############################
-                                                u_id = self.cleaned_data.get("user_ID")
-                                                if len(u_id) != 7:
-                                                    self.errors['user_ID'] = [
-                                                        u'Please enter valid user ID']
-                                                else:
-
-                                                    final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(
-                                                        u_id)  # 3054204"
-                                                    final_headers = {
-                                                        "x-api-key": "lsUfB4oaUX"
-                                                    }
-                                                    try:
-                                                        # fin = requests.get(final_url, final_headers, False)
-                                                        # print(username[5:])
-                                                        fin = requests.get(final_url, headers=final_headers,
-                                                                           verify=False)
-
-                                                        # temp_data_json = json.loads(json.dumps(fin.json()))
-
-                                                        temp_data_json = json.loads(json.dumps(fin.json()))
-                                                        country = str(temp_data_json['site']['countryCode'])
-
-                                                        if country == 'IND':
-                                                            if "full" in name and (
-                                                                    (((
-                                                                            end_time_date - start_time_date)).seconds / 60) / 60) < 9:
-                                                                raise ValidationError({
-                                                                    'Start_Time': 'Please enter valid start/end time : For a full day OT please choose 9 hrs'})
-                                                            elif "full" not in name and (
-                                                                    (end_time_date - start_time_date)).seconds < 3600:
-                                                                raise ValidationError({'Start_Time':
-                                                                                           'Please enter valid start/end time : Given OT to plot is ' + str(
-                                                                                               (((
-                                                                                                       end_time_date - start_time_date)).seconds) / 60) + ' mins, minimum is one hour'})
-                                                            if "full" in name and "lunch_45" != breaktime:
-                                                                raise ValidationError({'BreakTime':
-                                                                                           'Please select appropriate '
-                                                                                           'break time : full day should '
-                                                                                           'have lunch and 45 mins break'})
-                                                            if "full" not in name and ((((
-                                                                    end_time_date - start_time_date)).seconds / 60) / 60) == 8 and "lunch_30" not in breaktime:
-                                                                raise ValidationError({'BreakTime':
-                                                                                           'Please select appropriate break time : 8 hrs a day should have lunch and 30 mins break'})
-                                                            if "full" not in name and (
-                                                                    (((
-                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 7 and "lunch_15" not in breaktime:
-                                                                raise ValidationError({'BreakTime':
-                                                                                           'Please select appropriate break time : 7 hrs a day should have lunch and 15 mins break'})
-                                                            if "full" not in name and (
-                                                                    (((
-                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 5 and "lunch_15" not in breaktime:
-                                                                raise ValidationError({'BreakTime':
-                                                                                           "Please select appropriate break time : 5 hrs a day should have lunch and 15 mins break"})
-                                                            if "full" not in name and (
-                                                                    (((
-                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 6 and "lunch_15" not in breaktime:
-                                                                raise ValidationError({'BreakTime':
-                                                                                           "Please select appropriate break time : 6 hrs a day should have lunch and 15 mins break"})
-
-                                                            if "full" not in name and (
-                                                                    (((
-                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 4 and "15min" not in breaktime:
-                                                                raise ValidationError({'BreakTime':
-                                                                                           '4 hrs a day should have 15 mins break'})
-                                                            if "full" not in name and (
-                                                                    (((
-                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 2 and "15min" not in breaktime:
-                                                                raise ValidationError({'BreakTime':
-                                                                                           '2 hrs a day should have 15 mins break'})
-                                                            if "full" not in name and (
-                                                                    (((
-                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 3 and "15min" not in breaktime:
-                                                                raise ValidationError({'BreakTime':
-                                                                                           '3 hrs a day should have 15 mins break'})
-                                                            if "full" not in name and (
-                                                                    (((
-                                                                            end_time_date - start_time_date)).seconds / 60) / 60) == 1 and "no" not in breaktime:
-                                                                raise ValidationError({'BreakTime':
-                                                                                           '1 hrs a day should not have break time'})
 
 
-                                                    except ConnectionError and KeyError:
-                                                        self.errors['user_ID'] = [
-                                                            u'Please enter valid user ID']
 
                                         except ValueError:
                                             self.errors['End_Time'] = [u'Enter valid end time']
-
 
                             except ValueError:
                                 self.errors['Start_Time'] = [u'Enter valid start time']
 
                                 #####################################
-
-
 
         else:
             self.errors['user_ID'] = [
@@ -537,8 +622,6 @@ class OverTimeUserRequestForm(forms.ModelForm):
             #     "Not a valid input, Please try again with correct input"
             # )
         return cleaned_data
-
-
 
 
 class TeleOptiUserRequestForm(forms.ModelForm):
@@ -642,15 +725,147 @@ class TeleOptiUserRequestForm(forms.ModelForm):
             except ConnectionError and KeyError:
                 return "Please enter a valid employee number"
 
+    def for_break(self, *args, **kwargs):
+        u_id = self.cleaned_data.get("user_ID")
+        if len(u_id) != 7:
+            raise ValidationError("Please enter valid employee ID")
+        else:
+
+            final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(u_id)  # 3054204"
+            final_headers = {
+                "x-api-key": "lsUfB4oaUX"
+            }
+            try:
+                # fin = requests.get(final_url, final_headers, False)
+                # print(username[5:])
+                fin = requests.get(final_url, headers=final_headers, verify=False)
+
+                # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                temp_data_json = json.loads(json.dumps(fin.json()))
+                country = str(temp_data_json['site']['countryCode'])
+                breaktime = ""
+
+                if country == 'US':
+                    if (((
+                                 end_time_date - start_time_date).seconds / 60) / 60) == 9:
+                        breaktime = 'lunch(30) + 15 + 15 + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
+                        breaktime = 'lunch(30) + 15 + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
+                        breaktime = 'lunch(30) + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
+                        breaktime = 'lunch(30) + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
+                        breaktime = 'lunch(30) + 15'
+
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 4 or (((
+                                                                                                          end_time_date - start_time_date).seconds / 60) / 60) == 3 or (
+                            ((
+                                     end_time_date - start_time_date).seconds / 60) / 60) == 2:
+                        breaktime = '15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
+                        breaktime = 'No break'
+                    else:
+                        raise ValidationError({
+                            'Start_Time': 'Please enter valid start/end time : OT can be between 1 - 9 hrs'})
+                elif country == 'PH':
+                    if (((
+                                 end_time_date - start_time_date).seconds / 60) / 60) == 12:
+                        breaktime = '15 + 15 + 15 + lunch(60)'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 11:
+                        breaktime = '15 + 15 + 11 + lunch(60)'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 10:
+                        breaktime = '15 + 15 + 7 + lunch(60)'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 9:
+                        breaktime = '15 + 15 + 5 + lunch(60)'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
+                        breaktime = '15 + 15 + lunch(30)'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
+                        breaktime = '15 + 11'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
+                        breaktime = '15 + 7'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
+                        breaktime = '15 + 5'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 4:
+                        breaktime = '15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 3:
+                        breaktime = '11'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 2:
+                        breaktime = '7'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
+                        breaktime = 'No break'
+
+
+                    else:
+                        raise ValidationError({
+                            'Start_Time': 'Please enter valid start/end time : OT can be between 1 - 12 hrs'})
+                else:
+                    if (((
+                                 end_time_date - start_time_date).seconds / 60) / 60) == 9:
+                        breaktime = 'lunch(30) + 15 + 15 + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 8:
+                        breaktime = 'lunch(30) + 15 + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 7:
+                        breaktime = 'lunch(30) + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 6:
+                        breaktime = 'lunch(30) + 15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 5:
+                        breaktime = 'lunch(30) + 15'
+
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 4 or (((
+                                                                                                          end_time_date - start_time_date).seconds / 60) / 60) == 3 or (
+                            ((
+                                     end_time_date - start_time_date).seconds / 60) / 60) == 2:
+                        breaktime = '15'
+                    elif (((
+                                   end_time_date - start_time_date).seconds / 60) / 60) == 1:
+                        breaktime = 'No break'
+                    else:
+                        raise ValidationError({
+                            'Start_Time': 'Please enter valid start/end time : OT can be between 1 - 9 hrs'})
+
+                return breaktime
+            except ConnectionError and KeyError:
+                return "Please enter a valid employee number"
+
     def clean(self):
+        global start_time_date, end_time_date
         cleaned_data = super(TeleOptiUserRequestForm, self).clean()
         user_id = cleaned_data.get("user_ID")
-        # name = cleaned_data.get("Name")
+        name = cleaned_data.get("Name")
         str_time = cleaned_data.get('Start_Time')
         end_time = cleaned_data.get('End_Time')
         str_date = cleaned_data.get('Start_Date')
         end_date = cleaned_data.get('End_Date')
-        # breaktime = cleaned_data.get('BreakTime')
+        breaktime = cleaned_data.get('BreakTime')
+        activity = cleaned_data.get('Activity')
+        for items in OT_ACTIVITY:
+            if activity in items:
+                activity = items[1]
+        print(activity)
 
         if user_id and str_time and end_time:
             # Only do something if both fields are valid so far.
@@ -734,21 +949,16 @@ class TeleOptiUserRequestForm(forms.ModelForm):
 
                                                         temp_data_json = json.loads(json.dumps(fin.json()))
                                                         country = str(temp_data_json['site']['countryCode'])
-
                                                     except ConnectionError and KeyError:
                                                         self.errors['user_ID'] = [
                                                             u'Please enter valid user ID']
-
                                         except ValueError:
                                             self.errors['End_Time'] = [u'Enter valid end time']
-
 
                             except ValueError:
                                 self.errors['Start_Time'] = [u'Enter valid start time']
 
                                 #####################################
-
-
 
         else:
             self.errors['user_ID'] = [

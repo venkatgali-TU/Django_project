@@ -1,31 +1,16 @@
+import urllib3
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from rest_framework import status, generics, mixins
+from rest_framework import generics, mixins
 
 # Create your views here.
 from .forms import MvpForm, TeleOptiUserRequestForm, OverTimeUserRequestForm
-from .models import Mvp, MvpUserRequest
-import argparse
-import json
-import requests
-import simplejson as json
-import re
-from rest_framework import viewsets
-from .serializers import MvpSerializer
-from django.core.paginator import Paginator
-from django.shortcuts import render
-import json
-import json
-import urllib3
+from .models import Mvp
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-import gspread
-import requests
-import simplejson as json
-from oauth2client.service_account import ServiceAccountCredentials
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -161,6 +146,8 @@ def single_user(request, mvp_id, req):
                 form.full_clean()
                 form.clean()
                 form.for_Name()
+                breaktime = form.for_break()
+                print("breaktime" + breaktime)
 
                 if "Please" in form.clean_user_number():
                     messages.warning(request, "Please enter a valid employee number", fail_silently=True)
@@ -174,6 +161,10 @@ def single_user(request, mvp_id, req):
                     print('mvp_id is :' + str(MvpUserRequest.objects.latest('id').id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-SOT-' + str(mvp_id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Name='WFM-IRA-SOT-' + str(mvp_id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        BreakTime=breaktime)
 
                     MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
                         form.cleaned_data['user_ID']) + " Start Date : " + str(
@@ -282,6 +273,7 @@ def multi_user(request, mvp_id, req):
                 # check whether it's valid:
                 form.full_clean()
                 form.clean()
+                breaktime = form.for_break()
 
                 ############
 
@@ -324,6 +316,10 @@ def multi_user(request, mvp_id, req):
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
                     for mess in mess_split:
                         messages.success(request, mess)
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Name='WFM-IRA-SOT-' + str(mvp_id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        BreakTime=breaktime)
 
                     return render(request, "mvp/multi.html", context)
 
@@ -336,6 +332,7 @@ def multi_user(request, mvp_id, req):
                 # check whether it's valid:
                 form.full_clean()
                 form.clean()
+                breaktime = form.for_break()
 
                 ############
 
@@ -384,6 +381,10 @@ def multi_user(request, mvp_id, req):
                         messages.success(request, mess)
                     MESSAGE = ""
                     context = {'user_ID': 'WFM-IRA-MOT-' + str(mvp_id)}
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Name='WFM-IRA-SOT-' + str(mvp_id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        BreakTime=breaktime)
                     return render(request, "mvp/thanks.html", context)
 
                 #################
