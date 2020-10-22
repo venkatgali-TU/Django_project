@@ -568,8 +568,8 @@ class TeleOptiUserRequestForm(forms.ModelForm):
     Activity = forms.ChoiceField(label='Activity', required=True, choices=TELEOPTI_ACTIVITY,
                                  widget=forms.Select(attrs={'class': 'select'}))
 
-    Mul_Over = forms.ChoiceField(label='OverLap Status', required=True, choices=TELEOPTI_OVERLAP,
-                                 widget=forms.Select(attrs={'class': 'select'}))
+    # Mul_Over = forms.ChoiceField(label='OverLap Status', required=True, choices=TELEOPTI_OVERLAP,
+    #                              widget=forms.Select(attrs={'class': 'select'}))
 
     class Meta:
         model = MvpUserRequest
@@ -580,7 +580,7 @@ class TeleOptiUserRequestForm(forms.ModelForm):
             'End_Date',
             'End_Time',
             'Activity',
-            'Mul_Over'
+            # 'Mul_Over'
         ]
         widgets = {
             'user_ID': forms.TextInput(

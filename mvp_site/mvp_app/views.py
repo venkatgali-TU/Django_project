@@ -20,6 +20,7 @@ from .serializers import *
 
 CRITICAL = 50
 MESSAGE = "Enter the values in the portal below"
+EMAIL = ""
 
 
 def hello_mvp(request):
@@ -75,13 +76,16 @@ def hello_mvp(request):
                         "x-api-key": "lsUfB4oaUX"
                     }
                     try:
+                        global  EMAIL
                         # fin = requests.get(final_url, final_headers, False)
                         # print(username[5:])
                         fin = requests.get(final_url, headers=final_headers, verify=False)
 
                         # temp_data_json = json.loads(json.dumps(fin.json()))
 
+
                         temp_data_json = json.loads(json.dumps(fin.json()))
+                        EMAIL = str(temp_data_json['email'])
                         messages.warning(request, " ID : " + str(temp_data_json['id']))
                         messages.warning(request, " First Name : " + str(temp_data_json['firstName']))
                         messages.warning(request, " Last Name : " + str(temp_data_json['lastName']))
@@ -179,8 +183,8 @@ def single_user(request, mvp_id, req):
                         messages.success(request, mess)
                     context = {'user_ID': 'WFM-IRA-SOT-' + str(mvp_id)}
                     send_mail('WFM - Plotting website submissions: ',
-                              MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                              ['venkat.gali@taskus.com'])
+                              "Request Id : " + 'WFM-IRA-SOT-' + str(mvp_id) + " " + MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                              [EMAIL])
                     MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
 
@@ -228,8 +232,7 @@ def single_user(request, mvp_id, req):
                         form.cleaned_data['Start_Time']) + " End Date : " + str(
                         form.cleaned_data['End_Date']) + " End Time : " + str(
                         form.cleaned_data['End_Time']) + " Activity : " + str(
-                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
-                        form.cleaned_data['Mul_Over'])
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : "
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
                     for mess in mess_split:
                         messages.success(request, mess)
@@ -238,11 +241,12 @@ def single_user(request, mvp_id, req):
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-STEL-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
-                        Name='WFM-IRA-SOT-' + str(mvp_id))
+                        Name='WFM-IRA-STEL-' + str(mvp_id))
                     context = {'user_ID': 'WFM-IRA-STEL-' + str(mvp_id)}
                     send_mail('WFM - Plotting website submissions: ',
-                              MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                              ['venkat.gali@taskus.com'])
+                              "Request Id : " + 'WFM-IRA-STEL-' + str(mvp_id) + " " + MESSAGE.replace(
+                                  "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                              [EMAIL])
                     MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
             else:
@@ -323,6 +327,7 @@ def multi_user(request, mvp_id, req):
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         BreakTime=breaktime)
 
+
                     return render(request, "mvp/multi.html", context)
 
                 #################
@@ -375,18 +380,20 @@ def multi_user(request, mvp_id, req):
                         form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
                         form.cleaned_data['Mul_Over'])
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
-                    send_mail('WFM - Plotting website submissions: ',
-                              MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                              ['venkat.gali@taskus.com'])
 
                     for mess in mess_split:
                         messages.success(request, mess)
-                    MESSAGE = ""
+
                     context = {'user_ID': 'WFM-IRA-MOT-E' + str(mvp_id)}
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Name='WFM-IRA-MOT-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         BreakTime=breaktime)
+                    send_mail('WFM - Plotting website submissions: ',
+                              "Request Id : " + 'WFM-IRA-MOT-' + str(mvp_id) + " " + MESSAGE.replace(
+                                  "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                              [EMAIL])
+                    MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
 
                 #################
@@ -435,8 +442,7 @@ def multi_user(request, mvp_id, req):
                         form.cleaned_data['Start_Time']) + " End Date : " + str(
                         form.cleaned_data['End_Date']) + " End Time : " + str(
                         form.cleaned_data['End_Time']) + " Activity : " + str(
-                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
-                        form.cleaned_data['Mul_Over'])
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : "
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
                     for mess in mess_split:
                         messages.success(request, mess)
@@ -459,8 +465,7 @@ def multi_user(request, mvp_id, req):
                         form.cleaned_data['Start_Time']) + " End Date : " + str(
                         form.cleaned_data['End_Date']) + " End Time : " + str(
                         form.cleaned_data['End_Time']) + " Activity : " + str(
-                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
-                        form.cleaned_data['Mul_Over'])
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : "
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
                     for mess in mess_split:
                         messages.success(request, mess)
@@ -489,8 +494,7 @@ def multi_user(request, mvp_id, req):
                         form.cleaned_data['Start_Time']) + " End Date : " + str(
                         form.cleaned_data['End_Date']) + " End Time : " + str(
                         form.cleaned_data['End_Time']) + " Activity : " + str(
-                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
-                        form.cleaned_data['Mul_Over'])
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : "
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
                     for mess in mess_split:
                         messages.success(request, mess)
@@ -510,15 +514,15 @@ def multi_user(request, mvp_id, req):
                         form.cleaned_data['Start_Time']) + " End Date : " + str(
                         form.cleaned_data['End_Date']) + " End Time : " + str(
                         form.cleaned_data['End_Time']) + " Activity : " + str(
-                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
-                        form.cleaned_data['Mul_Over'])
+                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : "
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
                     for mess in mess_split:
                         messages.success(request, mess)
                     context = {'user_ID': 'WFM-IRA-MTEL-' + str(mvp_id)}
                     send_mail('WFM - Plotting website submissions: ',
-                              MESSAGE.replace("Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                              ['venkat.gali@taskus.com'])
+                              "Request Id : " + 'WFM-IRA-MTEL-' + str(mvp_id) + " " + MESSAGE.replace(
+                                  "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                              [EMAIL])
                     MESSAGE = ""
 
                     return render(request, "mvp/thanks.html", context)

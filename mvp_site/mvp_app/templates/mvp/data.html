@@ -7,95 +7,121 @@
 {% load status %}
 <form action="" method="post">
     {% csrf_token %}
-    <nav>
-        <div class="level-left">
-            <div class="content has-text-centered">
-                <p><a href="{% url 'hello_mvp'  %}">Go back to Home page</a>.
-                </p>
-            </div>
-        </div>
-        <div class="level-right">
-            <div class="field">
-                <label class="label">Search</label>
-                <div class="control">
-                    <input class="input" type="text" name="key" placeholder="Search for the Request Ids">
+    <div class="box">
+        <article class="media">
+            <div class="media-content">
+                <div class="centered-is-widescreen">
+                    <nav>
+                        <div class="level-left">
+                            <div class="content has-text-centered">
+                                <p><a href="{% url 'hello_mvp'  %}">Go back to Home page</a>.
+                                </p>
+                            </div>
+
+
+                        </div>
+
+                        <div class="level-right">
+                            <div class="level-item">
+                                <p class="subtitle is-5">
+                                    <strong>Please enter the Request Ids to search</strong>
+                                </p>
+                            </div>
+                            <div class="level-item">
+                                <div class="field has-addons">
+
+                                    <!--                                <label class="label">Search</label>-->
+                                    <p class="control">
+                                        <input class="input" type="text" name="key"
+                                               placeholder="WFM-IRA-##">
+                                    </p>
+
+                                    <p class="control">
+                                        <button class="button is-info is-rounded" type="submit"
+                                                value="Search"
+                                                name="search">Search
+                                        </button>
+
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </nav>
                 </div>
             </div>
-            <div class="field is-grouped">
-                <div class="content has-text-centered">
-                    <td><input class="button is-info is-rounded" type="submit" value="Search" name="search"></td>
-                </div>
-            </div>
-        </div>
-    </nav>
+        </article>
+    </div>
 
     {% if posts %}
 
     {% for post in posts %}
-    <div class="card">
-        <div class="card-content">
-            <p class="title">
-            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+    <div class="box">
+        <article class="media">
+            <div class="media-content">
+                <div class="content">
+                    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                        <tr>
+                            <th>{{ "Request ID" }}</th>
+                            <td>{{ post.Name}}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ "User ID" }}</th>
+                            <td>{{ post.user_ID }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ "Start Date" }}</th>
+                            <td>{{ post.Start_Date }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ "Start Time" }}</th>
+                            <td>{{ post.Start_Time }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ "End Date" }}</th>
+                            <td>{{ post.End_Date }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ "End Time" }}</th>
+                            <td>{{ post.End_Time }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ "Activity" }}</th>
+                            <td>{{ post.Activity|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ "Multiplicator / OverTime" }}</th>
+                            <td>{{ post.Mul_Over|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ "Break Time" }}</th>
+                            <td>{{ post.BreakTime|default:"-" }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ "Status" }}</th>
+                            {% if 'omplete' in post.Status %}
+                            <div class="has-text-info">
+                                <td>Complete</td>
+                            </div>
+                            {% else %}
+                            <div class="has-text-danger">
+                                <td>In Progress</td>
+                            </div>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <th>{{ "Campaign" }}</th>
+                            <td>{{ post.Campaign|default:"-" }}</td>
+                        </tr>
 
-
-                <tr>
-                    <th>{{ "Request ID" }}</th>
-                    <td>{{ post.Name}}</td>
-                </tr>
-                <tr>
-                    <th>{{ "User ID" }}</th>
-                    <td>{{ post.user_ID }}</td>
-                </tr>
-                <tr>
-                    <th>{{ "Start Date" }}</th>
-                    <td>{{ post.Start_Date }}</td>
-                </tr>
-                <tr>
-                    <th>{{ "Start Time" }}</th>
-                    <td>{{ post.Start_Time }}</td>
-                </tr>
-                <tr>
-                    <th>{{ "End Date" }}</th>
-                    <td>{{ post.End_Date }}</td>
-                </tr>
-                <tr>
-                    <th>{{ "End Time" }}</th>
-                    <td>{{ post.End_Time }}</td>
-                </tr>
-                <tr>
-                    <th>{{ "Activity" }}</th>
-                    <td>{{ post.Activity|default:"-" }}</td>
-                </tr>
-                <tr>
-                    <th>{{ "Multiplicator / OverTime" }}</th>
-                    <td>{{ post.Mul_Over|default:"-" }}</td>
-                </tr>
-                <tr>
-                    <th>{{ "Break Time" }}</th>
-                    <td>{{ post.BreakTime|default:"-" }}</td>
-                </tr>
-                <tr>
-                    <th>{{ "Status" }}</th>
-                    {% if 'omplete' in post.Status %}
-                    <td>Complete</td>
-                    {% else %}
-                    <td>In Progress</td>
-                    {% endif %}
-                </tr>
-                <tr>
-                    <th>{{ "Campaign" }}</th>
-                    <td>{{ post.Campaign|default:"-" }}</td>
-                </tr>
-
-                <tr>
-                    <th>{{ "Created At" }}</th>
-                    <td>{{ post.created_at }}</td>
-                </tr>
-
-
-            </table>
-            </p>
-        </div>
+                        <tr>
+                            <th>{{ "Created At" }}</th>
+                            <td>{{ post.created_at }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </article>
     </div>
     {%endfor%}
 
@@ -121,49 +147,6 @@
         </p>
         {% endif %}
 
-        <!--    <ul class="pagination-list">-->
-        <!--        {% if posts.number != 1 %}-->
-        <!--        <li>-->
-        <!--            <a class="pagination-link is-current" aria-label="Page current" aria-current="page" href="?page={{ posts.posts.number }}">{{posts.number}}</a>-->
-        <!--        </li>-->
-
-        <!--        {% else %}-->
-        <!--        <li>-->
-        <!--            <a class="pagination-link" aria-label="Goto page 1" href="?page={{ 1 }}">1</a>-->
-        <!--        </li>-->
-
-        <!--        {% endif %}-->
-
-
-        <!--        {% if posts.number != posts.paginator.num_pages %}-->
-        <!--        {% if posts.number != 1 %}-->
-        <!--        <li>-->
-        <!--            <span class="pagination-ellipsis">&hellip;</span>-->
-        <!--        </li>-->
-        <!--        <li>-->
-        <!--            <a class="pagination-link is-current" aria-label="Page current" aria-current="page" href="?page={{ posts.posts.number }}">{{posts.number}}</a>-->
-        <!--        </li>-->
-        <!--        <li>-->
-        <!--            <span class="pagination-ellipsis">&hellip;</span>-->
-        <!--        </li>-->
-        <!--        {% endif %}-->
-        <!--        {% endif %}-->
-
-        <!--        {% if posts.number == posts.paginator.num_pages %}-->
-
-        <!--        <li>-->
-        <!--            <a class="pagination-link is-current" aria-label="Page current" aria-current="page" href="?page={{ posts.paginator.num_pages }}">{{posts.paginator.num_pages}}</a>-->
-        <!--        </li>-->
-        <!--        {% else %}-->
-
-        <!--        <li>-->
-        <!--            <a class="pagination-link" aria-label="Goto page last page" href="?page={{ posts.number }}">{{posts.number}}</a>-->
-        <!--        </li>-->
-        <!--        {% endif %}-->
-
-        <!--    </ul>-->
-
-
         {% if posts.has_next %}
         <p class="control">
             <a class="button is-link is-rounded" href="?page={{ posts.next_page_number }}">Next</a>
@@ -172,7 +155,7 @@
 
         {% endif %}
     </div>
-
+    </div>
     <!--</nav>-->
 </form>
 {% endblock %}
