@@ -1,3 +1,5 @@
+import sys
+
 import urllib3
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -555,10 +557,10 @@ def multi_user(request, mvp_id, req):
 def profile_upload(request):
     # declaring template
     template = "mvp/profile_upload.html"
-    data = MvpUserRequest.objects.all()
+    data = MvpUserRequest.objects.all().reverse()
     # prompt is a context variable that can have different values      depending on their context
     prompt = {
-        'order': 'Order of the CSV should be name, email, address,    phone, profile',
+        'order': 'Download the template as a CSV, enter data and upload the CSV',
         'profiles': data
     }
     # GET request returns the value of the data with the specified key.
@@ -576,47 +578,55 @@ def profile_upload(request):
         io_string = io.StringIO(data_set)
         next(io_string)
         for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-            # if column
+            req_id = MvpUserRequest.objects.latest('id').id
+            print(column)
             tmp_column = check(column)
-            if "valid" not in tmp_column:
-                _, created = MvpUserRequest.objects.update_or_create(
-                    user_ID=tmp_column[0],
-                    Name=tmp_column[1],
-                    Start_Date=tmp_column[2],
-                    End_Date=tmp_column[3],
-                    Start_Time=tmp_column[4],
-                    End_Time=tmp_column[5],
-                    Activity=tmp_column[6],
-                    Mul_Over=tmp_column[7],
-                    Timezone=tmp_column[8],
-                    BreakTime=tmp_column[9],
-                    Status=tmp_column[10]
-                )
+            print(tmp_column)
+            if "Invalid" not in tmp_column:
+                if column[6] != '':
+                    request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
+                else:
+                    request_ID_str = "WFM-IRA-MOT-" + str(req_id)
 
-        context = {}
-        return render(request, template, context)
+                _, created = MvpUserRequest.objects.update_or_create(
+                    user_ID=column[0],
+                    Name=request_ID_str,
+                    Start_Date=column[1],
+                    End_Date=column[2],
+                    Start_Time=column[3],
+                    End_Time=column[4],
+                    Activity=column[5],
+                    Mul_Over=column[6],
+                    Timezone='',
+                    BreakTime=tmp_column,
+                    Status=''
+                )
+            else:
+                prompt['order'] = tmp_column
+                return render(request, template, prompt)
+
+        prompt['order'] = "Success! Please check your status in submitted tasks list"
+        return render(request, template, prompt)
     except Exception as e:
         print(str(e))
-        prompt['order'] = "Please upload a valid CSV!"
+        prompt['order'] = str(e)
         return render(request, template, prompt)
 
 
 def check(column):
     user_id = column[0]
-    name = column[1]
-    str_time = column[4]
-    end_time = column[5]
-    str_date = column[2]
-    end_date = column[3]
-    breaktime = column[8]
-    activity = column[6]
-    Mul_Over = column[7]
+    str_time = column[3]
+    end_time = column[4]
+    str_date = column[1]
+    end_date = column[2]
+    activity = column[5]
+    Mul_Over = column[6]
     timezone = ""
     Status = ""
+    result = ""
 
     if user_id and str_time and end_time:
         # Only do something if both fields are valid so far.
-        # print(type(str_date))
         str_date = datetime.strptime(str_date, '%Y-%m-%d')
         end_date = datetime.strptime(end_date, '%Y-%m-%d')
         past = datetime.now() - timedelta(days=7)
@@ -646,7 +656,7 @@ def check(column):
                             else:
                                 if len(end_time) != 5 and ":" not in end_time:
 
-                                    return "invalid end time"
+                                    return "Invalid end time"
                                 else:
                                     # print(str_time)
                                     end_time_split = end_time.split(":")
@@ -664,7 +674,7 @@ def check(column):
                                                 print(start_time_date)
                                                 print(end_time_date)
                                                 if start_time_date > end_time_date:
-                                                    return "invalid  start or end time"
+                                                    return "Invalid  start or end time"
                                                 else:
                                                     print("here")
 
@@ -749,11 +759,7 @@ def check(column):
                                                                 breaktime = '15'
                                                             elif temp_time < 2 and temp_time >= 1:
                                                                 breaktime = 'No break'
-                                                            result = [user_id, name, str_date, end_date, str_time,
-                                                                      end_time, activity, Mul_Over, breaktime,
-                                                                      "In Progress"]
-
-                                                            return result
+                                                        result = breaktime
 
                                                     except ConnectionError and KeyError:
                                                         return "Invalid User ID"
@@ -761,10 +767,10 @@ def check(column):
                                             except ValueError:
                                                 return "Invalid Start time or End time"
                                     except ValueError:
-                                        return 'Enter valid end time'
+                                        return 'Invalid end time'
 
                         except ValueError:
-                            return 'Enter valid start time'
+                            return 'Invalid start time'
 
                             #####################################
 
@@ -773,7 +779,7 @@ def check(column):
         # raise ValidationError(
         #     "Not a valid input, Please try again with correct input"
         # )
-    return "succedd"
+    return result
 
 
 @api_view(['GET', 'POST'])
