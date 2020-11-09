@@ -557,7 +557,7 @@ def multi_user(request, mvp_id, req):
 def profile_upload(request):
     # declaring template
     template = "mvp/profile_upload.html"
-    data = MvpUserRequest.objects.all().reverse()
+    data = MvpUserRequest.objects.all().order_by('-id')
     # prompt is a context variable that can have different values      depending on their context
     prompt = {
         'order': 'Download the template as a CSV, enter data and upload the CSV',
@@ -577,33 +577,36 @@ def profile_upload(request):
         # setup a stream which is when we loop through each line we are able to handle a data in a stream
         io_string = io.StringIO(data_set)
         next(io_string)
+        count = 0
         for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+            count = count + 1
             req_id = MvpUserRequest.objects.latest('id').id
-            print(column)
-            tmp_column = check(column)
-            print(tmp_column)
-            if "Invalid" not in tmp_column:
-                if column[6] != '':
-                    request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
-                else:
-                    request_ID_str = "WFM-IRA-MOT-" + str(req_id)
+            # print(column)
+            if count != 1:
+                tmp_column = check(column)
+                # print(count)
+                if "Invalid" not in tmp_column:
+                    if column[6] == '':
+                        request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
+                    else:
+                        request_ID_str = "WFM-IRA-MOT-" + str(req_id)
 
-                _, created = MvpUserRequest.objects.update_or_create(
-                    user_ID=column[0],
-                    Name=request_ID_str,
-                    Start_Date=column[1],
-                    End_Date=column[2],
-                    Start_Time=column[3],
-                    End_Time=column[4],
-                    Activity=column[5],
-                    Mul_Over=column[6],
-                    Timezone='',
-                    BreakTime=tmp_column,
-                    Status=''
-                )
-            else:
-                prompt['order'] = tmp_column
-                return render(request, template, prompt)
+                    _, created = MvpUserRequest.objects.update_or_create(
+                        user_ID=column[0],
+                        Name=request_ID_str,
+                        Start_Date=column[1],
+                        End_Date=column[2],
+                        Start_Time=column[3],
+                        End_Time=column[4],
+                        Activity=column[5],
+                        Mul_Over=column[6],
+                        Timezone='',
+                        BreakTime=tmp_column,
+                        Status=''
+                    )
+                else:
+                    prompt['order'] = tmp_column
+                    return render(request, template, prompt)
 
         prompt['order'] = "Success! Please check your status in submitted tasks list"
         return render(request, template, prompt)
@@ -634,7 +637,8 @@ def check(column):
             return "Invalid user ID"
         else:
             if str_date < past or end_date < past:
-                return "Invalid Dates"
+                pass
+                # return "Invalid Dates"
             else:
                 if str_date > end_date:
                     return "Invalid dates"

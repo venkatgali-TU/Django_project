@@ -19,48 +19,60 @@
     </li>
 </ul>
 
-<div class="container">
-    <!--    <div class="notification is-primary">-->
-    <div class="field is-grouped">
 
-        <form action="" method="POST" enctype="multipart/form-data">
-            <div class="field is-grouped">
-                <div class="control">
-                    {% csrf_token %}
-                    <input class='input is-info' type="file" id="file1" name="file">
-                </div>
+<div class="box">
+    <article class="media">
+        <div class="media-content">
+            <div class="content">
+                <div class="container">
+                    <!--    <div class="notification is-primary">-->
+                    <div class="field is-grouped">
+                        <form action="" method="POST" enctype="multipart/form-data">
+                            <div class="field is-grouped">
+                                <div class="control">
+                                    {% csrf_token %}
+                                    <input class='input is-info' type="file" id="file1" name="file">
+                                </div>
 
 
-                <div class="control">
-                    <strong>Only accepts CSV files</strong>
-                    <button class="button is-info" type="submit">Upload</button>
+                                <div class="control">
+                                    <a
+                                            href="https://docs.google.com/spreadsheets/d/19TgZ8lofb6iWlTMiLSMJ_voWTo3eBXXHLHhhZo_zrEM/edit?usp=sharing">Click
+                                        for template</a>
+                                </div>
+
+                                <div class="control">
+                                    <button class="button is-info" type="submit">Upload</button>
+                                </div>
+                            </div>
+
+
+                        </form>
+                    </div>
+
                 </div>
             </div>
-
-
-        </form>
-        <div class="content has-text-centered">
-            <p>
-                <a href="https://docs.google.com/spreadsheets/d/19TgZ8lofb6iWlTMiLSMJ_voWTo3eBXXHLHhhZo_zrEM/edit?usp=sharing">Click
-                    here to get the template</a>.
-            </p>
         </div>
-    </div>
-
-
-</div>
-<!--    </div>-->
+    </article>
 </div>
 
 {% endif %}
-<nav>
-    <div class="level-left">
-        <p class="level-item"><a href="{% url 'hello_mvp'  %}">Go back to Home page</a></p>
-    </div>
-    <div class="level-right">
-        <p class="level-item"><a href="{% url 'data_view'  %}">Go to submitted tasks</a></p>
-    </div>
-</nav>
+<div class="box">
+    <article class="media">
+        <div class="media-content">
+            <div class="content">
+                <nav>
+                    <div class="level-left">
+                        <p class="level-item"><a href="{% url 'hello_mvp'  %}">Go back to Home page</a></p>
+                    </div>
+                    <div class="level-right">
+                        <p class="level-item"><a href="{% url 'data_view'  %}">Go to submitted tasks</a></p>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </article>
+</div>
 {% for post in profiles %}
 <div class="box">
     <article class="media">
