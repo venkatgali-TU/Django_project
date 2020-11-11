@@ -1,0 +1,114 @@
+{% extends "mvp/base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<body>
+{% if messages %}
+<ul class="notification">
+    {% for message in messages %}
+    <li
+            {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message|safe }}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<ul class="notification">
+    <li>
+        {{order}}
+    </li>
+</ul>
+
+{% endif %}
+<div class="box">
+    <article class="media">
+        <div class="media-content">
+            <div class="content">
+
+                <div class="columns is-variable is-2-mobile is-0-tablet is-3-desktop is-8-widescreen is-1-fullhd">
+
+                    <div class="column"><a class="bd-notification is-primary"
+                                           href="{% url 'hello_mvp'  %}">Home
+                        Page</a></div>
+
+
+                    <div class="column"><a class="bd-notification is-primary"
+                                           href="{% url 'data_view'  %}">Submissions
+                        Page</a></div>
+
+                </div>
+            </div>
+        </div>
+    </article>
+</div>
+{% for post in profiles %}
+<div class="box">
+    <article class="media">
+        <div class="media-content">
+            <div class="content">
+                <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                    <tr>
+                        <th>{{ "Request ID" }}</th>
+                        <td>{{ post.Name}}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ "User ID" }}</th>
+                        <td>{{ post.user_ID }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ "Start Date" }}</th>
+                        <td>{{ post.Start_Date }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ "Start Time" }}</th>
+                        <td>{{ post.Start_Time }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ "End Date" }}</th>
+                        <td>{{ post.End_Date }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ "End Time" }}</th>
+                        <td>{{ post.End_Time }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ "Activity" }}</th>
+                        <td>{{ post.Activity|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ "Multiplicator / OverTime" }}</th>
+                        <td>{{ post.Mul_Over|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ "Break Time" }}</th>
+                        <td>{{ post.BreakTime|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ "Status" }}</th>
+                        {% if 'omplete' in post.Status %}
+                        <div class="has-text-info">
+                            <td>Complete</td>
+                        </div>
+                        {% else %}
+                        <div class="has-text-danger">
+                            <td>In Progress</td>
+                        </div>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th>{{ "Campaign" }}</th>
+                        <td>{{ post.Campaign|default:"-" }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>{{ "Created At" }}</th>
+                        <td>{{ post.created_at }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </article>
+</div>
+{% endfor %}
+</body>
+{% endblock %}

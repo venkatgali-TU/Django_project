@@ -49,6 +49,27 @@
     </ul>
     {% endif %}
 
+    <div class="box">
+        <article class="media">
+            <div class="media-content">
+                <div class="content">
+
+                    <div class="columns is-variable is-2-mobile is-0-tablet is-3-desktop is-8-widescreen is-1-fullhd">
+
+                        <div class="column"><a class="bd-notification is-primary"
+                                               href="{% url 'hello_mvp'  %}">Home
+                            Page</a></div>
+
+                        <div class="column"><a class="bd-notification is-primary"
+                                               href="{% url 'data_view'  %}">Submissions
+                            Page</a></div>
+
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+
     <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
         {% for field in form.visible_fields %}
         <tr>

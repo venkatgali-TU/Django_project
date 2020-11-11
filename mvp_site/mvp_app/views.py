@@ -129,15 +129,15 @@ def data_view(request):
     if request.method == "POST":
         key = request.POST['key']
         print(" success data : " + request.POST['key'])
-        all_objects = MvpUserRequest.objects.filter(Status__contains=key)
-        paginator = Paginator(all_objects, 5)
+        all_objects = MvpUserRequest.objects.all().filter(Name__contains=key)
+        paginator = Paginator(all_objects, 35)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
 
         return render(request, 'mvp/data.html', {'posts': posts})
     else:
         all_objects = MvpUserRequest.objects.all().order_by('-id')
-        paginator = Paginator(all_objects, 5)
+        paginator = Paginator(all_objects, 35)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
 
@@ -602,7 +602,7 @@ def profile_upload(request):
                         Mul_Over=column[6],
                         Timezone='',
                         BreakTime=tmp_column,
-                        Status=''
+                        Status='In Progress'
                     )
                 else:
                     prompt['order'] = tmp_column
@@ -613,6 +613,25 @@ def profile_upload(request):
     except Exception as e:
         print(str(e))
         prompt['order'] = str(e)
+        return render(request, template, prompt)
+
+
+def help_needed(request):
+    # declaring template
+    template = "mvp/help_needed.html"
+    data = MvpUserRequest.objects.all().order_by('-id')
+    # prompt is a context variable that can have different values      depending on their context
+    if len(data) == 0:
+        order_str = "No records to show"
+    else:
+        order_str = "Please find all the tickets need help"
+
+    prompt = {
+        'order': 'Download the template as a CSV, enter data and upload the CSV',
+        'profiles': data
+    }
+    # GET request returns the value of the data with the specified key.
+    if request.method == "GET":
         return render(request, template, prompt)
 
 
