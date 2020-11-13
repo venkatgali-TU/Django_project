@@ -136,28 +136,28 @@ def data_view(request):
 
         return render(request, 'mvp/data.html', {'posts': posts})
     else:
-        final_url = "https://epmsapi.taskus.prv/v1/api/employees?take=40000"
-        final_headers = {
-            "x-api-key": "lsUfB4oaUX"
-        }
-        final_list = {}
-        fin = requests.get(final_url, headers=final_headers, verify=False)
-        temp_data_json = json.loads(json.dumps(fin.json()))
-        for item in temp_data_json:
-            try:
-                temp_camp = item['campaign']['name']
-                final_list[item['employeeNo']] = temp_camp
-            except TypeError:
-                continue
+        # final_url = "https://epmsapi.taskus.prv/v1/api/employees?take=40000"
+        # final_headers = {
+        #     "x-api-key": "lsUfB4oaUX"
+        # }
+        # final_list = {}
+        # fin = requests.get(final_url, headers=final_headers, verify=False)
+        # temp_data_json = json.loads(json.dumps(fin.json()))
+        # for item in temp_data_json:
+        #     try:
+        #         temp_camp = item['campaign']['name']
+        #         final_list[item['employeeNo']] = temp_camp
+        #     except TypeError:
+        #         continue
         all_objects = MvpUserRequest.objects.all().order_by('-id')
-        print(len(final_list))
-        for objs in all_objects:
-            try:
-                if objs.Timezone == '':
-                    MvpUserRequest.objects.filter(id=objs.id).update(
-                        Timezone=final_list[objs.user_ID])
-            except:
-                continue
+        # print(len(final_list))
+        # for objs in all_objects:
+        #     try:
+        #         if objs.Timezone == '':
+        #             MvpUserRequest.objects.filter(id=objs.id).update(
+        #                 Timezone=final_list[objs.user_ID])
+        #     except:
+        #         continue
 
         paginator = Paginator(all_objects, 35)
         page = request.GET.get('page')
