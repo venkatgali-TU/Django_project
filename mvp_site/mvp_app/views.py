@@ -37,6 +37,8 @@ LOCATION = ""
 def hello_mvp(request):
     # if this is a POST request we need to process the form data
 
+    global EMAIL, NAME, POSITION, LOCATION
+
     # print(MvpForm(request.POST).errors)
     if request.method == 'POST' and MvpForm(request.POST).is_valid():
         # create a form instance and populate it with data from the request:
@@ -60,21 +62,30 @@ def hello_mvp(request):
         if 'Single' in form.clean_user_req():
 
             if form.clean_req_type() == "OverTime":
-                if POSITION != "Teammate":
+                if POSITION != "RPA Business Analyst":
                     print(POSITION)
                     return HttpResponseRedirect('/single/' + str(mvp_model.id) + '/OverTime')
+                else:
+                    messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
+
             else:
                 if POSITION != "Teammate":
                     print(POSITION)
                     return HttpResponseRedirect('/single/' + str(mvp_model.id) + '/TeleOpti')
+                else:
+                    messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
         else:
             # context = {}
             if form.clean_req_type() == "OverTime":
                 if POSITION != "Teammate":
                     return HttpResponseRedirect('/multi/' + str(mvp_model.id) + '/OverTime')
+                else:
+                    messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
             else:
                 if POSITION != "Teammate":
                     return HttpResponseRedirect('/multi/' + str(mvp_model.id) + '/TeleOpti')
+                else:
+                    messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
 
         # return HttpResponseRedirect('/mvp_app/')
 
@@ -93,7 +104,6 @@ def hello_mvp(request):
                         "x-api-key": "lsUfB4oaUX"
                     }
                     try:
-                        global EMAIL, NAME, POSITION, LOCATION
                         # fin = requests.get(final_url, final_headers, False)
                         # #print(username[5:])
                         fin = requests.get(final_url, headers=final_headers, verify=False)
