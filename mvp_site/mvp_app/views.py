@@ -230,7 +230,7 @@ def single_user(request, mvp_id, req):
                         send_mail('WFM - Plotting website submissions: ',
                                   "Request Id : " + 'WFM-IRA-SOT-' + str(mvp_id) + " " + MESSAGE.replace(
                                       "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL,"workforce.indore@taskus.com"])
+                                  [EMAIL, "workforce.indore@taskus.com"])
                     else:
                         send_mail('WFM - Plotting website submissions: ',
                                   "Request Id : " + 'WFM-IRA-SOT-' + str(mvp_id) + " " + MESSAGE.replace(
@@ -299,7 +299,7 @@ def single_user(request, mvp_id, req):
                         send_mail('WFM - Plotting website submissions: ',
                                   "Request Id : " + 'WFM-IRA-STEL-' + str(mvp_id) + " " + MESSAGE.replace(
                                       "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL,"workforce.indore@taskus.com"])
+                                  [EMAIL, "workforce.indore@taskus.com"])
 
                     else:
                         send_mail('WFM - Plotting website submissions: ',
@@ -452,13 +452,12 @@ def multi_user(request, mvp_id, req):
                         send_mail('WFM - Plotting website submissions: ',
                                   "Request Id : " + 'WFM-IRA-MOT-' + str(mvp_id) + " " + MESSAGE.replace(
                                       "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL,"workforce.indore@taskus.com"])
+                                  [EMAIL, "workforce.indore@taskus.com"])
                     else:
                         send_mail('WFM - Plotting website submissions: ',
                                   "Request Id : " + 'WFM-IRA-MOT-' + str(mvp_id) + " " + MESSAGE.replace(
                                       "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
                                   [EMAIL])
-
 
                     MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
@@ -590,13 +589,12 @@ def multi_user(request, mvp_id, req):
                         send_mail('WFM - Plotting website submissions: ',
                                   "Request Id : " + 'WFM-IRA-MTEL-' + str(mvp_id) + " " + MESSAGE.replace(
                                       "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL,"workforce.indore@taskus.com"])
+                                  [EMAIL, "workforce.indore@taskus.com"])
                     else:
                         send_mail('WFM - Plotting website submissions: ',
                                   "Request Id : " + 'WFM-IRA-MTEL-' + str(mvp_id) + " " + MESSAGE.replace(
                                       "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
                                   [EMAIL])
-
 
                     MESSAGE = ""
 
