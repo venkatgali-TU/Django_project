@@ -1,17 +1,14 @@
-import sys
+from datetime import datetime, timedelta
 
 import urllib3
-from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from rest_framework import generics, mixins
 
 # Create your views here.
 from .forms import MvpForm, TeleOptiUserRequestForm, OverTimeUserRequestForm
 from .models import Mvp
-from datetime import datetime, timedelta
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -68,7 +65,8 @@ def hello_mvp(request):
                 else:
                     context = {}
                     context['form'] = form
-                    messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
+                    messages.warning(request,
+                                     " You are not authorized to raise requests. Please contact your supervisor!")
                     return render(request, "mvp/home.html", context)
 
             else:
@@ -78,7 +76,8 @@ def hello_mvp(request):
                 else:
                     context = {}
                     context['form'] = form
-                    messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
+                    messages.warning(request,
+                                     " You are not authorized to raise requests. Please contact your supervisor!")
                     return render(request, "mvp/home.html", context)
         else:
             # context = {}
@@ -88,7 +87,8 @@ def hello_mvp(request):
                 else:
                     context = {}
                     context['form'] = form
-                    messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
+                    messages.warning(request,
+                                     " You are not authorized to raise requests. Please contact your supervisor!")
                     return render(request, "mvp/home.html", context)
             else:
                 if POSITION != "Teammate":
@@ -96,7 +96,8 @@ def hello_mvp(request):
                 else:
                     context = {}
                     context['form'] = form
-                    messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
+                    messages.warning(request,
+                                     " You are not authorized to raise requests. Please contact your supervisor!")
                     return render(request, "mvp/home.html", context)
 
         # return HttpResponseRedirect('/mvp_app/')
@@ -225,11 +226,17 @@ def single_user(request, mvp_id, req):
                     for mess in mess_split:
                         messages.success(request, mess)
                     context = {'user_ID': 'WFM-IRA-SOT-' + str(mvp_id)}
-                    # if
-                    send_mail('WFM - Plotting website submissions: ',
-                              "Request Id : " + 'WFM-IRA-SOT-' + str(mvp_id) + " " + MESSAGE.replace(
-                                  "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                              [EMAIL])
+                    if "Ind" in LOCATION:
+                        send_mail('WFM - Plotting website submissions: ',
+                                  "Request Id : " + 'WFM-IRA-SOT-' + str(mvp_id) + " " + MESSAGE.replace(
+                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                                  [EMAIL,"workforce.indore@taskus.com"])
+                    else:
+                        send_mail('WFM - Plotting website submissions: ',
+                                  "Request Id : " + 'WFM-IRA-SOT-' + str(mvp_id) + " " + MESSAGE.replace(
+                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                                  [EMAIL])
+
                     MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
 
@@ -288,10 +295,18 @@ def single_user(request, mvp_id, req):
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Name='WFM-IRA-STEL-' + str(mvp_id))
                     context = {'user_ID': 'WFM-IRA-STEL-' + str(mvp_id)}
-                    send_mail('WFM - Plotting website submissions: ',
-                              "Request Id : " + 'WFM-IRA-STEL-' + str(mvp_id) + " " + MESSAGE.replace(
-                                  "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                              [EMAIL])
+                    if "Ind" in LOCATION:
+                        send_mail('WFM - Plotting website submissions: ',
+                                  "Request Id : " + 'WFM-IRA-STEL-' + str(mvp_id) + " " + MESSAGE.replace(
+                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                                  [EMAIL,"workforce.indore@taskus.com"])
+
+                    else:
+                        send_mail('WFM - Plotting website submissions: ',
+                                  "Request Id : " + 'WFM-IRA-STEL-' + str(mvp_id) + " " + MESSAGE.replace(
+                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                                  [EMAIL])
+
                     MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
             else:
@@ -433,10 +448,18 @@ def multi_user(request, mvp_id, req):
                         Name='WFM-IRA-MOT-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         BreakTime=breaktime)
-                    send_mail('WFM - Plotting website submissions: ',
-                              "Request Id : " + 'WFM-IRA-MOT-' + str(mvp_id) + " " + MESSAGE.replace(
-                                  "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                              [EMAIL])
+                    if "Ind" in LOCATION:
+                        send_mail('WFM - Plotting website submissions: ',
+                                  "Request Id : " + 'WFM-IRA-MOT-' + str(mvp_id) + " " + MESSAGE.replace(
+                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                                  [EMAIL,"workforce.indore@taskus.com"])
+                    else:
+                        send_mail('WFM - Plotting website submissions: ',
+                                  "Request Id : " + 'WFM-IRA-MOT-' + str(mvp_id) + " " + MESSAGE.replace(
+                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                                  [EMAIL])
+
+
                     MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
 
@@ -563,10 +586,18 @@ def multi_user(request, mvp_id, req):
                     for mess in mess_split:
                         messages.success(request, mess)
                     context = {'user_ID': 'WFM-IRA-MTEL-' + str(mvp_id)}
-                    send_mail('WFM - Plotting website submissions: ',
-                              "Request Id : " + 'WFM-IRA-MTEL-' + str(mvp_id) + " " + MESSAGE.replace(
-                                  "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                              [EMAIL])
+                    if "Ind" in LOCATION:
+                        send_mail('WFM - Plotting website submissions: ',
+                                  "Request Id : " + 'WFM-IRA-MTEL-' + str(mvp_id) + " " + MESSAGE.replace(
+                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                                  [EMAIL,"workforce.indore@taskus.com"])
+                    else:
+                        send_mail('WFM - Plotting website submissions: ',
+                                  "Request Id : " + 'WFM-IRA-MTEL-' + str(mvp_id) + " " + MESSAGE.replace(
+                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
+                                  [EMAIL])
+
+
                     MESSAGE = ""
 
                     return render(request, "mvp/thanks.html", context)
@@ -615,6 +646,7 @@ def profile_upload(request):
         io_string = io.StringIO(data_set)
         next(io_string)
         count = 0
+        submitted_requests = {}
         for column in csv.reader(io_string, delimiter=',', quotechar="|"):
             count = count + 1
             req_id = MvpUserRequest.objects.latest('id').id
@@ -625,8 +657,14 @@ def profile_upload(request):
                 if "Invalid" not in tmp_column:
                     if column[6] == '':
                         request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
+                        submitted_requests[request_ID_str] = column[0] + " " + column[1] + " " + column[2] + " " + \
+                                                             column[3] + " " + column[4] + " " + column[5] + " " + \
+                                                             column[6]
                     else:
                         request_ID_str = "WFM-IRA-MOT-" + str(req_id)
+                        submitted_requests[request_ID_str] = column[0] + " " + column[1] + " " + column[2] + " " + \
+                                                             column[3] + " " + column[4] + " " + column[5] + " " + \
+                                                             column[6]
 
                     _, created = MvpUserRequest.objects.update_or_create(
                         user_ID=column[0],
@@ -646,6 +684,13 @@ def profile_upload(request):
                     return render(request, template, prompt)
 
         prompt['order'] = "Success! Please check your status in submitted tasks list"
+        if "Ind" in LOCATION:
+            send_mail('WFM - Plotting website submissions: ', str(submitted_requests), 'svc.aacr@taskus.com',
+                      [EMAIL, "workforce.indore@taskus.com"])
+        else:
+            send_mail('WFM - Plotting website submissions: ', str(submitted_requests), 'svc.aacr@taskus.com',
+                      [EMAIL])
+
         return render(request, template, prompt)
     except Exception as e:
         # print(str(e))
