@@ -66,26 +66,38 @@ def hello_mvp(request):
                     print(POSITION)
                     return HttpResponseRedirect('/single/' + str(mvp_model.id) + '/OverTime')
                 else:
+                    context = {}
+                    context['form'] = form
                     messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
+                    return render(request, "mvp/home.html", context)
 
             else:
                 if POSITION != "Teammate":
                     print(POSITION)
                     return HttpResponseRedirect('/single/' + str(mvp_model.id) + '/TeleOpti')
                 else:
+                    context = {}
+                    context['form'] = form
                     messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
+                    return render(request, "mvp/home.html", context)
         else:
             # context = {}
             if form.clean_req_type() == "OverTime":
                 if POSITION != "Teammate":
                     return HttpResponseRedirect('/multi/' + str(mvp_model.id) + '/OverTime')
                 else:
+                    context = {}
+                    context['form'] = form
                     messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
+                    return render(request, "mvp/home.html", context)
             else:
                 if POSITION != "Teammate":
                     return HttpResponseRedirect('/multi/' + str(mvp_model.id) + '/TeleOpti')
                 else:
+                    context = {}
+                    context['form'] = form
                     messages.warning(request, " You are not authorized to raise requests. Please contact your supervisor!")
+                    return render(request, "mvp/home.html", context)
 
         # return HttpResponseRedirect('/mvp_app/')
 
