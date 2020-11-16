@@ -62,7 +62,7 @@ def hello_mvp(request):
         if 'Single' in form.clean_user_req():
 
             if form.clean_req_type() == "OverTime":
-                if POSITION != "RPA Business Analyst":
+                if POSITION != "Teammate":
                     print(POSITION)
                     return HttpResponseRedirect('/single/' + str(mvp_model.id) + '/OverTime')
                 else:
