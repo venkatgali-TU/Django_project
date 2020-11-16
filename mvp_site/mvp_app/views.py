@@ -29,12 +29,15 @@ from .serializers import *
 CRITICAL = 50
 MESSAGE = "Enter the values in the portal below"
 EMAIL = ""
+NAME = ""
+POSITION = ""
+LOCATION = ""
 
 
 def hello_mvp(request):
     # if this is a POST request we need to process the form data
 
-    print(MvpForm(request.POST).errors)
+    # print(MvpForm(request.POST).errors)
     if request.method == 'POST' and MvpForm(request.POST).is_valid():
         # create a form instance and populate it with data from the request:
         #############
@@ -53,7 +56,7 @@ def hello_mvp(request):
         form.full_clean()
         form.fields
         mvp_model = form.save()
-        print(form.clean_req_type())
+        # print(form.clean_req_type())
         if 'Single' in form.clean_user_req():
 
             if form.clean_req_type() == "OverTime":
@@ -84,15 +87,18 @@ def hello_mvp(request):
                         "x-api-key": "lsUfB4oaUX"
                     }
                     try:
-                        global EMAIL
+                        global EMAIL, NAME, POSITION, LOCATION
                         # fin = requests.get(final_url, final_headers, False)
-                        # print(username[5:])
+                        # #print(username[5:])
                         fin = requests.get(final_url, headers=final_headers, verify=False)
 
                         # temp_data_json = json.loads(json.dumps(fin.json()))
 
                         temp_data_json = json.loads(json.dumps(fin.json()))
                         EMAIL = str(temp_data_json['email'])
+                        POSITION = str(temp_data_json['position']['name'])
+                        NAME = str(temp_data_json['firstName']) + " " + str(temp_data_json['lastName'])
+                        LOCATION = str(temp_data_json['site']['location'])
                         messages.warning(request, " ID : " + str(temp_data_json['id']))
                         messages.warning(request, " First Name : " + str(temp_data_json['firstName']))
                         messages.warning(request, " Last Name : " + str(temp_data_json['lastName']))
@@ -106,7 +112,7 @@ def hello_mvp(request):
                         messages.warning(request, " Campaign : " + str(temp_data_json['campaign']['name']))
                     except ConnectionError and KeyError:
                         messages.warning(request, " Couldn't identify your profile! " + str(username))
-                        print("connection refused")
+                        # print("connection refused")
 
                 else:
                     messages.warning(request, username)
@@ -128,7 +134,7 @@ def hello_mvp(request):
 def data_view(request):
     if request.method == "POST":
         key = request.POST['key']
-        print(" success data : " + request.POST['key'])
+        # print(" success data : " + request.POST['key'])
         all_objects = MvpUserRequest.objects.all().filter(Name__contains=key)
         paginator = Paginator(all_objects, 35)
         page = request.GET.get('page')
@@ -136,28 +142,8 @@ def data_view(request):
 
         return render(request, 'mvp/data.html', {'posts': posts})
     else:
-        # final_url = "https://epmsapi.taskus.prv/v1/api/employees?take=40000"
-        # final_headers = {
-        #     "x-api-key": "lsUfB4oaUX"
-        # }
-        # final_list = {}
-        # fin = requests.get(final_url, headers=final_headers, verify=False)
-        # temp_data_json = json.loads(json.dumps(fin.json()))
-        # for item in temp_data_json:
-        #     try:
-        #         temp_camp = item['campaign']['name']
-        #         final_list[item['employeeNo']] = temp_camp
-        #     except TypeError:
-        #         continue
+
         all_objects = MvpUserRequest.objects.all().order_by('-id')
-        # print(len(final_list))
-        # for objs in all_objects:
-        #     try:
-        #         if objs.Timezone == '':
-        #             MvpUserRequest.objects.filter(id=objs.id).update(
-        #                 Timezone=final_list[objs.user_ID])
-        #     except:
-        #         continue
 
         paginator = Paginator(all_objects, 35)
         page = request.GET.get('page')
@@ -168,19 +154,19 @@ def data_view(request):
 
 def single_user(request, mvp_id, req):
     global MESSAGE
-    # print("req is :" + req)
+    # #print("req is :" + req)
     if req == "OverTime":
         if request.method == 'POST':  # and OverTimeUserRequestForm(request.POST).is_valid():
             if OverTimeUserRequestForm(request.POST).is_valid():
 
-                # print("IN HERE!!!")
+                # #print("IN HERE!!!")
                 form = OverTimeUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
                 form.clean()
                 form.for_Name()
                 breaktime = form.for_break()
-                print("breaktime" + breaktime)
+                # #print("breaktime" + breaktime)
 
                 if "Please" in form.clean_user_number():
                     messages.warning(request, "Please enter a valid employee number", fail_silently=True)
@@ -191,7 +177,7 @@ def single_user(request, mvp_id, req):
                     return render(request, "mvp/single.html", context)
                 else:
                     mvp_model = form.save()
-                    print('mvp_id is :' + str(MvpUserRequest.objects.latest('id').id))
+                    # print('mvp_id is :' + str(MvpUserRequest.objects.latest('id').id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-SOT-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
@@ -211,6 +197,7 @@ def single_user(request, mvp_id, req):
                     for mess in mess_split:
                         messages.success(request, mess)
                     context = {'user_ID': 'WFM-IRA-SOT-' + str(mvp_id)}
+                    # if
                     send_mail('WFM - Plotting website submissions: ',
                               "Request Id : " + 'WFM-IRA-SOT-' + str(mvp_id) + " " + MESSAGE.replace(
                                   "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
@@ -241,7 +228,7 @@ def single_user(request, mvp_id, req):
     else:
         if request.method == 'POST':  # and TeleOptiUserRequestForm(request.POST).is_valid():
             if TeleOptiUserRequestForm(request.POST).is_valid():
-                print("IN HERE!!!")
+                # print("IN HERE!!!")
                 form = TeleOptiUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
@@ -267,7 +254,7 @@ def single_user(request, mvp_id, req):
                     for mess in mess_split:
                         messages.success(request, mess)
                     mvp_model = form.save()
-                    print('mvp_id is :' + str(MvpUserRequest.objects.latest('id').id))
+                    # print('mvp_id is :' + str(MvpUserRequest.objects.latest('id').id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-STEL-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
@@ -303,8 +290,8 @@ def multi_user(request, mvp_id, req):
     if req == "OverTime":
         if request.method == 'POST' and OverTimeUserRequestForm(request.POST).is_valid():
             if '_con' in request.POST:
-                print("IN HERE!!!")
-                print(request.POST)
+                # print("IN HERE!!!")
+                # print(request.POST)
                 form = OverTimeUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
@@ -449,8 +436,8 @@ def multi_user(request, mvp_id, req):
         if request.method == 'POST' and TeleOptiUserRequestForm(request.POST).is_valid():
 
             if '_con' in request.POST:
-                print("IN HERE!!!")
-                print(request.POST)
+                # print("IN HERE!!!")
+                # print(request.POST)
                 form = TeleOptiUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
@@ -603,10 +590,10 @@ def profile_upload(request):
         for column in csv.reader(io_string, delimiter=',', quotechar="|"):
             count = count + 1
             req_id = MvpUserRequest.objects.latest('id').id
-            # print(column)
+            # #print(column)
             if count != 1:
                 tmp_column = check(column)
-                # print(count)
+                # #print(count)
                 if "Invalid" not in tmp_column:
                     if column[6] == '':
                         request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
@@ -633,7 +620,7 @@ def profile_upload(request):
         prompt['order'] = "Success! Please check your status in submitted tasks list"
         return render(request, template, prompt)
     except Exception as e:
-        print(str(e))
+        # print(str(e))
         prompt['order'] = str(e)
         return render(request, template, prompt)
 
@@ -694,8 +681,8 @@ def check(column):
                             str_hour = int(str_hour)
                             str_min = int(str_min)
 
-                            # print(str(str_hour))
-                            # print(str(str_min))
+                            # #print(str(str_hour))
+                            # #print(str(str_min))
                             if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
                                 return "Invalid start time"
                             else:
@@ -703,7 +690,7 @@ def check(column):
 
                                     return "Invalid end time"
                                 else:
-                                    # print(str_time)
+                                    # #print(str_time)
                                     end_time_split = end_time.split(":")
                                     end_hour = end_time_split[0]
                                     end_min = end_time_split[1]
@@ -716,12 +703,12 @@ def check(column):
                                             try:
                                                 start_time_date = datetime.strptime(str_time, '%H:%M')
                                                 end_time_date = datetime.strptime(end_time, '%H:%M')
-                                                print(start_time_date)
-                                                print(end_time_date)
+                                                # print(start_time_date)
+                                                # print(end_time_date)
                                                 if start_time_date > end_time_date:
                                                     return "Invalid  start or end time"
                                                 else:
-                                                    print("here")
+                                                    # print("here")
 
                                                     final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(
                                                         user_id)  # 3054204"
@@ -730,7 +717,7 @@ def check(column):
                                                     }
                                                     try:
                                                         # fin = requests.get(final_url, final_headers, False)
-                                                        # print(username[5:])
+                                                        # #print(username[5:])
                                                         fin = requests.get(final_url, headers=final_headers,
                                                                            verify=False)
 
@@ -833,7 +820,7 @@ def request_list(request):
     List all products, or create a new product.
     """
     if request.method == 'GET':
-        products = MvpUserRequest.objects.all().exclude(Status__contains='omplete').order_by('-id')[:15]
+        products = MvpUserRequest.objects.all().exclude(Status__contains='omplete').order_by('-id')[:25]
         serializer = MvpSerializer(products, context={'request': request}, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':

@@ -30,10 +30,9 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
             # fin = requests.get(final_url, final_headers, False)
             # print(username[5:])
             fin = requests.get(final_url, headers=final_headers, verify=False)
-
-            # temp_data_json = json.loads(json.dumps(fin.json()))
-
             temp_data_json = json.loads(json.dumps(fin.json()))
+            MvpUserRequest.objects.filter(user_ID=str(field_value)).update(
+                Timezone=str(temp_data_json['campaign']['name']))
             return str(temp_data_json['campaign']['name'])
         except ConnectionError and KeyError:
             return "Couldnt find the correct campaign name"
@@ -75,21 +74,7 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
         field_name = 'user_ID'
         # obj = MvpUserRequest.objects.first()
         field_value = getattr(obj, field_name)
-        final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(field_value)  # 3054204"
-        final_headers = {
-            "x-api-key": "lsUfB4oaUX"
-        }
-        try:
-            # fin = requests.get(final_url, final_headers, False)
-            # print(username[5:])
-            fin = requests.get(final_url, headers=final_headers, verify=False)
-
-            # temp_data_json = json.loads(json.dumps(fin.json()))
-
-            temp_data_json = json.loads(json.dumps(fin.json()))
-            return str(temp_data_json['site']['timeZone'])
-        except ConnectionError and KeyError:
-            return "Couldnt find the correct timezone"
+        return str(field_value)
 
     def req_id(self, obj):
         field_name = 'Status'
