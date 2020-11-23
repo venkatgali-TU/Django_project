@@ -651,37 +651,50 @@ def profile_upload(request):
             # #print(column)
             if count != 1:
                 tmp_column = check(column)
-                # #print(count)
+                print(tmp_column)
                 if "Invalid" not in tmp_column:
-                    if column[6] == '':
+                    # print(column[6])
+                    if len(column) <= 6:
                         request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
                         submitted_requests[request_ID_str] = column[0] + " " + column[1] + " " + column[2] + " " + \
-                                                             column[3] + " " + column[4] + " " + column[5] + " " + \
-                                                             column[6]
+                                                             column[3] + " " + column[4] + " " + column[5] + " "
+                        _, created = MvpUserRequest.objects.update_or_create(
+                            user_ID=column[0],
+                            Name=request_ID_str,
+                            Start_Date=column[1],
+                            End_Date=column[2],
+                            Start_Time=column[3],
+                            End_Time=column[4],
+                            Activity=column[5],
+                            Mul_Over='',
+                            Timezone='',
+                            BreakTime=tmp_column,
+                            Status='In Progress'
+                        )
                     else:
                         request_ID_str = "WFM-IRA-MOT-" + str(req_id)
                         submitted_requests[request_ID_str] = column[0] + " " + column[1] + " " + column[2] + " " + \
                                                              column[3] + " " + column[4] + " " + column[5] + " " + \
                                                              column[6]
+                        _, created = MvpUserRequest.objects.update_or_create(
+                            user_ID=column[0],
+                            Name=request_ID_str,
+                            Start_Date=column[1],
+                            End_Date=column[2],
+                            Start_Time=column[3],
+                            End_Time=column[4],
+                            Activity=column[5],
+                            Mul_Over=column[6],
+                            Timezone='',
+                            BreakTime=tmp_column,
+                            Status='In Progress'
+                        )
 
-                    _, created = MvpUserRequest.objects.update_or_create(
-                        user_ID=column[0],
-                        Name=request_ID_str,
-                        Start_Date=column[1],
-                        End_Date=column[2],
-                        Start_Time=column[3],
-                        End_Time=column[4],
-                        Activity=column[5],
-                        Mul_Over=column[6],
-                        Timezone='',
-                        BreakTime=tmp_column,
-                        Status='In Progress'
-                    )
-                else:
-                    prompt['order'] = tmp_column
-                    return render(request, template, prompt)
+        if count > 100:
+            prompt['order'] = "Successfully uploaded 100 records! Please create another csv to upload the rest"
+        else:
+            prompt['order'] = "Success! Please check your status in submitted tasks list"
 
-        prompt['order'] = "Success! Please check your status in submitted tasks list"
         if "Ind" in LOCATION:
             send_mail('WFM - Plotting website submissions: ', str(submitted_requests), 'svc.aacr@taskus.com',
                       [EMAIL, "workforce.indore@taskus.com"])
@@ -716,173 +729,341 @@ def help_needed(request):
 
 
 def check(column):
-    user_id = column[0]
-    str_time = column[3]
-    end_time = column[4]
-    str_date = column[1]
-    end_date = column[2]
-    activity = column[5]
-    Mul_Over = column[6]
-    timezone = ""
-    Status = ""
-    result = ""
+    if len(column)>6:
+        user_id = column[0]
+        str_time = column[3]
+        end_time = column[4]
+        str_date = column[1]
+        end_date = column[2]
+        activity = column[5]
+        Mul_Over = column[6]
+        timezone = ""
+        Status = ""
+        result = ""
 
-    if user_id and str_time and end_time:
-        # Only do something if both fields are valid so far.
-        str_date = datetime.strptime(str_date, '%Y-%m-%d')
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
-        past = datetime.now() - timedelta(days=7)
-        if len(user_id) != 7:
-            return "Invalid user ID"
-        else:
-            if str_date < past or end_date < past:
-                pass
-                # return "Invalid Dates"
+        if user_id and str_time and end_time:
+            # Only do something if both fields are valid so far.
+            str_date = datetime.strptime(str_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+            past = datetime.now() - timedelta(days=7)
+            if len(user_id) != 7:
+                return "Invalid user ID"
             else:
-                if str_date > end_date:
-                    return "Invalid dates"
+                if str_date < past or end_date < past:
+                    pass
+                    # return "Invalid Dates"
                 else:
-                    if len(str_time) != 5 and ":" not in str_time:
-                        return "Invalid start time"
+                    if str_date > end_date:
+                        return "Invalid dates"
                     else:
-                        str_time_split = str_time.split(":")
-                        str_hour = str_time_split[0]
-                        str_min = str_time_split[1]
-                        try:
-                            str_hour = int(str_hour)
-                            str_min = int(str_min)
+                        if len(str_time) != 5 and ":" not in str_time:
+                            return "Invalid start time"
+                        else:
+                            str_time_split = str_time.split(":")
+                            str_hour = str_time_split[0]
+                            str_min = str_time_split[1]
+                            try:
+                                str_hour = int(str_hour)
+                                str_min = int(str_min)
 
-                            # #print(str(str_hour))
-                            # #print(str(str_min))
-                            if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
-                                return "Invalid start time"
-                            else:
-                                if len(end_time) != 5 and ":" not in end_time:
-
-                                    return "Invalid end time"
+                                # #print(str(str_hour))
+                                # #print(str(str_min))
+                                if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
+                                    return "Invalid start time"
                                 else:
-                                    # #print(str_time)
-                                    end_time_split = end_time.split(":")
-                                    end_hour = end_time_split[0]
-                                    end_min = end_time_split[1]
-                                    try:
-                                        end_hour = int(end_hour)
-                                        end_min = int(end_min)
-                                        if end_hour > 23 or end_hour < 0 or end_min > 59 or end_min < 0:
-                                            return "Invalid end time"
-                                        else:
-                                            try:
-                                                start_time_date = datetime.strptime(str_time, '%H:%M')
-                                                end_time_date = datetime.strptime(end_time, '%H:%M')
-                                                # print(start_time_date)
-                                                # print(end_time_date)
-                                                if start_time_date > end_time_date:
-                                                    return "Invalid  start or end time"
-                                                else:
-                                                    # print("here")
+                                    if len(end_time) != 5 and ":" not in end_time:
 
-                                                    final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(
-                                                        user_id)  # 3054204"
-                                                    final_headers = {
-                                                        "x-api-key": "lsUfB4oaUX"
-                                                    }
-                                                    try:
-                                                        # fin = requests.get(final_url, final_headers, False)
-                                                        # #print(username[5:])
-                                                        fin = requests.get(final_url, headers=final_headers,
-                                                                           verify=False)
+                                        return "Invalid end time"
+                                    else:
+                                        # #print(str_time)
+                                        end_time_split = end_time.split(":")
+                                        end_hour = end_time_split[0]
+                                        end_min = end_time_split[1]
+                                        try:
+                                            end_hour = int(end_hour)
+                                            end_min = int(end_min)
+                                            if end_hour > 23 or end_hour < 0 or end_min > 59 or end_min < 0:
+                                                return "Invalid end time"
+                                            else:
+                                                try:
+                                                    start_time_date = datetime.strptime(str_time, '%H:%M')
+                                                    end_time_date = datetime.strptime(end_time, '%H:%M')
+                                                    # print(start_time_date)
+                                                    # print(end_time_date)
+                                                    if start_time_date > end_time_date:
+                                                        return "Invalid  start or end time"
+                                                    else:
+                                                        # print("here")
 
-                                                        # temp_data_json = json.loads(json.dumps(fin.json()))
+                                                        final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(
+                                                            user_id)  # 3054204"
+                                                        final_headers = {
+                                                            "x-api-key": "lsUfB4oaUX"
+                                                        }
+                                                        try:
+                                                            # fin = requests.get(final_url, final_headers, False)
+                                                            # #print(username[5:])
+                                                            fin = requests.get(final_url, headers=final_headers,
+                                                                               verify=False)
 
-                                                        temp_data_json = json.loads(json.dumps(fin.json()))
-                                                        country = str(temp_data_json['site']['countryCode'])
-                                                        breaktime = ""
+                                                            # temp_data_json = json.loads(json.dumps(fin.json()))
 
-                                                        if country == 'US':
-                                                            temp_time = (((
-                                                                                  end_time_date - start_time_date).seconds / 60) / 60)
-                                                            if temp_time == 9:
-                                                                breaktime = 'lunch(30) + 15 + 15 + 15'
-                                                            elif temp_time < 9 and temp_time >= 8:
-                                                                breaktime = 'lunch(30) + 15 + 15'
-                                                            elif temp_time < 8 and temp_time >= 7:
-                                                                breaktime = 'lunch(30) + 15'
-                                                            elif temp_time < 7 and temp_time >= 6:
-                                                                breaktime = 'lunch(30) + 15'
-                                                            elif temp_time < 6 and temp_time >= 5:
-                                                                breaktime = 'lunch(30) + 15'
+                                                            temp_data_json = json.loads(json.dumps(fin.json()))
+                                                            country = str(temp_data_json['site']['countryCode'])
+                                                            breaktime = ""
 
-                                                            elif temp_time < 5 and temp_time >= 2:
-                                                                breaktime = '15'
-                                                            elif temp_time < 2 and temp_time >= 1:
-                                                                breaktime = 'No break'
+                                                            if country == 'US':
+                                                                temp_time = (((
+                                                                                      end_time_date - start_time_date).seconds / 60) / 60)
+                                                                if temp_time == 9:
+                                                                    breaktime = 'lunch(30) + 15 + 15 + 15'
+                                                                elif temp_time < 9 and temp_time >= 8:
+                                                                    breaktime = 'lunch(30) + 15 + 15'
+                                                                elif temp_time < 8 and temp_time >= 7:
+                                                                    breaktime = 'lunch(30) + 15'
+                                                                elif temp_time < 7 and temp_time >= 6:
+                                                                    breaktime = 'lunch(30) + 15'
+                                                                elif temp_time < 6 and temp_time >= 5:
+                                                                    breaktime = 'lunch(30) + 15'
 
-                                                        elif country == 'PH':
-                                                            temp_time = (((
-                                                                                  end_time_date - start_time_date).seconds / 60) / 60)
-                                                            if temp_time == 12:
-                                                                breaktime = '15 + 15 + 15 + lunch(60)'
-                                                            elif temp_time < 12 and temp_time >= 11:
-                                                                breaktime = '15 + 15 + 11 + lunch(60)'
-                                                            elif temp_time < 11 and temp_time >= 10:
-                                                                breaktime = '15 + 15 + 7 + lunch(60)'
-                                                            elif temp_time < 10 and temp_time >= 9:
-                                                                breaktime = '15 + 15 + 5 + lunch(60)'
-                                                            elif temp_time < 9 and temp_time >= 8:
-                                                                breaktime = '15 + 15 + lunch(30)'
-                                                            elif temp_time < 8 and temp_time >= 7:
-                                                                breaktime = '15 + 11'
-                                                            elif temp_time < 7 and temp_time >= 6:
-                                                                breaktime = '15 + 7'
-                                                            elif temp_time < 6 and temp_time >= 5:
-                                                                breaktime = '15 + 5'
-                                                            elif temp_time < 5 and temp_time >= 4:
-                                                                breaktime = '15'
-                                                            elif temp_time < 4 and temp_time >= 3:
-                                                                breaktime = '11'
-                                                            elif temp_time < 3 and temp_time >= 2:
-                                                                breaktime = '7'
-                                                            elif temp_time < 2 and temp_time >= 1:
-                                                                breaktime = 'No break'
-                                                        else:
-                                                            temp_time = (((
-                                                                                  end_time_date - start_time_date).seconds / 60) / 60)
-                                                            if temp_time == 9:
-                                                                breaktime = 'lunch(30) + 15 + 15 + 15'
-                                                            elif temp_time < 9 and temp_time >= 8:
-                                                                breaktime = 'lunch(30) + 15 + 15'
-                                                            elif temp_time < 8 and temp_time >= 7:
-                                                                breaktime = 'lunch(30) + 15'
-                                                            elif temp_time < 7 and temp_time >= 6:
-                                                                breaktime = 'lunch(30) + 15'
-                                                            elif temp_time < 6 and temp_time >= 5:
-                                                                breaktime = 'lunch(30) + 15'
+                                                                elif temp_time < 5 and temp_time >= 2:
+                                                                    breaktime = '15'
+                                                                elif temp_time < 2 and temp_time >= 1:
+                                                                    breaktime = 'No break'
 
-                                                            elif temp_time < 5 and temp_time >= 2:
-                                                                breaktime = '15'
-                                                            elif temp_time < 2 and temp_time >= 1:
-                                                                breaktime = 'No break'
-                                                        result = breaktime
+                                                            elif country == 'PH':
+                                                                temp_time = (((
+                                                                                      end_time_date - start_time_date).seconds / 60) / 60)
+                                                                if temp_time == 12:
+                                                                    breaktime = '15 + 15 + 15 + lunch(60)'
+                                                                elif temp_time < 12 and temp_time >= 11:
+                                                                    breaktime = '15 + 15 + 11 + lunch(60)'
+                                                                elif temp_time < 11 and temp_time >= 10:
+                                                                    breaktime = '15 + 15 + 7 + lunch(60)'
+                                                                elif temp_time < 10 and temp_time >= 9:
+                                                                    breaktime = '15 + 15 + 5 + lunch(60)'
+                                                                elif temp_time < 9 and temp_time >= 8:
+                                                                    breaktime = '15 + 15 + lunch(30)'
+                                                                elif temp_time < 8 and temp_time >= 7:
+                                                                    breaktime = '15 + 11'
+                                                                elif temp_time < 7 and temp_time >= 6:
+                                                                    breaktime = '15 + 7'
+                                                                elif temp_time < 6 and temp_time >= 5:
+                                                                    breaktime = '15 + 5'
+                                                                elif temp_time < 5 and temp_time >= 4:
+                                                                    breaktime = '15'
+                                                                elif temp_time < 4 and temp_time >= 3:
+                                                                    breaktime = '11'
+                                                                elif temp_time < 3 and temp_time >= 2:
+                                                                    breaktime = '7'
+                                                                elif temp_time < 2 and temp_time >= 1:
+                                                                    breaktime = 'No break'
+                                                            else:
+                                                                temp_time = (((
+                                                                                      end_time_date - start_time_date).seconds / 60) / 60)
+                                                                if temp_time == 9:
+                                                                    breaktime = 'lunch(30) + 15 + 15 + 15'
+                                                                elif temp_time < 9 and temp_time >= 8:
+                                                                    breaktime = 'lunch(30) + 15 + 15'
+                                                                elif temp_time < 8 and temp_time >= 7:
+                                                                    breaktime = 'lunch(30) + 15'
+                                                                elif temp_time < 7 and temp_time >= 6:
+                                                                    breaktime = 'lunch(30) + 15'
+                                                                elif temp_time < 6 and temp_time >= 5:
+                                                                    breaktime = 'lunch(30) + 15'
 
-                                                    except ConnectionError and KeyError:
-                                                        return "Invalid User ID"
+                                                                elif temp_time < 5 and temp_time >= 2:
+                                                                    breaktime = '15'
+                                                                elif temp_time < 2 and temp_time >= 1:
+                                                                    breaktime = 'No break'
+                                                            result = breaktime
 
-                                            except ValueError:
-                                                return "Invalid Start time or End time"
-                                    except ValueError:
-                                        return 'Invalid end time'
+                                                        except ConnectionError and KeyError:
+                                                            return "Invalid User ID"
 
-                        except ValueError:
-                            return 'Invalid start time'
+                                                except ValueError:
+                                                    return "Invalid Start time or End time"
+                                        except ValueError:
+                                            return 'Invalid end time'
 
-                            #####################################
+                            except ValueError:
+                                return 'Invalid start time'
 
+                                #####################################
+
+        else:
+            return 'Please enter valid user ID'
+            # raise ValidationError(
+            #     "Not a valid input, Please try again with correct input"
+            # )
+        return result
     else:
-        return 'Please enter valid user ID'
-        # raise ValidationError(
-        #     "Not a valid input, Please try again with correct input"
-        # )
-    return result
+        user_id = column[0]
+        str_time = column[3]
+        end_time = column[4]
+        str_date = column[1]
+        end_date = column[2]
+        activity = column[5]
+        timezone = ""
+        Status = ""
+        result = ""
+
+        if user_id and str_time and end_time:
+            # Only do something if both fields are valid so far.
+            str_date = datetime.strptime(str_date, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+            past = datetime.now() - timedelta(days=7)
+            if len(user_id) != 7:
+                return "Invalid user ID"
+            else:
+                if str_date < past or end_date < past:
+                    pass
+                    # return "Invalid Dates"
+                else:
+                    if str_date > end_date:
+                        return "Invalid dates"
+                    else:
+                        if len(str_time) != 5 and ":" not in str_time:
+                            return "Invalid start time"
+                        else:
+                            str_time_split = str_time.split(":")
+                            str_hour = str_time_split[0]
+                            str_min = str_time_split[1]
+                            try:
+                                str_hour = int(str_hour)
+                                str_min = int(str_min)
+
+                                # #print(str(str_hour))
+                                # #print(str(str_min))
+                                if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
+                                    return "Invalid start time"
+                                else:
+                                    if len(end_time) != 5 and ":" not in end_time:
+
+                                        return "Invalid end time"
+                                    else:
+                                        # #print(str_time)
+                                        end_time_split = end_time.split(":")
+                                        end_hour = end_time_split[0]
+                                        end_min = end_time_split[1]
+                                        try:
+                                            end_hour = int(end_hour)
+                                            end_min = int(end_min)
+                                            if end_hour > 23 or end_hour < 0 or end_min > 59 or end_min < 0:
+                                                return "Invalid end time"
+                                            else:
+                                                try:
+                                                    start_time_date = datetime.strptime(str_time, '%H:%M')
+                                                    end_time_date = datetime.strptime(end_time, '%H:%M')
+                                                    # print(start_time_date)
+                                                    # print(end_time_date)
+                                                    if start_time_date > end_time_date:
+                                                        return "Invalid  start or end time"
+                                                    else:
+                                                        # print("here")
+
+                                                        final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(
+                                                            user_id)  # 3054204"
+                                                        final_headers = {
+                                                            "x-api-key": "lsUfB4oaUX"
+                                                        }
+                                                        try:
+                                                            # fin = requests.get(final_url, final_headers, False)
+                                                            # #print(username[5:])
+                                                            fin = requests.get(final_url, headers=final_headers,
+                                                                               verify=False)
+
+                                                            # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                                                            temp_data_json = json.loads(json.dumps(fin.json()))
+                                                            country = str(temp_data_json['site']['countryCode'])
+                                                            breaktime = ""
+
+                                                            if country == 'US':
+                                                                temp_time = (((
+                                                                                      end_time_date - start_time_date).seconds / 60) / 60)
+                                                                if temp_time == 9:
+                                                                    breaktime = 'lunch(30) + 15 + 15 + 15'
+                                                                elif temp_time < 9 and temp_time >= 8:
+                                                                    breaktime = 'lunch(30) + 15 + 15'
+                                                                elif temp_time < 8 and temp_time >= 7:
+                                                                    breaktime = 'lunch(30) + 15'
+                                                                elif temp_time < 7 and temp_time >= 6:
+                                                                    breaktime = 'lunch(30) + 15'
+                                                                elif temp_time < 6 and temp_time >= 5:
+                                                                    breaktime = 'lunch(30) + 15'
+
+                                                                elif temp_time < 5 and temp_time >= 2:
+                                                                    breaktime = '15'
+                                                                elif temp_time < 2 and temp_time >= 1:
+                                                                    breaktime = 'No break'
+
+                                                            elif country == 'PH':
+                                                                temp_time = (((
+                                                                                      end_time_date - start_time_date).seconds / 60) / 60)
+                                                                if temp_time == 12:
+                                                                    breaktime = '15 + 15 + 15 + lunch(60)'
+                                                                elif temp_time < 12 and temp_time >= 11:
+                                                                    breaktime = '15 + 15 + 11 + lunch(60)'
+                                                                elif temp_time < 11 and temp_time >= 10:
+                                                                    breaktime = '15 + 15 + 7 + lunch(60)'
+                                                                elif temp_time < 10 and temp_time >= 9:
+                                                                    breaktime = '15 + 15 + 5 + lunch(60)'
+                                                                elif temp_time < 9 and temp_time >= 8:
+                                                                    breaktime = '15 + 15 + lunch(30)'
+                                                                elif temp_time < 8 and temp_time >= 7:
+                                                                    breaktime = '15 + 11'
+                                                                elif temp_time < 7 and temp_time >= 6:
+                                                                    breaktime = '15 + 7'
+                                                                elif temp_time < 6 and temp_time >= 5:
+                                                                    breaktime = '15 + 5'
+                                                                elif temp_time < 5 and temp_time >= 4:
+                                                                    breaktime = '15'
+                                                                elif temp_time < 4 and temp_time >= 3:
+                                                                    breaktime = '11'
+                                                                elif temp_time < 3 and temp_time >= 2:
+                                                                    breaktime = '7'
+                                                                elif temp_time < 2 and temp_time >= 1:
+                                                                    breaktime = 'No break'
+                                                            else:
+                                                                temp_time = (((
+                                                                                      end_time_date - start_time_date).seconds / 60) / 60)
+                                                                if temp_time == 9:
+                                                                    breaktime = 'lunch(30) + 15 + 15 + 15'
+                                                                elif temp_time < 9 and temp_time >= 8:
+                                                                    breaktime = 'lunch(30) + 15 + 15'
+                                                                elif temp_time < 8 and temp_time >= 7:
+                                                                    breaktime = 'lunch(30) + 15'
+                                                                elif temp_time < 7 and temp_time >= 6:
+                                                                    breaktime = 'lunch(30) + 15'
+                                                                elif temp_time < 6 and temp_time >= 5:
+                                                                    breaktime = 'lunch(30) + 15'
+
+                                                                elif temp_time < 5 and temp_time >= 2:
+                                                                    breaktime = '15'
+                                                                elif temp_time < 2 and temp_time >= 1:
+                                                                    breaktime = 'No break'
+                                                            result = breaktime
+
+                                                        except ConnectionError and KeyError:
+                                                            return "Invalid User ID"
+
+                                                except ValueError:
+                                                    return "Invalid Start time or End time"
+                                        except ValueError:
+                                            return 'Invalid end time'
+
+                            except ValueError:
+                                return 'Invalid start time'
+
+                                #####################################
+
+        else:
+            return 'Please enter valid user ID'
+            # raise ValidationError(
+            #     "Not a valid input, Please try again with correct input"
+            # )
+        return result
 
 
 @api_view(['GET', 'POST'])
