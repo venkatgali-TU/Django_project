@@ -66,6 +66,8 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
                 result_bus = "Greece"
             elif "Ireland" in str(temp_data_json['site']['location']):
                 result_bus = "Ireland"
+            elif "La Union" in str(temp_data_json['site']['location']):
+                result_bus = "Manila"
             return result_bus
         except ConnectionError and KeyError:
             return "Couldnt find the correct business name"
