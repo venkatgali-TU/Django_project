@@ -99,7 +99,7 @@
                         <th><abbr title="End Time">End Time</abbr></th>
                         <th><abbr title="Activity">Activity</abbr></th>
                         <th><abbr title="Multiplicator / OverTime">Multiplicator / OverTime</abbr></th>
-                        <th><abbr title="Break Time">Break Time</abbr></th>
+<!--                        <th><abbr title="Break Time">Break Time</abbr></th>-->
                         <th><abbr title="Status">Status</abbr></th>
                         <th><abbr title="Campaign">Campaign</abbr></th>
                         <th>Created At</th>
@@ -115,7 +115,7 @@
                         <th><abbr title="End Time">End Time</abbr></th>
                         <th><abbr title="Activity">Activity</abbr></th>
                         <th><abbr title="Multiplicator / OverTime">Multiplicator / OverTime</abbr></th>
-                        <th><abbr title="Break Time">Break Time</abbr></th>
+<!--                        <th><abbr title="Break Time">Break Time</abbr></th>-->
                         <th><abbr title="Status">Status</abbr></th>
                         <th><abbr title="Campaign">Campaign</abbr></th>
                         <th>Created At</th>
@@ -135,10 +135,14 @@
                         <td>{{ post.End_Time }}</td>
                         <td>{{ post.Activity|default:"-" }}</td>
                         <td>{{ post.Mul_Over|default:"-" }}</td>
-                        <td>{{ post.BreakTime|default:"-" }}</td>
+<!--                        <td>{{ post.BreakTime|default:"-" }}</td>-->
                         {% if 'omplete' in post.Status %}
                         <div class="has-text-info">
                             <td>Complete</td>
+                        </div>
+                        {% elif 'decided' in post.Status %}
+                        <div class="has-text-info">
+                            <td>To be Decided</td>
                         </div>
                         {% elif 'elp' in post.Status %}
                         <div class="has-text-info">

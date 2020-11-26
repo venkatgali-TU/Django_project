@@ -173,7 +173,16 @@ def data_view(request):
     else:
 
         all_objects = MvpUserRequest.objects.all().order_by('-id')
-
+        # campaigns = {}
+        # with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+        #     reader = csv.reader(f)
+        #     for row in reader:
+        #         if len(row) > 1:
+        #             campaigns[row[0]] = row[1]
+        # for obj in MvpUserRequest.objects.all():
+        #     if obj.user_ID in campaigns:
+        #         MvpUserRequest.objects.filter(id=obj.id).update(
+        #             Timezone=campaigns[obj.user_ID])
         paginator = Paginator(all_objects, 35)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
@@ -622,6 +631,8 @@ def multi_user(request, mvp_id, req):
 
 def profile_upload(request):
     # declaring template
+    print("name is: " + NAME)
+
     template = "mvp/profile_upload.html"
     data = MvpUserRequest.objects.all().order_by('-id')
     # prompt is a context variable that can have different values      depending on their context
@@ -668,7 +679,7 @@ def profile_upload(request):
                             Activity=column[5],
                             Mul_Over='',
                             Timezone='',
-                            BreakTime=tmp_column,
+                            BreakTime=NAME,
                             Status='In Progress'
                         )
                     else:
@@ -729,7 +740,7 @@ def help_needed(request):
 
 
 def check(column):
-    if len(column)>6:
+    if len(column) > 6:
         user_id = column[0]
         str_time = column[3]
         end_time = column[4]
@@ -1072,7 +1083,7 @@ def request_list(request):
     List all products, or create a new product.
     """
     if request.method == 'GET':
-        products = MvpUserRequest.objects.all().exclude(Status__contains='omplete').order_by('-id')[:25]
+        products = MvpUserRequest.objects.all().exclude(Status__contains='omplete').order_by('-id')[:50]
         serializer = MvpSerializer(products, context={'request': request}, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':

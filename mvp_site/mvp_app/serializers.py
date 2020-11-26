@@ -1,3 +1,5 @@
+import csv
+
 from rest_framework import serializers
 
 from .models import MvpUserRequest
@@ -22,20 +24,32 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
         # obj = MvpUserRequest.objects.all().latest('id')
         field_value = getattr(obj, field_name)
 
-        final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(field_value)  # 3054204"
-        final_headers = {
-            "x-api-key": "lsUfB4oaUX"
-        }
-        try:
-            # fin = requests.get(final_url, final_headers, False)
-            # print(username[5:])
-            fin = requests.get(final_url, headers=final_headers, verify=False)
-            temp_data_json = json.loads(json.dumps(fin.json()))
-            MvpUserRequest.objects.filter(user_ID=str(field_value)).update(
-                Timezone=str(temp_data_json['campaign']['name']))
-            return str(temp_data_json['campaign']['name'])
-        except ConnectionError and KeyError:
-            return "Couldnt find the correct campaign name"
+        campaigns = {}
+        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if len(row) > 1:
+                    campaigns[row[0]] = row[1]
+        MvpUserRequest.objects.filter(user_ID=str(field_value)).update(
+            Timezone=campaigns[obj.user_ID])
+        # field_name = 'user_ID'
+        # # obj = MvpUserRequest.objects.all().latest('id')
+        # field_value = getattr(obj, field_name)
+        #
+        # final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + str(field_value)  # 3054204"
+        # final_headers = {
+        #     "x-api-key": "lsUfB4oaUX"
+        # }
+        # try:
+        #     # fin = requests.get(final_url, final_headers, False)
+        #     # print(username[5:])
+        #     fin = requests.get(final_url, headers=final_headers, verify=False)
+        #     temp_data_json = json.loads(json.dumps(fin.json()))
+        #     MvpUserRequest.objects.filter(user_ID=str(field_value)).update(
+        #         Timezone=str(temp_data_json['campaign']['name']))
+        #     return str(temp_data_json['campaign']['name'])
+        # except ConnectionError and KeyError:
+        #     return "Couldnt find the correct campaign name"
 
     def business_name(self, obj):
         field_name = 'user_ID'
