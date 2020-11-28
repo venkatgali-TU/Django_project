@@ -24,14 +24,20 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
         # obj = MvpUserRequest.objects.all().latest('id')
         field_value = getattr(obj, field_name)
 
-        campaigns = {}
-        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
-            reader = csv.reader(f)
-            for row in reader:
-                if len(row) > 1:
-                    campaigns[row[0]] = row[1]
-        MvpUserRequest.objects.filter(user_ID=str(field_value)).update(
-            Timezone=campaigns[obj.user_ID])
+        try:
+            campaigns = {}
+            with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    if len(row) > 1:
+                        campaigns[row[0]] = row[1]
+            MvpUserRequest.objects.filter(user_ID=str(field_value)).update(
+                Timezone=campaigns[obj.user_ID])
+            return campaigns[obj.user_ID]
+        except:
+            MvpUserRequest.objects.filter(user_ID=str(field_value)).update(
+                Timezone='')
+            return ''
         # field_name = 'user_ID'
         # # obj = MvpUserRequest.objects.all().latest('id')
         # field_value = getattr(obj, field_name)
