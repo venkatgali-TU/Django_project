@@ -16,7 +16,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class MvpSerializer(serializers.HyperlinkedModelSerializer):
     campaign = serializers.SerializerMethodField('campaign_name')
     business_unit = serializers.SerializerMethodField('business_name')
-    timeZone = serializers.SerializerMethodField('timezone')
     req_id = serializers.SerializerMethodField('requestid')
 
     def campaign_name(self, obj):
@@ -92,12 +91,6 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
         except ConnectionError and KeyError:
             return "Couldnt find the correct business name"
 
-    def timezone(self, obj):
-        field_name = 'user_ID'
-        # obj = MvpUserRequest.objects.first()
-        field_value = getattr(obj, field_name)
-        return str(field_value)
-
     def req_id(self, obj):
         field_name = 'Status'
         field_value = getattr(obj, field_name)
@@ -120,4 +113,4 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
                   'campaign',
                   'business_unit',
                   'created_at',
-                  'timeZone')
+                  'Timezone')

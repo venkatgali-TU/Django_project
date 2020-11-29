@@ -775,7 +775,8 @@ def request_detail(request, pk):
     elif request.method == 'PUT':
         serializer = MvpSerializer(product, data=request.data, context={'request': request})
         if serializer.is_valid():
-            serializer.save()
+            MvpUserRequest.objects.filter(id=request.data['id']).update(
+                BreakTime=datetime.now())
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
