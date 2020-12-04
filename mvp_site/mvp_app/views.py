@@ -747,7 +747,7 @@ def request_list(request):
     List all products, or create a new product.
     """
     if request.method == 'GET':
-        products = MvpUserRequest.objects.all().exclude(Status__contains='omplete').order_by('-id')[:20]
+        products = MvpUserRequest.objects.all().exclude(Status__contains='omplete').order_by('created_at')[:20] ##Changed from id to createdat
         serializer = MvpSerializer(products, context={'request': request}, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
@@ -775,8 +775,9 @@ def request_detail(request, pk):
     elif request.method == 'PUT':
         serializer = MvpSerializer(product, data=request.data, context={'request': request})
         if serializer.is_valid():
-            MvpUserRequest.objects.filter(id=request.data['id']).update(
-                BreakTime=datetime.now())
+            # MvpUserRequest.objects.filter(id=request.data['id']).update(
+            #     BreakTime=datetime.now())
+            serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
