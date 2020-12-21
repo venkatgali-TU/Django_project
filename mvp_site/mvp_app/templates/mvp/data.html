@@ -12,6 +12,24 @@
             <div class="media-content">
                 <div class="centered-is-widescreen">
                     <nav>
+                            <p><strong>Total number of records: </strong>{{total}}</p>
+                            <p><strong>Completed: </strong>{{completed}}</p>
+                            <p><STRONG>In progress: </STRONG>{{inprogress}}</p>
+                            <p><strong>Help Needed: </strong>{{helpneeded}}</p>
+                            <p><strong>Failed: </strong>{{failed}}</p>
+
+
+                    </nav>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <div class="box">
+        <article class="media">
+            <div class="media-content">
+                <div class="centered-is-widescreen">
+                    <nav>
                         <div class="level-left">
                             <div class="content has-text-centered">
                                 <p><a href="{% url 'hello_mvp'  %}">Home</a>.
@@ -70,7 +88,7 @@
                             <th><abbr title="End Time">End Time</abbr></th>
                             <th><abbr title="Activity">Activity</abbr></th>
                             <th><abbr title="Multiplicator / OverTime">Multiplicator / OverTime</abbr></th>
-<!--                            <th><abbr title="Break Time">Break Time</abbr></th>-->
+                            <!--                            <th><abbr title="Break Time">Break Time</abbr></th>-->
                             <th><abbr title="Status">Status</abbr></th>
                             <th><abbr title="Campaign">Campaign</abbr></th>
                             <th>Created At</th>
@@ -86,7 +104,7 @@
                             <th><abbr title="End Time">End Time</abbr></th>
                             <th><abbr title="Activity">Activity</abbr></th>
                             <th><abbr title="Multiplicator / OverTime">Multiplicator / OverTime</abbr></th>
-<!--                            <th><abbr title="Break Time">Break Time</abbr></th>-->
+                            <!--                            <th><abbr title="Break Time">Break Time</abbr></th>-->
                             <th><abbr title="Status">Status</abbr></th>
                             <th><abbr title="Campaign">Campaign</abbr></th>
                             <th>Created At</th>
@@ -105,22 +123,18 @@
                             <td>{{ post.End_Time }}</td>
                             <td>{{ post.Activity|default:"-" }}</td>
                             <td>{{ post.Mul_Over|default:"-" }}</td>
-<!--                            <td>{{ post.BreakTime|default:"-" }}</td>-->
+                            <!--                            <td>{{ post.BreakTime|default:"-" }}</td>-->
                             {% if 'Complete' in post.Status %}
                             <div class="has-text-info">
-                                <td>Complete</td>
+                                <td class="has-text-success">Complete</td>
                             </div>
-                            {% elif 'elp' in post.Status %}
+                            {% elif 'Help Needed' in post.Status %}
                             <div class="has-text-info">
-                                <td>Help Needed</td>
-                            </div>
-                            {% elif 'ecided' in post.Status %}
-                            <div class="has-text-info">
-                                <td>To be Decided</td>
+                                <td class="has-text-danger">Help Needed</td>
                             </div>
                             {% else %}
                             <div class="has-text-danger">
-                                <td>In Progress</td>
+                                <td class="has-text-info">In Progress</td>
                             </div>
                             {% endif %}
                             <td>{{ post.Timezone|default:"-" }}</td>

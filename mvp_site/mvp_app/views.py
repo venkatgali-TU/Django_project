@@ -161,6 +161,12 @@ def hello_mvp(request):
 
 
 def data_view(request):
+    total = len(MvpUserRequest.objects.all())
+    InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
+        Status__contains='Help Needed'))
+    Completed = len(MvpUserRequest.objects.all().filter(Status__contains='Complete'))
+    HelpNeeded = len(MvpUserRequest.objects.all().filter(Status__contains='Help Needed'))
+    Failed = len(MvpUserRequest.objects.all().filter(Status__contains='Failed'))
     if request.method == "POST":
         key = request.POST['key']
         # print(" success data : " + request.POST['key'])
@@ -169,7 +175,9 @@ def data_view(request):
         page = request.GET.get('page')
         posts = paginator.get_page(page)
 
-        return render(request, 'mvp/data.html', {'posts': posts})
+        return render(request, 'mvp/data.html',
+                      {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
+                       'helpneeded': HelpNeeded, 'failed': Failed})
     else:
 
         all_objects = MvpUserRequest.objects.all().order_by('-id')
@@ -186,8 +194,9 @@ def data_view(request):
         paginator = Paginator(all_objects, 100)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
-
-        return render(request, 'mvp/data.html', {'posts': posts})
+        return render(request, 'mvp/data.html',
+                      {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
+                       'helpneeded': HelpNeeded, 'failed': Failed})
 
 
 def single_user(request, mvp_id, req):
@@ -664,7 +673,7 @@ def profile_upload(request):
             count = count + 1
             req_id = MvpUserRequest.objects.latest('id').id
             try:
-                if count != 1 and count < 100:
+                if count != 1 and count < 500:
                     str_time = column[3]
                     end_time = column[4]
                     str_date = column[1]
@@ -727,16 +736,21 @@ def profile_upload(request):
             except:
                 pass
 
+        submitted_requests_mail_message = ""
+        for item in submitted_requests:
+            submitted_requests_mail_message = "\n" + "Request ID: " + item + ", details: " + submitted_requests[item]
+
         if "Ind" in LOCATION:
-            send_mail('WFM - Plotting website submissions: ', str(submitted_requests), 'svc.aacr@taskus.com',
-                      [EMAIL, "workforce.indore@taskus.com",'venkat.gali@tasksus.com'])
+            send_mail('WFM - Plotting website submissions: ', str(submitted_requests_mail_message),
+                      'svc.aacr@taskus.com',
+                      [EMAIL, "workforce.indore@taskus.com", 'venkat.gali@tasksus.com'])
         else:
-            send_mail('WFM - Plotting website submissions: ', str(submitted_requests), 'svc.aacr@taskus.com',
-                      [EMAIL,'venkat.gali@tasksus.com'])
+            send_mail('WFM - Plotting website submissions: ', str(submitted_requests_mail_message),
+                      'svc.aacr@taskus.com',
+                      [EMAIL, 'venkat.gali@tasksus.com'])
 
         return render(request, template, prompt)
     except Exception as e:
-        # print(str(e))
         prompt['order'] = str(e)
         return render(request, template, prompt)
 
@@ -747,7 +761,8 @@ def request_list(request):
     List all products, or create a new product.
     """
     if request.method == 'GET':
-        products = MvpUserRequest.objects.all().exclude(Status__contains='omplete').order_by('created_at')[:20] ##Changed from id to createdat
+        products = MvpUserRequest.objects.all().exclude(Status__contains='omplete').exclude(
+            Status__contains='eeded').order_by('created_at')[:20]  ##Changed from id to createdat
         serializer = MvpSerializer(products, context={'request': request}, many=True)
         return Response(serializer.data)
     elif request.method == 'POST':
