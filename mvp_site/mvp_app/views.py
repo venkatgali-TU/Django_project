@@ -739,7 +739,6 @@ def profile_upload(request):
                         print(start_time_date)
                         print(end_time_date)
             except Exception as e:
-                print(e)
                 pass
 
         submitted_requests_mail_message = ""
