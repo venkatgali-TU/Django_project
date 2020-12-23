@@ -472,7 +472,7 @@ class OverTimeUserRequestForm(forms.ModelForm):
                                                 try:
                                                     start_time_date = datetime.strptime(str_time, '%H:%M')
                                                     end_time_date = datetime.strptime(end_time, '%H:%M')
-                                                    if start_time_date > end_time_date:
+                                                    if start_time_date > end_time_date and str_date == end_date:
                                                         self.errors['Start_Time'] = [
                                                             u'Please enter valid start time & end time, Start time should be less than end time']
                                                         self.errors['End_Time'] = [
@@ -720,7 +720,7 @@ class TeleOptiUserRequestForm(forms.ModelForm):
                                                 try:
                                                     start_time_date = datetime.strptime(str_time, '%H:%M')
                                                     end_time_date = datetime.strptime(end_time, '%H:%M')
-                                                    if start_time_date > end_time_date:
+                                                    if start_time_date > end_time_date and str_date == end_date:
                                                         self.errors['Start_Time'] = [
                                                             u'Please enter valid start time & end time, Start time should be less than end time']
                                                         self.errors['End_Time'] = [

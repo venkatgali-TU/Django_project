@@ -672,6 +672,7 @@ def profile_upload(request):
         for column in csv.reader(io_string, delimiter=',', quotechar="|"):
             count = count + 1
             req_id = MvpUserRequest.objects.latest('id').id
+            print("strt"+column[0])
             try:
                 if count != 1 and count < 500:
                     str_time = column[3]
@@ -684,9 +685,13 @@ def profile_upload(request):
                     end_date = datetime.strptime(end_date, '%Y-%m-%d')
                     past = datetime.now() - timedelta(days=7)
                     # print(tmp_column)
+                    print(column[0]+"outside")
                     if column[
-                        0] in campaigns and str_date <= end_date and str_date >= past and start_time_date < end_time_date:
+                        0] in campaigns and str_date <= end_date and str_date >= past:
+                        if start_time_date > end_time_date and str_date == end_date:
+                            continue
                         timezone = campaigns[column[0]]
+                        print(column[0]+"inside")
                         if len(column) <= 6:
                             request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
                             submitted_requests[request_ID_str] = column[0] + " " + column[1] + " " + column[2] + " " + \
@@ -733,12 +738,17 @@ def profile_upload(request):
                         print(past)
                         print(start_time_date)
                         print(end_time_date)
-            except:
+            except Exception as e:
+                print(e)
                 pass
 
         submitted_requests_mail_message = ""
+
         for item in submitted_requests:
             submitted_requests_mail_message = "\n" + "Request ID: " + item + ", details: " + submitted_requests[item]
+        print(submitted_requests_mail_message)
+        print(request.user.email)
+        EMAIL = request.user.email
 
         if "Ind" in LOCATION:
             send_mail('WFM - Plotting website submissions: ', str(submitted_requests_mail_message),
