@@ -161,6 +161,31 @@ def hello_mvp(request):
 
 
 def data_view(request):
+    try:
+        locations = {}
+        with open(r'C:\Users\vg3054204\Desktop\roster_location.csv', 'rt') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if len(row) > 1:
+                    locations[row[0]] = row[1]
+    except:
+        locations[row[0]] = ""
+    # print(locations)
+    ind = 0
+    ph = 0
+    us = 0
+    for item in MvpUserRequest.objects.all().values_list('user_ID', flat=True):
+        if item in locations:
+            if locations[item] == "PH":
+                ph = ph + 1
+            elif locations[item] == "US":
+                us = us + 1
+            elif locations[item] == "IND":
+                ind = ind + 1
+        else:
+            print(item)
+
+    print(str(len(MvpUserRequest.objects.all().values_list('user_ID', flat=True))))
     total = len(MvpUserRequest.objects.all())
     InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
         Status__contains='Help Needed'))
@@ -177,7 +202,7 @@ def data_view(request):
 
         return render(request, 'mvp/data.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
-                       'helpneeded': HelpNeeded, 'failed': Failed})
+                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph})
     else:
 
         all_objects = MvpUserRequest.objects.all().order_by('-id')
@@ -196,7 +221,7 @@ def data_view(request):
         posts = paginator.get_page(page)
         return render(request, 'mvp/data.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
-                       'helpneeded': HelpNeeded, 'failed': Failed})
+                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph})
 
 
 def single_user(request, mvp_id, req):
@@ -672,7 +697,7 @@ def profile_upload(request):
         for column in csv.reader(io_string, delimiter=',', quotechar="|"):
             count = count + 1
             req_id = MvpUserRequest.objects.latest('id').id
-            print("strt"+column[0])
+            print("strt" + column[0])
             try:
                 if count != 1 and count < 500:
                     str_time = column[3]
@@ -685,13 +710,13 @@ def profile_upload(request):
                     end_date = datetime.strptime(end_date, '%Y-%m-%d')
                     past = datetime.now() - timedelta(days=7)
                     # print(tmp_column)
-                    print(column[0]+"outside")
+                    print(column[0] + "outside")
                     if column[
                         0] in campaigns and str_date <= end_date and str_date >= past:
                         if start_time_date > end_time_date and str_date == end_date:
                             continue
                         timezone = campaigns[column[0]]
-                        print(column[0]+"inside")
+                        print(column[0] + "inside")
                         if len(column) <= 6:
                             request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
                             submitted_requests[request_ID_str] = column[0] + " " + column[1] + " " + column[2] + " " + \
