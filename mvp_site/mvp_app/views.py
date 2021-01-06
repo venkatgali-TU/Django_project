@@ -659,7 +659,7 @@ def multi_user(request, mvp_id, req):
 
 def profile_upload(request):
     # declaring template
-    print("name is: " + NAME)
+    print("name is: " + request.user.email)
 
     template = "mvp/profile_upload.html"
     data = MvpUserRequest.objects.all().order_by('-id')
@@ -708,15 +708,21 @@ def profile_upload(request):
                     end_time_date = datetime.strptime(end_time, '%H:%M')
                     str_date = datetime.strptime(str_date, '%Y-%m-%d')
                     end_date = datetime.strptime(end_date, '%Y-%m-%d')
+
+                    print(str_date)
+                    print(end_date)
                     past = datetime.now() - timedelta(days=7)
+
+                    print(past)
                     # print(tmp_column)
                     print(column[0] + "outside")
                     if column[
                         0] in campaigns and str_date <= end_date and str_date >= past:
+
+                        print(column[0] + "inside")
                         if start_time_date > end_time_date and str_date == end_date:
                             continue
                         timezone = campaigns[column[0]]
-                        print(column[0] + "inside")
                         if len(column) <= 6:
                             request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
                             submitted_requests[request_ID_str] = column[0] + " " + column[1] + " " + column[2] + " " + \
@@ -756,14 +762,16 @@ def profile_upload(request):
                             count - 1) + " records! please check the submissions tasks for status"
                     else:
                         timezone = ''  # print(column[6])
-                        print("in here fail")
                         print(campaigns[column[0]])
                         print(str_date)
                         print(end_date)
                         print(past)
                         print(start_time_date)
                         print(end_time_date)
+
+                        print("in here fail")
             except Exception as e:
+                print(e)
                 pass
 
         submitted_requests_mail_message = ""
