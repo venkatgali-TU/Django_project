@@ -171,57 +171,88 @@ def data_view(request):
     except:
         locations[row[0]] = ""
     # print(locations)
-    ind = 0
-    ph = 0
-    us = 0
-    for item in MvpUserRequest.objects.all().values_list('user_ID', flat=True):
-        if item in locations:
-            if locations[item] == "PH":
-                ph = ph + 1
-            elif locations[item] == "US":
-                us = us + 1
-            elif locations[item] == "IND":
-                ind = ind + 1
-        else:
-            print(item)
 
-    print(str(len(MvpUserRequest.objects.all().values_list('user_ID', flat=True))))
-    total = len(MvpUserRequest.objects.all())
-    InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
-        Status__contains='Help Needed'))
-    Completed = len(MvpUserRequest.objects.all().filter(Status__contains='Complete'))
-    HelpNeeded = len(MvpUserRequest.objects.all().filter(Status__contains='Help Needed'))
-    Failed = len(MvpUserRequest.objects.all().filter(Status__contains='Failed'))
     if request.method == "POST":
+        print("--")
+        print(request.POST)
+        s_d = request.POST['trip-start']
+        e_d = request.POST['trip-end']
+        ind = 0
+        ph = 0
+        us = 0
+        for item in MvpUserRequest.objects.all().filter(created_at__range=[s_d,e_d]).values_list('user_ID', flat=True):
+            if item in locations:
+                if locations[item] == "PH":
+                    ph = ph + 1
+                elif locations[item] == "US":
+                    us = us + 1
+                elif locations[item] == "IND":
+                    ind = ind + 1
+            else:
+                print(item)
+
+        total = len(MvpUserRequest.objects.all().filter(created_at__range=[s_d,e_d]))
+        InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
+            Status__contains='Help Needed').filter(created_at__range=[s_d,e_d]))
+        Completed = len(MvpUserRequest.objects.all().filter(Status__contains='Complete').filter(created_at__range=[s_d,e_d]))
+        HelpNeeded = len(MvpUserRequest.objects.all().filter(Status__contains='Help Needed').filter(created_at__range=[s_d,e_d]))
+        Failed = len(MvpUserRequest.objects.all().filter(Status__contains='Failed').filter(created_at__range=[s_d,e_d]))
         key = request.POST['key']
         # print(" success data : " + request.POST['key'])
-        all_objects = MvpUserRequest.objects.all().filter(Name__contains=key)
+        all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(created_at__range=[s_d,e_d])
         paginator = Paginator(all_objects, 35)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
+        print("in post")
+        print(s_d)
+        print(e_d)
+        print("---")
 
         return render(request, 'mvp/data.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
-                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph})
-    else:
+                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph,'st_d':s_d,'end_date':e_d})
+    elif request.method=='GET':
 
         all_objects = MvpUserRequest.objects.all().order_by('-id')
-        # campaigns = {}
-        # with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
-        #     reader = csv.reader(f)
-        #     for row in reader:
-        #         if len(row) > 1:
-        #             campaigns[row[0]] = row[1]
-        # for obj in MvpUserRequest.objects.all():
-        #     if obj.user_ID in campaigns:
-        #         MvpUserRequest.objects.filter(id=obj.id).update(
-        #             Timezone=campaigns[obj.user_ID])
+        s_d = "2020-10-26"
+        now = datetime.now()
+        e_d = '2020-11-01'
+        ind = 0
+        ph = 0
+        us = 0
+        for item in MvpUserRequest.objects.all().values_list('user_ID', flat=True):
+            if item in locations:
+                if locations[item] == "PH":
+                    ph = ph + 1
+                elif locations[item] == "US":
+                    us = us + 1
+                elif locations[item] == "IND":
+                    ind = ind + 1
+            else:
+                print(item)
+
+        total = len(MvpUserRequest.objects.all())
+        InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
+            Status__contains='Help Needed'))
+        Completed = len(
+            MvpUserRequest.objects.all().filter(Status__contains='Complete'))
+        HelpNeeded = len(
+            MvpUserRequest.objects.all().filter(Status__contains='Help Needed'))
+        Failed = len(
+            MvpUserRequest.objects.all().filter(Status__contains='Failed'))
+
+        # print(" success data : " + request.POST['key'])
+        all_objects = MvpUserRequest.objects.all()
         paginator = Paginator(all_objects, 100)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
+        print("in get")
+        print(s_d)
+        print(e_d)
+        print("--")
         return render(request, 'mvp/data.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
-                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph})
+                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph,'st_d':s_d,'end_date':e_d})
 
 
 def single_user(request, mvp_id, req):
@@ -785,11 +816,11 @@ def profile_upload(request):
         if "Ind" in LOCATION:
             send_mail('WFM - Plotting website submissions: ', str(submitted_requests_mail_message),
                       'svc.aacr@taskus.com',
-                      [EMAIL, "workforce.indore@taskus.com", 'venkat.gali@tasksus.com'])
+                      [EMAIL, "workforce.indore@taskus.com", 'venkat.gali@taskus.com'])
         else:
             send_mail('WFM - Plotting website submissions: ', str(submitted_requests_mail_message),
                       'svc.aacr@taskus.com',
-                      [EMAIL, 'venkat.gali@tasksus.com'])
+                      [EMAIL, 'venkat.gali@taskus.com'])
 
         return render(request, template, prompt)
     except Exception as e:

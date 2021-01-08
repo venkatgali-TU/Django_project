@@ -7,22 +7,103 @@
 {% load status %}
 <form action="" method="post">
     {% csrf_token %}
+    <nav class="level">
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Start Date</p>
+                <input type="date" id="start_date" name="trip-start"
+                       value={{st_d}}
+                       min="2020-10-26" max="2025-12-31">
+            </div>
+        </div>
+
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">End Date</p>
+                <input type="date" id="end_date" name="trip-end"
+                       value={{end_date}}
+                       min="2020-10-26" max="2025-12-31">
+            </div>
+        </div>
+        <div class="level-item has-text-centered">
+            <div>
+                <p class="heading">Submit</p>
+                <button class="button is-info is-rounded" type="submit" name="date_search">Submit</button>
+            </div>
+        </div>
+
+    </nav>
+
+
     <div class="box">
         <article class="media">
             <div class="media-content">
                 <div class="centered-is-widescreen">
-                    <nav>
-                            <p><strong>Total number of records: </strong>{{total}}</p>
-                            <p><strong>Completed: </strong>{{completed}}</p>
-                            <p><STRONG>In progress: </STRONG>{{inprogress}}</p>
-                            <p><strong>Help Needed: </strong>{{helpneeded}}</p>
-                            <p><strong>Failed: </strong>{{failed}}</p>
-                            <p><STRONG>Total Number of US requests: </STRONG>{{us}}</p>
-                            <p><strong>Total Number of IND requests: </strong>{{ind}}</p>
-                            <p><strong>Total Number of PH requests: </strong>{{ph}}</p>
+                    <!--<nav>
+                        <p><strong>Total number of records: </strong>{{total}}</p>
+                        <p><strong>Completed: </strong>{{completed}}</p>
+                        <p><STRONG>In progress: </STRONG>{{inprogress}}</p>
+                        <p><strong>Help Needed: </strong>{{helpneeded}}</p>
+                        <p><strong>Failed: </strong>{{failed}}</p>
+                        <p><STRONG>Total Number of US requests: </STRONG>{{us}}</p>
+                        <p><strong>Total Number of IND requests: </strong>{{ind}}</p>
+                        <p><strong>Total Number of PH requests: </strong>{{ph}}</p>
 
 
+                    </nav>-->
+
+                    <nav class="level">
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Total number of records</p>
+                                <p class="title">{{total}}</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Completed</p>
+                                <p class="title">{{completed}}</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">In Progress</p>
+                                <p class="title">{{inprogress}}</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Help Needed</p>
+                                <p class="title">{{helpneeded}}</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Failed</p>
+                                <p class="title">{{failed}}</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Total US requests</p>
+                                <p class="title">{{us}}</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Total IND requests</p>
+                                <p class="title">{{ind}}</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Total PH requests</p>
+                                <p class="title">{{ph}}</p>
+                            </div>
+                        </div>
                     </nav>
+
+
                 </div>
             </div>
         </article>
@@ -32,39 +113,37 @@
         <article class="media">
             <div class="media-content">
                 <div class="centered-is-widescreen">
-                    <nav>
-                        <div class="level-left">
-                            <div class="content has-text-centered">
-                                <p><a href="{% url 'hello_mvp'  %}">Home</a>.
-                                </p>
-                            </div>
-
-
+                    <nav class="level">
+                        <div class="level-item has-text-centered">
+                            <p><a href="{% url 'hello_mvp'  %}">Home</a>
+                            </p>
                         </div>
 
-                        <div class="level-right">
-                            <div class="level-item">
-                                <p class="subtitle is-5">
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">
                                     <strong>Please enter the Request Ids to search</strong>
                                 </p>
-                            </div>
-                            <div class="level-item">
+                                <p class="control">
                                 <div class="field has-addons">
-
-                                    <!--                                <label class="label">Search</label>-->
-                                    <p class="control">
-                                        <input class="input" type="text" name="key"
-                                               placeholder="WFM-IRA-##">
-                                    </p>
-
-                                    <p class="control">
+                                    <div class="control">
+                                        <input class="input" type="text" name="key" placeholder="WFM-IRA-##">
+                                    </div>
+                                    <div class="control">
                                         <button class="button is-info is-rounded" type="submit"
-                                                value="Search"
-                                                name="search">Search
+                                        value="Search"
+                                        name="search">
+                                            Search
                                         </button>
-
-                                    </p>
+                                    </div>
                                 </div>
+                                <!--<input class="input" type="text" name="key"
+                                       placeholder="WFM-IRA-##">
+                            <button class="button is-info is-rounded" type="submit"
+                                        value="Search"
+                                        name="search">Search
+                                </button>-->
+                                </p>
                             </div>
 
                         </div>
@@ -94,7 +173,7 @@
                             <!--                            <th><abbr title="Break Time">Break Time</abbr></th>-->
                             <th><abbr title="Status">Status</abbr></th>
                             <th><abbr title="Campaign">Campaign</abbr></th>
-                            <th>Created At</th>
+                            <th>Created At (UTC)</th>
                         </tr>
                         </thead>
                         <tfoot>
@@ -188,4 +267,25 @@
     </div>
     <!--</nav>-->
 </form>
+
+<script type="text/javascript">
+
+var today = new Date();
+var dd = today.getDate();
+
+var mm = today.getMonth()+1;
+var yyyy = today.getFullYear();
+if(dd<10)
+{
+    dd='0'+dd;
+}
+
+if(mm<10)
+{
+    mm='0'+mm;
+}
+today = yyyy+'-'+mm+'-'+dd;
+document.getElementById('end_date').value = today;
+
+</script>
 {% endblock %}
