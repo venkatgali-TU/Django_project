@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from rest_framework import generics, mixins
+from django.core.mail import EmailMessage
 
 # Create your views here.
 from .forms import MvpForm, TeleOptiUserRequestForm, OverTimeUserRequestForm
@@ -180,7 +181,7 @@ def data_view(request):
         ind = 0
         ph = 0
         us = 0
-        for item in MvpUserRequest.objects.all().filter(created_at__range=[s_d,e_d]).values_list('user_ID', flat=True):
+        for item in MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]).values_list('user_ID', flat=True):
             if item in locations:
                 if locations[item] == "PH":
                     ph = ph + 1
@@ -191,32 +192,34 @@ def data_view(request):
             else:
                 print(item)
 
-        total = len(MvpUserRequest.objects.all().filter(created_at__range=[s_d,e_d]))
+        total = len(MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]))
         InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
-            Status__contains='Help Needed').filter(created_at__range=[s_d,e_d]))
-        Completed = len(MvpUserRequest.objects.all().filter(Status__contains='Complete').filter(created_at__range=[s_d,e_d]))
-        HelpNeeded = len(MvpUserRequest.objects.all().filter(Status__contains='Help Needed').filter(created_at__range=[s_d,e_d]))
-        Failed = len(MvpUserRequest.objects.all().filter(Status__contains='Failed').filter(created_at__range=[s_d,e_d]))
+            Status__contains='Help Needed').filter(created_at__range=[s_d, e_d]))
+        Completed = len(
+            MvpUserRequest.objects.all().filter(Status__contains='Complete').filter(created_at__range=[s_d, e_d]))
+        HelpNeeded = len(
+            MvpUserRequest.objects.all().filter(Status__contains='Help Needed').filter(created_at__range=[s_d, e_d]))
+        Failed = len(
+            MvpUserRequest.objects.all().filter(Status__contains='Failed').filter(created_at__range=[s_d, e_d]))
         key = request.POST['key']
         # print(" success data : " + request.POST['key'])
-        all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(created_at__range=[s_d,e_d])
+        all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
+            created_at__range=[s_d, e_d]).order_by('-id')
         paginator = Paginator(all_objects, 35)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
-        print("in post")
-        print(s_d)
-        print(e_d)
-        print("---")
 
         return render(request, 'mvp/data.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
-                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph,'st_d':s_d,'end_date':e_d})
-    elif request.method=='GET':
+                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
+                       'end_date': e_d})
+    elif request.method == 'GET':
 
         all_objects = MvpUserRequest.objects.all().order_by('-id')
         s_d = "2020-10-26"
         now = datetime.now()
-        e_d = '2020-11-01'
+        print(now)
+        e_d = str(now).split(' ')[0]
         ind = 0
         ph = 0
         us = 0
@@ -242,17 +245,15 @@ def data_view(request):
             MvpUserRequest.objects.all().filter(Status__contains='Failed'))
 
         # print(" success data : " + request.POST['key'])
-        all_objects = MvpUserRequest.objects.all()
+        all_objects = MvpUserRequest.objects.all().order_by('-id')
         paginator = Paginator(all_objects, 100)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
-        print("in get")
-        print(s_d)
-        print(e_d)
-        print("--")
+
         return render(request, 'mvp/data.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
-                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph,'st_d':s_d,'end_date':e_d})
+                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
+                       'end_date': e_d})
 
 
 def single_user(request, mvp_id, req):
@@ -728,7 +729,6 @@ def profile_upload(request):
         for column in csv.reader(io_string, delimiter=',', quotechar="|"):
             count = count + 1
             req_id = MvpUserRequest.objects.latest('id').id
-            print("strt" + column[0])
             try:
                 if count != 1 and count < 500:
                     str_time = column[3]
@@ -739,25 +739,16 @@ def profile_upload(request):
                     end_time_date = datetime.strptime(end_time, '%H:%M')
                     str_date = datetime.strptime(str_date, '%Y-%m-%d')
                     end_date = datetime.strptime(end_date, '%Y-%m-%d')
-
-                    print(str_date)
-                    print(end_date)
                     past = datetime.now() - timedelta(days=7)
-
-                    print(past)
-                    # print(tmp_column)
-                    print(column[0] + "outside")
                     if column[
                         0] in campaigns and str_date <= end_date and str_date >= past:
-
-                        print(column[0] + "inside")
                         if start_time_date > end_time_date and str_date == end_date:
                             continue
                         timezone = campaigns[column[0]]
                         if len(column) <= 6:
                             request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
-                            submitted_requests[request_ID_str] = column[0] + " " + column[1] + " " + column[2] + " " + \
-                                                                 column[3] + " " + column[4] + " " + column[5] + " "
+                            submitted_requests[request_ID_str] = column[0] + "!" + column[1] + "!" + column[2] + "!" + \
+                                                                 column[3] + "!" + column[4] + "!" + column[5] + "!"
                             _, created = MvpUserRequest.objects.update_or_create(
                                 user_ID=column[0],
                                 Name=request_ID_str,
@@ -773,8 +764,8 @@ def profile_upload(request):
                             )
                         else:
                             request_ID_str = "WFM-IRA-MOT-" + str(req_id)
-                            submitted_requests[request_ID_str] = column[0] + " " + column[1] + " " + column[2] + " " + \
-                                                                 column[3] + " " + column[4] + " " + column[5] + " " + \
+                            submitted_requests[request_ID_str] = column[0] + "!" + column[1] + "!" + column[2] + "!" + \
+                                                                 column[3] + "!" + column[4] + "!" + column[5] + "!" + \
                                                                  column[6]
                             _, created = MvpUserRequest.objects.update_or_create(
                                 user_ID=column[0],
@@ -792,38 +783,73 @@ def profile_upload(request):
                         prompt['order'] = "Successfully completed " + str(
                             count - 1) + " records! please check the submissions tasks for status"
                     else:
-                        timezone = ''  # print(column[6])
-                        print(campaigns[column[0]])
-                        print(str_date)
-                        print(end_date)
-                        print(past)
-                        print(start_time_date)
-                        print(end_time_date)
-
                         print("in here fail")
             except Exception as e:
                 print(e)
                 pass
 
         submitted_requests_mail_message = ""
+        data_dict = {"Request_ID":[],"User_ID":[],"Start_Date":[],"Start_Time":[],"End_Date":[],"End_Time":[],"Activity":[],"Mul_Overlap":[],}
+        html_email = ""
+        for item in submitted_requests:
+            temp_list = data_dict['Request_ID']
+            temp_list.append(item)
+            data_dict['Request_ID'] = temp_list
+
+            new_items = submitted_requests[item].split('!')
+            temp_list = data_dict['User_ID']
+            temp_list.append(new_items[0])
+            data_dict['User_ID'] = temp_list
+            temp_list = data_dict['Start_Date']
+            temp_list.append(new_items[1])
+            data_dict['Start_Date'] = temp_list
+            temp_list = data_dict['Start_Time']
+            temp_list.append(new_items[2])
+            data_dict['Start_Time'] = temp_list
+            temp_list = data_dict['End_Date']
+            temp_list.append(new_items[3])
+            data_dict['End_Date'] = temp_list
+            temp_list = data_dict['End_Time']
+            temp_list.append(new_items[4])
+            data_dict['End_Time'] = temp_list
+            temp_list = data_dict['Activity']
+            temp_list.append(new_items[5])
+            data_dict['Activity'] = temp_list
+            temp_list = data_dict['Mul_Overlap']
+            temp_list.append(new_items[6])
+            data_dict['Mul_Overlap'] = temp_list
+
+
+        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(data_dict.keys()) + '</th></tr>'
+
+        for row in zip(*data_dict.values()):
+            html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
+
+        html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
+
 
         for item in submitted_requests:
             submitted_requests_mail_message = "\n" + "Request ID: " + item + ", details: " + submitted_requests[item]
-        print(submitted_requests_mail_message)
-        print(request.user.email)
+        #print(submitted_requests_mail_message)
+        #print(request.user.email)
         EMAIL = request.user.email
 
         if "Ind" in LOCATION:
-            send_mail('WFM - Plotting website submissions: ', str(submitted_requests_mail_message),
-                      'svc.aacr@taskus.com',
-                      [EMAIL, "workforce.indore@taskus.com", 'venkat.gali@taskus.com'])
+            msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com', [EMAIL, "workforce.indore@taskus.com", 'venkat.gali@taskus.com'])
+            msg.content_subtype = "html"  # Main content is now text/html
+            msg.send()
+            # send_mail('WFM - Plotting website submissions: ', str(submitted_requests_mail_message),
+            #           'svc.aacr@taskus.com',
+            #           [EMAIL, "workforce.indore@taskus.com", 'venkat.gali@taskus.com'])
         else:
-            send_mail('WFM - Plotting website submissions: ', str(submitted_requests_mail_message),
-                      'svc.aacr@taskus.com',
-                      [EMAIL, 'venkat.gali@taskus.com'])
+            msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
+                               [EMAIL, 'venkat.gali@taskus.com'])
+            msg.content_subtype = "html"  # Main content is now text/html
+            msg.send()
 
         return render(request, template, prompt)
     except Exception as e:
+
         prompt['order'] = str(e)
         return render(request, template, prompt)
 

@@ -1,0 +1,2 @@
+User_ID (Format: ######),Start_date (Format: 2020-MM-DD),End_Date (Format: 2020-MM-DD),Start_time (Format: 20:30),End_time (Format: 20:30),Activity,Max number of records: 500
+123456,2020-11-10,2020-11-10,19:30,20:30,Daily Stand Up,

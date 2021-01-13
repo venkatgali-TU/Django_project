@@ -31,19 +31,20 @@
                             <div class="field is-grouped">
                                 <div class="control">
                                     {% csrf_token %}
+                                     {% load static %}
                                     <input class='input is-info' type="file" id="file1" name="file">
                                 </div>
 
 
                                 <div class="control">
                                     <a
-                                            href="https://docs.google.com/spreadsheets/d/19TgZ8lofb6iWlTMiLSMJ_voWTo3eBXXHLHhhZo_zrEM/edit?usp=sharing">OT
-                                        template</a>
+                                        href="{% static 'mvp_app/Template - OverTime Plotting - Sheet1.csv' %}" download>OT
+                                                                                   template</a>
                                 </div>
 
                                 <div class="control">
                                     <a
-                                            href="https://docs.google.com/spreadsheets/d/1DEyMuFIEu0u-vUyoTXeK-OW0gD2tgtWC_mVrL7SvzeU/edit?usp=sharing">TeleOpti
+                                            href="{% static 'mvp_app/Template - TeleOpti Plotting - Sheet1.csv' %}" download>TeleOpti
                                         template</a>
                                 </div>
 
@@ -102,7 +103,7 @@
                         <!--                        <th><abbr title="Break Time">Break Time</abbr></th>-->
                         <th><abbr title="Status">Status</abbr></th>
                         <th><abbr title="Campaign">Campaign</abbr></th>
-                        <th>Created At</th>
+                        <th>Created At (UTC)</th>
                     </tr>
                     </thead>
                     <tfoot>
@@ -118,7 +119,7 @@
                         <!--                        <th><abbr title="Break Time">Break Time</abbr></th>-->
                         <th><abbr title="Status">Status</abbr></th>
                         <th><abbr title="Campaign">Campaign</abbr></th>
-                        <th>Created At</th>
+                        <th>Created At (UTC)</th>
                     </tr>
                     </tfoot>
                     <tbody>

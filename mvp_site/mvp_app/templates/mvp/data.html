@@ -5,6 +5,10 @@
 
 {% load static %}
 {% load status %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+
 <form action="" method="post">
     {% csrf_token %}
     <nav class="level">
@@ -27,7 +31,7 @@
         </div>
         <div class="level-item has-text-centered">
             <div>
-                <p class="heading">Submit</p>
+                <p class="heading"></p>
                 <button class="button is-info is-rounded" type="submit" name="date_search">Submit</button>
             </div>
         </div>
@@ -131,8 +135,8 @@
                                     </div>
                                     <div class="control">
                                         <button class="button is-info is-rounded" type="submit"
-                                        value="Search"
-                                        name="search">
+                                                value="Search"
+                                                name="search">
                                             Search
                                         </button>
                                     </div>
@@ -159,7 +163,7 @@
         <article class="media">
             <div class="media-content">
                 <div class="content">
-                    <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                    <table id="bulma_table" class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                         <thead>
                         <tr>
                             <th><abbr title="Request ID">Request ID</abbr></th>
@@ -268,24 +272,4 @@
     <!--</nav>-->
 </form>
 
-<script type="text/javascript">
-
-var today = new Date();
-var dd = today.getDate();
-
-var mm = today.getMonth()+1;
-var yyyy = today.getFullYear();
-if(dd<10)
-{
-    dd='0'+dd;
-}
-
-if(mm<10)
-{
-    mm='0'+mm;
-}
-today = yyyy+'-'+mm+'-'+dd;
-document.getElementById('end_date').value = today;
-
-</script>
 {% endblock %}
