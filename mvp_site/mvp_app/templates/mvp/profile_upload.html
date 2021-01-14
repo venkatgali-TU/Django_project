@@ -28,25 +28,14 @@
                     <!--    <div class="notification is-primary">-->
                     <div class="field is-grouped">
                         <form action="" method="POST" enctype="multipart/form-data">
+
                             <div class="field is-grouped">
                                 <div class="control">
                                     {% csrf_token %}
-                                     {% load static %}
+                                    {% load static %}
                                     <input class='input is-info' type="file" id="file1" name="file">
                                 </div>
 
-
-                                <div class="control">
-                                    <a
-                                        href="{% static 'mvp_app/Template - OverTime Plotting - Sheet1.csv' %}" download>OT
-                                                                                   template</a>
-                                </div>
-
-                                <div class="control">
-                                    <a
-                                            href="{% static 'mvp_app/Template - TeleOpti Plotting - Sheet1.csv' %}" download>TeleOpti
-                                        template</a>
-                                </div>
 
                                 <div class="control">
                                     <button class="button is-info" type="submit">Upload</button>
@@ -67,29 +56,79 @@
 <div class="box">
     <article class="media">
         <div class="media-content">
-            <div class="content">
+            <div class="centered-is-widescreen">
+                <!--<nav>
+                    <p><strong>Total number of records: </strong>{{total}}</p>
+                    <p><strong>Completed: </strong>{{completed}}</p>
+                    <p><STRONG>In progress: </STRONG>{{inprogress}}</p>
+                    <p><strong>Help Needed: </strong>{{helpneeded}}</p>
+                    <p><strong>Failed: </strong>{{failed}}</p>
+                    <p><STRONG>Total Number of US requests: </STRONG>{{us}}</p>
+                    <p><strong>Total Number of IND requests: </strong>{{ind}}</p>
+                    <p><strong>Total Number of PH requests: </strong>{{ph}}</p>
 
-                <div class="columns is-variable is-2-mobile is-0-tablet is-3-desktop is-8-widescreen is-1-fullhd">
 
-                    <div class="column"><a class="bd-notification is-primary"
-                                           href="{% url 'hello_mvp'  %}">Home
-                        Page</a></div>
+                </nav>-->
+
+                <nav class="level">
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">Home</p>
+                            <a class="bd-notification is-primary"
+                               href="{% url 'hello_mvp'  %}">Home Page</a>
+                        </div>
+                    </div>
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">Submissions</p>
+                            <a class="bd-notification is-primary"
+                               href="{% url 'data_view'  %}">Submissions
+                                Page</a>
+                        </div>
+                    </div>
+                    {% load static %}
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">Click here to download OT csv</p>
+                            <a
+                                    href="{% static 'mvp_app/Template - OverTime Plotting - Sheet1.csv' %}" download>OT
+                                template</a>
+                        </div>
+                    </div>
+                    {% load static %}
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">Click here to download TeleOpti csv</p>
+                            <a
+                                    href="{% static 'mvp_app/submission_results.csv' %}" download>TeleOpti
+                                template</a>
+                        </div>
+                    </div>
+                    {% load static %}
+                    <div class="level-item has-text-centered">
+                        <div>
+                            <p class="heading">Click here to download uploaded file</p>
+                            <a
+                                    href="{% static 'mvp_app/submission_results.csv' %}" download>Submitted
+                                results</a>
+                        </div>
+                    </div>
 
 
-                    <div class="column"><a class="bd-notification is-primary"
-                                           href="{% url 'data_view'  %}">Submissions
-                        Page</a></div>
+                </nav>
 
-                </div>
+
             </div>
         </div>
     </article>
 </div>
+
+
 <div class="box">
     <article class="media">
         <div class="media-content">
             <div class="content">
-                <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                <table id="bulma_table" class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
                     <thead>
                     <tr>
                         <th><abbr title="Request ID">Request ID</abbr></th>
@@ -100,7 +139,7 @@
                         <th><abbr title="End Time">End Time</abbr></th>
                         <th><abbr title="Activity">Activity</abbr></th>
                         <th><abbr title="Multiplicator / OverTime">Multiplicator / OverTime</abbr></th>
-                        <!--                        <th><abbr title="Break Time">Break Time</abbr></th>-->
+                        <th><abbr title="Requested By">Requested By</abbr></th>
                         <th><abbr title="Status">Status</abbr></th>
                         <th><abbr title="Campaign">Campaign</abbr></th>
                         <th>Created At (UTC)</th>
@@ -116,16 +155,15 @@
                         <th><abbr title="End Time">End Time</abbr></th>
                         <th><abbr title="Activity">Activity</abbr></th>
                         <th><abbr title="Multiplicator / OverTime">Multiplicator / OverTime</abbr></th>
-                        <!--                        <th><abbr title="Break Time">Break Time</abbr></th>-->
+                        <th><abbr title="Requested By">Requested By</abbr></th>
                         <th><abbr title="Status">Status</abbr></th>
                         <th><abbr title="Campaign">Campaign</abbr></th>
-                        <th>Created At (UTC)</th>
+                        <th>Created At</th>
                     </tr>
                     </tfoot>
                     <tbody>
 
                     {% for post in profiles %}
-
                     <tr>
                         <th>{{ post.Name}}</th>
                         <td>{{ post.user_ID}}
@@ -136,18 +174,19 @@
                         <td>{{ post.End_Time }}</td>
                         <td>{{ post.Activity|default:"-" }}</td>
                         <td>{{ post.Mul_Over|default:"-" }}</td>
-                        <!--                        <td>{{ post.BreakTime|default:"-" }}</td>-->
+                        {% if 'Uknown' in post.BreakTime %}
+                        <td> Unknown User</td>
+                        {%else%}
+                        <td>{{ post.BreakTime|default:"-" }}</td>
+                        {%endif%}
+
                         {% if 'Complete' in post.Status %}
                         <div class="has-text-info">
                             <td class="has-text-success">Complete</td>
                         </div>
-                        {% elif 'elp' in post.Status %}
+                        {% elif 'Help Needed' in post.Status %}
                         <div class="has-text-info">
                             <td class="has-text-danger">Help Needed</td>
-                        </div>
-                        {% elif 'ecided' in post.Status %}
-                        <div class="has-text-info">
-                            <td class="has-text-danger">To be Decided</td>
                         </div>
                         {% else %}
                         <div class="has-text-danger">

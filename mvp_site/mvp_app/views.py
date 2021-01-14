@@ -173,7 +173,6 @@ def data_view(request):
         locations[row[0]] = ""
     # print(locations)
 
-
     if request.method == "POST":
         print("--")
         print(request.POST)
@@ -256,6 +255,7 @@ def data_view(request):
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
                        'end_date': e_d})
 
+
 def help_needed(request):
     try:
         locations = {}
@@ -267,7 +267,6 @@ def help_needed(request):
     except:
         locations[row[0]] = ""
     # print(locations)
-
 
     if request.method == "POST":
 
@@ -282,12 +281,11 @@ def help_needed(request):
         page = request.GET.get('page')
         posts = paginator.get_page(page)
 
-        html_str = "<h1>Thanks for your submission</h1><p>You have completed the folowing request IDs, Please check in submissions page for more info.</p><p><b>"+ ids + "</b></p>"
+        html_str = "<h1>Thanks for your submission</h1><p>You have completed the folowing request IDs, Please check in submissions page for more info.</p><p><b>" + ids + "</b></p>"
         msg = EmailMessage('WFM - Plotting website submissions: ', html_str, 'svc.aacr@taskus.com',
                            [request.user.email, 'venkat.gali@taskus.com'])
         msg.content_subtype = "html"  # Main content is now text/html
         msg.send()
-
 
         return render(request, 'mvp/help_needed.html',
                       {'posts': posts})
@@ -302,7 +300,6 @@ def help_needed(request):
 
         return render(request, 'mvp/help_needed.html',
                       {'posts': posts})
-
 
 
 def single_user(request, mvp_id, req):
@@ -349,15 +346,48 @@ def single_user(request, mvp_id, req):
                         messages.success(request, mess)
                     context = {'user_ID': 'WFM-IRA-SOT-' + str(mvp_id)}
                     if "Ind" in LOCATION:
-                        send_mail('WFM - Plotting website submissions: ',
-                                  "Request Id : " + 'WFM-IRA-SOT-' + str(mvp_id) + " " + MESSAGE.replace(
-                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL, "workforce.indore@taskus.com"])
+                        data_dict = {"Request_ID": ['WFM-IRA-SOT-' + str(mvp_id)], "User_ID": [str(
+                        form.cleaned_data['user_ID'])], "Start_Date": [str(
+                        form.cleaned_data['Start_Date'])], "Start_Time": [str(
+                        form.cleaned_data['Start_Time'])],
+                                     "End_Date": [str(
+                        form.cleaned_data['End_Date'])],
+                                     "End_Time": [str(
+                        form.cleaned_data['End_Time'])], "Activity": [str(
+                        form.cleaned_data['Activity'])], "Mul_Overlap": [str(
+                        form.cleaned_data['Mul_Over'])], }
+                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                            data_dict.keys()) + '</th></tr>'
+                        for row in zip(*data_dict.values()):
+                            html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
+
+                        html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
+                        msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
+                                           [request.user.email, 'venkat.gali@taskus.com','workforce.indore@taskus.com'])
+                        msg.content_subtype = "html"  # Main content is now text/html
+                        msg.send()
                     else:
-                        send_mail('WFM - Plotting website submissions: ',
-                                  "Request Id : " + 'WFM-IRA-SOT-' + str(mvp_id) + " " + MESSAGE.replace(
-                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL])
+                        data_dict = {"Request_ID": ['WFM-IRA-SOT-' + str(mvp_id)], "User_ID": [str(
+                            form.cleaned_data['user_ID'])], "Start_Date": [str(
+                            form.cleaned_data['Start_Date'])], "Start_Time": [str(
+                            form.cleaned_data['Start_Time'])],
+                                     "End_Date": [str(
+                                         form.cleaned_data['End_Date'])],
+                                     "End_Time": [str(
+                                         form.cleaned_data['End_Time'])], "Activity": [str(
+                                form.cleaned_data['Activity'])], "Mul_Overlap": [str(
+                                form.cleaned_data['Mul_Over'])], }
+
+                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                            data_dict.keys()) + '</th></tr>'
+                        for row in zip(*data_dict.values()):
+                            html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
+
+                        html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
+                        msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
+                                           [request.user.email, 'venkat.gali@taskus.com'])
+                        msg.content_subtype = "html"  # Main content is now text/html
+                        msg.send()
 
                     MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
@@ -417,16 +447,47 @@ def single_user(request, mvp_id, req):
                         BreakTime=NAME)
                     context = {'user_ID': 'WFM-IRA-STEL-' + str(mvp_id)}
                     if "Ind" in LOCATION:
-                        send_mail('WFM - Plotting website submissions: ',
-                                  "Request Id : " + 'WFM-IRA-STEL-' + str(mvp_id) + " " + MESSAGE.replace(
-                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL, "workforce.indore@taskus.com"])
+                        data_dict = {"Request_ID": ['WFM-IRA-STEL-' + str(mvp_id)], "User_ID": [str(
+                            form.cleaned_data['user_ID'])], "Start_Date": [str(
+                            form.cleaned_data['Start_Date'])], "Start_Time": [str(
+                            form.cleaned_data['Start_Time'])],
+                                     "End_Date": [str(
+                                         form.cleaned_data['End_Date'])],
+                                     "End_Time": [str(
+                                         form.cleaned_data['End_Time'])], "Activity": [str(
+                                form.cleaned_data['Activity'])], "Mul_Overlap": [str(
+                                form.cleaned_data['Mul_Over'])], }
+                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                            data_dict.keys()) + '</th></tr>'
+                        for row in zip(*data_dict.values()):
+                            html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
 
+                        html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
+                        msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
+                                           [request.user.email, 'venkat.gali@taskus.com',
+                                            'workforce.indore@taskus.com'])
+                        msg.content_subtype = "html"  # Main content is now text/html
+                        msg.send()
                     else:
-                        send_mail('WFM - Plotting website submissions: ',
-                                  "Request Id : " + 'WFM-IRA-STEL-' + str(mvp_id) + " " + MESSAGE.replace(
-                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL])
+                        data_dict = {"Request_ID": ['WFM-IRA-STEL-' + str(mvp_id)], "User_ID": [str(
+                            form.cleaned_data['user_ID'])], "Start_Date": [str(
+                            form.cleaned_data['Start_Date'])], "Start_Time": [str(
+                            form.cleaned_data['Start_Time'])],
+                                     "End_Date": [str(
+                                         form.cleaned_data['End_Date'])],
+                                     "End_Time": [str(
+                                         form.cleaned_data['End_Time'])], "Activity": [str(
+                                form.cleaned_data['Activity'])], "Mul_Overlap": [''], }
+                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                            data_dict.keys()) + '</th></tr>'
+                        for row in zip(*data_dict.values()):
+                            html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
+
+                        html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
+                        msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
+                                           [request.user.email, 'venkat.gali@taskus.com'])
+                        msg.content_subtype = "html"  # Main content is now text/html
+                        msg.send()
 
                     MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
@@ -454,9 +515,10 @@ def multi_user(request, mvp_id, req):
     NAME = request.user.first_name + " " + request.user.last_name
     if req == "OverTime":
         if request.method == 'POST' and OverTimeUserRequestForm(request.POST).is_valid():
+            data_dict = {"Request_ID": [], "User_ID": [], "Start_Date": [], "Start_Time": [],
+                         "End_Date": [],
+                         "End_Time": [], "Activity": [], "Mul_Overlap": [], }
             if '_con' in request.POST:
-                # print("IN HERE!!!")
-                # print(request.POST)
                 form = OverTimeUserRequestForm(request.POST)
                 # check whether it's valid:
                 form.full_clean()
@@ -508,6 +570,37 @@ def multi_user(request, mvp_id, req):
                         Name='WFM-IRA-MOT-S-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         BreakTime=NAME)
+                    temp_list = data_dict['Request_ID']
+                    temp_list.append('WFM-IRA-MOT-S-' + str(mvp_id))
+                    data_dict['Request_ID'] = temp_list
+                    temp_list = data_dict['User_ID']
+                    temp_list.append(str(
+                        form.cleaned_data['user_ID']))
+                    data_dict['User_ID'] = temp_list
+                    temp_list = data_dict['Start_Date']
+                    temp_list.append(str(
+                        form.cleaned_data['Start_Date']))
+                    data_dict['Start_Date'] = temp_list
+                    temp_list = data_dict['Start_Time']
+                    temp_list.append(str(
+                        form.cleaned_data['Start_Time']))
+                    data_dict['Start_Time'] = temp_list
+                    temp_list = data_dict['End_Date']
+                    temp_list.append(str(
+                        form.cleaned_data['End_Date']))
+                    data_dict['End_Date'] = temp_list
+                    temp_list = data_dict['End_Time']
+                    temp_list.append(str(
+                        form.cleaned_data['End_Time']))
+                    data_dict['End_Time'] = temp_list
+                    temp_list = data_dict['Activity']
+                    temp_list.append(str(
+                        form.cleaned_data['Activity']))
+                    data_dict['Activity'] = temp_list
+                    temp_list = data_dict['Mul_Overlap']
+                    temp_list.append(str(
+                        form.cleaned_data['Mul_Over']))
+                    data_dict['Mul_Overlap'] = temp_list
 
                     return render(request, "mvp/multi.html", context)
 
@@ -567,19 +660,66 @@ def multi_user(request, mvp_id, req):
 
                     context = {'user_ID': 'WFM-IRA-MOT-E' + str(mvp_id)}
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
-                        Name='WFM-IRA-MOT-' + str(mvp_id))
+                        Name='WFM-IRA-MOT-E' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         BreakTime=NAME)
+                    temp_list = data_dict['Request_ID']
+                    temp_list.append('WFM-IRA-MOT-E' + str(mvp_id))
+                    data_dict['Request_ID'] = temp_list
+                    temp_list = data_dict['User_ID']
+                    temp_list.append(str(
+                        form.cleaned_data['user_ID']))
+                    data_dict['User_ID'] = temp_list
+                    temp_list = data_dict['Start_Date']
+                    temp_list.append(str(
+                        form.cleaned_data['Start_Date']))
+                    data_dict['Start_Date'] = temp_list
+                    temp_list = data_dict['Start_Time']
+                    temp_list.append(str(
+                        form.cleaned_data['Start_Time']))
+                    data_dict['Start_Time'] = temp_list
+                    temp_list = data_dict['End_Date']
+                    temp_list.append(str(
+                        form.cleaned_data['End_Date']))
+                    data_dict['End_Date'] = temp_list
+                    temp_list = data_dict['End_Time']
+                    temp_list.append(str(
+                        form.cleaned_data['End_Time']))
+                    data_dict['End_Time'] = temp_list
+                    temp_list = data_dict['Activity']
+                    temp_list.append(str(
+                        form.cleaned_data['Activity']))
+                    data_dict['Activity'] = temp_list
+                    temp_list = data_dict['Mul_Overlap']
+                    temp_list.append(str(
+                        form.cleaned_data['Mul_Over']))
+                    data_dict['Mul_Overlap'] = temp_list
                     if "Ind" in LOCATION:
-                        send_mail('WFM - Plotting website submissions: ',
-                                  "Request Id : " + 'WFM-IRA-MOT-' + str(mvp_id) + " " + MESSAGE.replace(
-                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL, "workforce.indore@taskus.com"])
+
+                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                            data_dict.keys()) + '</th></tr>'
+                        for row in zip(*data_dict.values()):
+                            html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
+
+                        html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
+                        msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
+                                           [request.user.email, 'venkat.gali@taskus.com',
+                                            'workforce.indore@taskus.com'])
+                        msg.content_subtype = "html"  # Main content is now text/html
+                        msg.send()
+
                     else:
-                        send_mail('WFM - Plotting website submissions: ',
-                                  "Request Id : " + 'WFM-IRA-MOT-' + str(mvp_id) + " " + MESSAGE.replace(
-                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL])
+                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                            data_dict.keys()) + '</th></tr>'
+                        for row in zip(*data_dict.values()):
+                            html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
+
+                        html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
+                        msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
+                                           [request.user.email, 'venkat.gali@taskus.com'])
+                        msg.content_subtype = "html"  # Main content is now text/html
+                        msg.send()
+
 
                     MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
@@ -606,6 +746,9 @@ def multi_user(request, mvp_id, req):
 
     else:
         if request.method == 'POST' and TeleOptiUserRequestForm(request.POST).is_valid():
+            data_dict = {"Request_ID": [], "User_ID": [], "Start_Date": [], "Start_Time": [],
+                         "End_Date": [],
+                         "End_Time": [], "Activity": [], "Mul_Overlap": [], }
 
             if '_con' in request.POST:
                 # print("IN HERE!!!")
@@ -657,6 +800,36 @@ def multi_user(request, mvp_id, req):
                         form.cleaned_data['End_Time']) + " Activity : " + str(
                         form.cleaned_data['Activity']) + " Multiplicator/OverLap : "
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
+                    temp_list = data_dict['Request_ID']
+                    temp_list.append('WFM-IRA-MTEL-S' + str(mvp_id))
+                    data_dict['Request_ID'] = temp_list
+                    temp_list = data_dict['User_ID']
+                    temp_list.append(str(
+                        form.cleaned_data['user_ID']))
+                    data_dict['User_ID'] = temp_list
+                    temp_list = data_dict['Start_Date']
+                    temp_list.append(str(
+                        form.cleaned_data['Start_Date']))
+                    data_dict['Start_Date'] = temp_list
+                    temp_list = data_dict['Start_Time']
+                    temp_list.append(str(
+                        form.cleaned_data['Start_Time']))
+                    data_dict['Start_Time'] = temp_list
+                    temp_list = data_dict['End_Date']
+                    temp_list.append(str(
+                        form.cleaned_data['End_Date']))
+                    data_dict['End_Date'] = temp_list
+                    temp_list = data_dict['End_Time']
+                    temp_list.append(str(
+                        form.cleaned_data['End_Time']))
+                    data_dict['End_Time'] = temp_list
+                    temp_list = data_dict['Activity']
+                    temp_list.append(str(
+                        form.cleaned_data['Activity']))
+                    data_dict['Activity'] = temp_list
+                    temp_list = data_dict['Mul_Overlap']
+                    temp_list.append('')
+                    data_dict['Mul_Overlap'] = temp_list
                     for mess in mess_split:
                         messages.success(request, mess)
 
@@ -711,16 +884,60 @@ def multi_user(request, mvp_id, req):
                     for mess in mess_split:
                         messages.success(request, mess)
                     context = {'user_ID': 'WFM-IRA-MTEL-' + str(mvp_id)}
+                    temp_list = data_dict['Request_ID']
+                    temp_list.append('WFM-IRA-MTEL-' + str(mvp_id))
+                    data_dict['Request_ID'] = temp_list
+                    temp_list = data_dict['User_ID']
+                    temp_list.append(str(
+                        form.cleaned_data['user_ID']))
+                    data_dict['User_ID'] = temp_list
+                    temp_list = data_dict['Start_Date']
+                    temp_list.append(str(
+                        form.cleaned_data['Start_Date']))
+                    data_dict['Start_Date'] = temp_list
+                    temp_list = data_dict['Start_Time']
+                    temp_list.append(str(
+                        form.cleaned_data['Start_Time']))
+                    data_dict['Start_Time'] = temp_list
+                    temp_list = data_dict['End_Date']
+                    temp_list.append(str(
+                        form.cleaned_data['End_Date']))
+                    data_dict['End_Date'] = temp_list
+                    temp_list = data_dict['End_Time']
+                    temp_list.append(str(
+                        form.cleaned_data['End_Time']))
+                    data_dict['End_Time'] = temp_list
+                    temp_list = data_dict['Activity']
+                    temp_list.append(str(
+                        form.cleaned_data['Activity']))
+                    data_dict['Activity'] = temp_list
+                    temp_list = data_dict['Mul_Overlap']
+                    temp_list.append('')
+                    data_dict['Mul_Overlap'] = temp_list
                     if "Ind" in LOCATION:
-                        send_mail('WFM - Plotting website submissions: ',
-                                  "Request Id : " + 'WFM-IRA-MTEL-' + str(mvp_id) + " " + MESSAGE.replace(
-                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL, "workforce.indore@taskus.com"])
+                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                            data_dict.keys()) + '</th></tr>'
+                        for row in zip(*data_dict.values()):
+                            html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
+
+                        html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
+                        msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
+                                           [request.user.email, 'venkat.gali@taskus.com',
+                                            'workforce.indore@taskus.com'])
+                        msg.content_subtype = "html"  # Main content is now text/html
+                        msg.send()
                     else:
-                        send_mail('WFM - Plotting website submissions: ',
-                                  "Request Id : " + 'WFM-IRA-MTEL-' + str(mvp_id) + " " + MESSAGE.replace(
-                                      "Enter the values in the portal below", ""), 'svc.aacr@taskus.com',
-                                  [EMAIL])
+                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                            data_dict.keys()) + '</th></tr>'
+                        for row in zip(*data_dict.values()):
+                            html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
+
+                        html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
+                        msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
+                                           [request.user.email, 'venkat.gali@taskus.com',
+                                            'workforce.indore@taskus.com'])
+                        msg.content_subtype = "html"  # Main content is now text/html
+                        msg.send()
 
                     MESSAGE = ""
 
@@ -748,12 +965,12 @@ def multi_user(request, mvp_id, req):
 
 def profile_upload(request):
     # declaring template
-    #print("name is: " + request.user.email)
-    NAME = request.user.first_name +" "+ request.user.last_name
+    # print("name is: " + request.user.email)
+    NAME = request.user.first_name + " " + request.user.last_name
     print("name is: " + NAME)
 
     template = "mvp/profile_upload.html"
-    data = MvpUserRequest.objects.all().order_by('-id')
+    data = MvpUserRequest.objects.all().order_by('-id')[0:1000]
     # prompt is a context variable that can have different values      depending on their context
     prompt = {
         'order': 'Download the template as a CSV, enter data and upload the CSV',
@@ -782,74 +999,108 @@ def profile_upload(request):
                 for row in reader:
                     if len(row) > 1:
                         campaigns[row[0]] = row[1]
-            # timezone = campaigns[obj.user_ID]
         except:
-            timezone = ''
-        for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-            count = count + 1
-            req_id = MvpUserRequest.objects.latest('id').id
-            try:
-                if count != 1 and count < 500:
-                    str_time = column[3]
-                    end_time = column[4]
-                    str_date = column[1]
-                    end_date = column[2]
-                    start_time_date = datetime.strptime(str_time, '%H:%M')
-                    end_time_date = datetime.strptime(end_time, '%H:%M')
-                    str_date = datetime.strptime(str_date, '%Y-%m-%d')
-                    end_date = datetime.strptime(end_date, '%Y-%m-%d')
-                    past = datetime.now() - timedelta(days=7)
-                    if column[
-                        0] in campaigns and str_date <= end_date and str_date >= past:
-                        if start_time_date > end_time_date and str_date == end_date:
-                            continue
-                        timezone = campaigns[column[0]]
-                        if len(column) <= 6:
-                            request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
-                            submitted_requests[request_ID_str] = column[0] + "!" + column[1] + "!" + column[2] + "!" + \
-                                                                 column[3] + "!" + column[4] + "!" + column[5] + "!"
-                            _, created = MvpUserRequest.objects.update_or_create(
-                                user_ID=column[0],
-                                Name=request_ID_str,
-                                Start_Date=column[1],
-                                End_Date=column[2],
-                                Start_Time=column[3],
-                                End_Time=column[4],
-                                Activity=column[5],
-                                Mul_Over='',
-                                Timezone=timezone,
-                                BreakTime=NAME,
-                                Status='In Progress'
-                            )
-                        else:
-                            request_ID_str = "WFM-IRA-MOT-" + str(req_id)
-                            submitted_requests[request_ID_str] = column[0] + "!" + column[1] + "!" + column[2] + "!" + \
-                                                                 column[3] + "!" + column[4] + "!" + column[5] + "!" + \
-                                                                 column[6]
-                            _, created = MvpUserRequest.objects.update_or_create(
-                                user_ID=column[0],
-                                Name=request_ID_str,
-                                Start_Date=column[1],
-                                End_Date=column[2],
-                                Start_Time=column[3],
-                                End_Time=column[4],
-                                Activity=column[5],
-                                Mul_Over=column[6],
-                                Timezone=timezone,
-                                BreakTime=NAME,
-                                Status='In Progress'
-                            )
-                        prompt['order'] = "Successfully completed " + str(
-                            count - 1) + " records! please check the submissions tasks for status"
-                    else:
-                        print("in here fail")
-            except Exception as e:
-                print(e)
-                pass
+            prompt['order'] = "Cannot find a campaign for the user!"
 
-        submitted_requests_mail_message = ""
-        data_dict = {"Request_ID":[],"User_ID":[],"Start_Date":[],"Start_Time":[],"End_Date":[],"End_Time":[],"Activity":[],"Mul_Overlap":[],}
-        html_email = ""
+        with open(
+                'C:/Users/vg3054204/PycharmProjects/Django_project/mvp_site/mvp_app/static/mvp_app/submission_results.csv',
+                'w', newline="") as csvfile:
+            new_header = ['Req_ID', 'User_ID', 'Start_Date',
+                          'Start_Time',
+                          'End_Date',
+                          'End_Time', 'Activity', 'Mul/Overlap', 'Status'
+                          ]
+            csvwriter = csv.DictWriter(csvfile, fieldnames=new_header)
+            csvwriter.writeheader()
+            for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+                count = count + 1
+                req_id = MvpUserRequest.objects.latest('id').id
+
+                try:
+                    if count != 1 and count < 500:
+                        str_time = column[3]
+                        end_time = column[4]
+                        str_date = column[1]
+                        end_date = column[2]
+                        start_time_date = datetime.strptime(str_time, '%H:%M')
+                        end_time_date = datetime.strptime(end_time, '%H:%M')
+                        str_date = datetime.strptime(str_date, '%Y-%m-%d')
+                        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+                        past = datetime.now() - timedelta(days=7)
+                        if column[0] in campaigns and end_date >= str_date >= past:
+                            if start_time_date > end_time_date and str_date == end_date:
+                                continue
+                            timezone = campaigns[column[0]]
+                            if len(column) <= 6:
+                                request_ID_str = "WFM-IRA-MTEL-" + str(req_id)
+                                submitted_requests[request_ID_str] = column[0] + "!" + column[1] + "!" + column[
+                                    2] + "!" + \
+                                                                     column[3] + "!" + column[4] + "!" + column[5] + "!"
+                                _, created = MvpUserRequest.objects.update_or_create(
+                                    user_ID=column[0],
+                                    Name=request_ID_str,
+                                    Start_Date=column[1],
+                                    End_Date=column[2],
+                                    Start_Time=column[3],
+                                    End_Time=column[4],
+                                    Activity=column[5],
+                                    Mul_Over='',
+                                    Timezone=timezone,
+                                    BreakTime=NAME,
+                                    Status='In Progress'
+                                )
+                                csvwriter.writerow(
+                                    {'Req_ID': request_ID_str, 'User_ID': column[0], 'Start_Date': column[1],
+                                     'Start_Time': column[3],
+                                     'End_Date': column[2],
+                                     'End_Time': column[4], 'Activity': column[5], 'Mul/Overlap': "",
+                                     'Status': "Success"})
+                            else:
+                                request_ID_str = "WFM-IRA-MOT-" + str(req_id)
+                                submitted_requests[request_ID_str] = column[0] + "!" + column[1] + "!" + column[
+                                    2] + "!" + \
+                                                                     column[3] + "!" + column[4] + "!" + column[
+                                                                         5] + "!" + \
+                                                                     column[6]
+                                _, created = MvpUserRequest.objects.update_or_create(
+                                    user_ID=column[0],
+                                    Name=request_ID_str,
+                                    Start_Date=column[1],
+                                    End_Date=column[2],
+                                    Start_Time=column[3],
+                                    End_Time=column[4],
+                                    Activity=column[5],
+                                    Mul_Over=column[6],
+                                    Timezone=timezone,
+                                    BreakTime=NAME,
+                                    Status='In Progress'
+                                )
+                                csvwriter.writerow(
+                                    {'Req_ID': request_ID_str, 'User_ID': column[0], 'Start_Date': column[1],
+                                     'Start_Time': column[3],
+                                     'End_Date': column[2],
+                                     'End_Time': column[4], 'Activity': column[5], 'Mul/Overlap': column[6],
+                                     'Status': "Success"})
+                            prompt['order'] = "Successfully completed " + str(
+                                count - 1) + " records! please check the submissions tasks for status"
+                        else:
+                            csvwriter.writerow({'Req_ID': request_ID_str, 'User_ID': column[0], 'Start_Date': column[1],
+                                                'Start_Time': column[3],
+                                                'End_Date': column[2],
+                                                'End_Time': column[4], 'Activity': column[5], 'Mul/Overlap': "",
+                                                'Status': "Fail"})
+                except Exception as e:
+                    prompt['order'] = e
+                    csvwriter.writerow({'Req_ID': request_ID_str, 'User_ID': column[0], 'Start_Date': column[1],
+                                        'Start_Time': column[3],
+                                        'End_Date': column[2],
+                                        'End_Time': column[4], 'Activity': column[5], 'Mul/Overlap': "",
+                                        'Status': "Fail"})
+
+                    pass
+
+        data_dict = {"Request_ID": [], "User_ID": [], "Start_Date": [], "Start_Time": [], "End_Date": [],
+                     "End_Time": [], "Activity": [], "Mul_Overlap": [], }
         for item in submitted_requests:
             temp_list = data_dict['Request_ID']
             temp_list.append(item)
@@ -878,8 +1129,8 @@ def profile_upload(request):
             temp_list.append(new_items[6])
             data_dict['Mul_Overlap'] = temp_list
 
-
-        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(data_dict.keys()) + '</th></tr>'
+        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+            data_dict.keys()) + '</th></tr>'
 
         for row in zip(*data_dict.values()):
             html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
@@ -887,19 +1138,13 @@ def profile_upload(request):
         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
 
 
-        for item in submitted_requests:
-            submitted_requests_mail_message = "\n" + "Request ID: " + item + ", details: " + submitted_requests[item]
-        #print(submitted_requests_mail_message)
-        #print(request.user.email)
         EMAIL = request.user.email
 
         if "Ind" in LOCATION:
-            msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com', [EMAIL, "workforce.indore@taskus.com", 'venkat.gali@taskus.com'])
+            msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
+                               [EMAIL, "workforce.indore@taskus.com", 'venkat.gali@taskus.com'])
             msg.content_subtype = "html"  # Main content is now text/html
             msg.send()
-            # send_mail('WFM - Plotting website submissions: ', str(submitted_requests_mail_message),
-            #           'svc.aacr@taskus.com',
-            #           [EMAIL, "workforce.indore@taskus.com", 'venkat.gali@taskus.com'])
         else:
             msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
                                [EMAIL, 'venkat.gali@taskus.com'])
