@@ -124,6 +124,11 @@
                         </div>
 
                         <div class="level-item has-text-centered">
+                            <p><a href="{% url 'help_needed'  %}">Help Needed</a>
+                            </p>
+                        </div>
+
+                        <div class="level-item has-text-centered">
                             <div>
                                 <p class="heading">
                                     <strong>Please enter the Request Ids to search</strong>
@@ -174,7 +179,7 @@
                             <th><abbr title="End Time">End Time</abbr></th>
                             <th><abbr title="Activity">Activity</abbr></th>
                             <th><abbr title="Multiplicator / OverTime">Multiplicator / OverTime</abbr></th>
-                            <!--                            <th><abbr title="Break Time">Break Time</abbr></th>-->
+                            <th><abbr title="Requested By">Requested By</abbr></th>
                             <th><abbr title="Status">Status</abbr></th>
                             <th><abbr title="Campaign">Campaign</abbr></th>
                             <th>Created At (UTC)</th>
@@ -190,7 +195,7 @@
                             <th><abbr title="End Time">End Time</abbr></th>
                             <th><abbr title="Activity">Activity</abbr></th>
                             <th><abbr title="Multiplicator / OverTime">Multiplicator / OverTime</abbr></th>
-                            <!--                            <th><abbr title="Break Time">Break Time</abbr></th>-->
+                                                        <th><abbr title="Requested By">Requested By</abbr></th>
                             <th><abbr title="Status">Status</abbr></th>
                             <th><abbr title="Campaign">Campaign</abbr></th>
                             <th>Created At</th>
@@ -209,7 +214,12 @@
                             <td>{{ post.End_Time }}</td>
                             <td>{{ post.Activity|default:"-" }}</td>
                             <td>{{ post.Mul_Over|default:"-" }}</td>
-                            <!--                            <td>{{ post.BreakTime|default:"-" }}</td>-->
+                            {% if 'Uknown' in post.BreakTime %}
+                            <td> Unknown User </td>
+                            {%else%}
+                            <td>{{ post.BreakTime|default:"-" }}</td>
+                            {%endif%}
+
                             {% if 'Complete' in post.Status %}
                             <div class="has-text-info">
                                 <td class="has-text-success">Complete</td>

@@ -173,6 +173,7 @@ def data_view(request):
         locations[row[0]] = ""
     # print(locations)
 
+
     if request.method == "POST":
         print("--")
         print(request.POST)
@@ -255,10 +256,59 @@ def data_view(request):
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
                        'end_date': e_d})
 
+def help_needed(request):
+    try:
+        locations = {}
+        with open(r'C:\Users\vg3054204\Desktop\roster_location.csv', 'rt') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if len(row) > 1:
+                    locations[row[0]] = row[1]
+    except:
+        locations[row[0]] = ""
+    # print(locations)
+
+
+    if request.method == "POST":
+
+        ids = ""
+        for items in request.POST:
+            if "chex" in items:
+                MvpUserRequest.objects.filter(id=items.split("_")[1].split('$')[0]).update(
+                    Status='Complete')
+                ids = ids + items.split("_")[1].split('$')[1]
+        all_objects = MvpUserRequest.objects.all().filter(Status__contains='elp Needed').order_by('-id')
+        paginator = Paginator(all_objects, 100)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+
+        html_str = "<h1>Thanks for your submission</h1><p>You have completed the folowing request IDs, Please check in submissions page for more info.</p><p><b>"+ ids + "</b></p>"
+        msg = EmailMessage('WFM - Plotting website submissions: ', html_str, 'svc.aacr@taskus.com',
+                           [request.user.email, 'venkat.gali@taskus.com'])
+        msg.content_subtype = "html"  # Main content is now text/html
+        msg.send()
+
+
+        return render(request, 'mvp/help_needed.html',
+                      {'posts': posts})
+    elif request.method == 'GET':
+        print("--")
+        print(request.POST)
+
+        all_objects = MvpUserRequest.objects.all().filter(Status__contains='elp Needed').order_by('-id')
+        paginator = Paginator(all_objects, 100)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+
+        return render(request, 'mvp/help_needed.html',
+                      {'posts': posts})
+
+
 
 def single_user(request, mvp_id, req):
     global MESSAGE
     # #print("req is :" + req)
+    NAME = request.user.first_name + " " + request.user.last_name
     if req == "OverTime":
         if request.method == 'POST':  # and OverTimeUserRequestForm(request.POST).is_valid():
             if OverTimeUserRequestForm(request.POST).is_valid():
@@ -284,7 +334,7 @@ def single_user(request, mvp_id, req):
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Name='WFM-IRA-SOT-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
-                        BreakTime=breaktime)
+                        BreakTime=NAME)
 
                     MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
                         form.cleaned_data['user_ID']) + " Start Date : " + str(
@@ -363,6 +413,8 @@ def single_user(request, mvp_id, req):
                     mvp_model = form.save()
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Name='WFM-IRA-STEL-' + str(mvp_id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        BreakTime=NAME)
                     context = {'user_ID': 'WFM-IRA-STEL-' + str(mvp_id)}
                     if "Ind" in LOCATION:
                         send_mail('WFM - Plotting website submissions: ',
@@ -399,6 +451,7 @@ def single_user(request, mvp_id, req):
 
 def multi_user(request, mvp_id, req):
     global MESSAGE
+    NAME = request.user.first_name + " " + request.user.last_name
     if req == "OverTime":
         if request.method == 'POST' and OverTimeUserRequestForm(request.POST).is_valid():
             if '_con' in request.POST:
@@ -454,7 +507,7 @@ def multi_user(request, mvp_id, req):
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Name='WFM-IRA-MOT-S-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
-                        BreakTime=breaktime)
+                        BreakTime=NAME)
 
                     return render(request, "mvp/multi.html", context)
 
@@ -516,7 +569,7 @@ def multi_user(request, mvp_id, req):
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Name='WFM-IRA-MOT-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
-                        BreakTime=breaktime)
+                        BreakTime=NAME)
                     if "Ind" in LOCATION:
                         send_mail('WFM - Plotting website submissions: ',
                                   "Request Id : " + 'WFM-IRA-MOT-' + str(mvp_id) + " " + MESSAGE.replace(
@@ -589,6 +642,8 @@ def multi_user(request, mvp_id, req):
                         Status='WFM-IRA-MTEL-S' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Name='WFM-IRA-MTEL-S' + str(mvp_id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        BreakTime=NAME)
 
                     context = {}
 
@@ -641,6 +696,8 @@ def multi_user(request, mvp_id, req):
                         Status='WFM-IRA-MTEL-E' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Name='WFM-IRA-MTEL-E' + str(mvp_id))
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        BreakTime=NAME)
                     context = {}
 
                     MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
@@ -691,7 +748,9 @@ def multi_user(request, mvp_id, req):
 
 def profile_upload(request):
     # declaring template
-    print("name is: " + request.user.email)
+    #print("name is: " + request.user.email)
+    NAME = request.user.first_name +" "+ request.user.last_name
+    print("name is: " + NAME)
 
     template = "mvp/profile_upload.html"
     data = MvpUserRequest.objects.all().order_by('-id')
