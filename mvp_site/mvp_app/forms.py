@@ -442,7 +442,7 @@ class OverTimeUserRequestForm(forms.ModelForm):
                         self.errors['Start Date'] = [u'Enter valid start ID, it should be less than start date']
                         # raise ValidationError("Please enter start date less than end date")
                     else:
-                        if len(str_time) != 5 and ":" not in str_time:
+                        if len(str_time) != 5 or ":" not in str_time:
                             self.errors['Start_Time'] = [u'Enter valid start time']
                         else:
                             str_time_split = str_time.split(":")
@@ -457,7 +457,7 @@ class OverTimeUserRequestForm(forms.ModelForm):
                                 if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
                                     self.errors['Start_Time'] = [u'Enter valid start time']
                                 else:
-                                    if len(end_time) != 5 and ":" not in end_time:
+                                    if len(end_time) != 5 or ":" not in end_time:
                                         self.errors['End_Time'] = [u'Enter valid end time']
                                     else:
                                         end_time_split = end_time.split(":")
@@ -690,7 +690,7 @@ class TeleOptiUserRequestForm(forms.ModelForm):
                         self.errors['Start Date'] = [u'Enter valid start ID, it should be less than start date']
                         # raise ValidationError("Please enter start date less than end date")
                     else:
-                        if len(str_time) != 5 and ":" not in str_time:
+                        if len(str_time) != 5 or ":" not in str_time:
                             self.errors['Start_Time'] = [u'Enter valid start time']
                         else:
                             str_time_split = str_time.split(":")
@@ -705,7 +705,7 @@ class TeleOptiUserRequestForm(forms.ModelForm):
                                 if str_hour > 23 or str_hour < 0 or str_min > 59 or str_min < 0:
                                     self.errors['Start_Time'] = [u'Enter valid start time']
                                 else:
-                                    if len(end_time) != 5 and ":" not in end_time:
+                                    if len(end_time) != 5 or ":" not in end_time:
                                         self.errors['End_Time'] = [u'Enter valid end time']
                                     else:
                                         end_time_split = end_time.split(":")

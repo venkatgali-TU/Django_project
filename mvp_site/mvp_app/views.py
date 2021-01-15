@@ -356,7 +356,7 @@ def single_user(request, mvp_id, req):
                         form.cleaned_data['End_Time'])], "Activity": [str(
                         form.cleaned_data['Activity'])], "Mul_Overlap": [str(
                         form.cleaned_data['Mul_Over'])], }
-                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                        html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
                             html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
@@ -378,7 +378,7 @@ def single_user(request, mvp_id, req):
                                 form.cleaned_data['Activity'])], "Mul_Overlap": [str(
                                 form.cleaned_data['Mul_Over'])], }
 
-                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                        html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
                             html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
@@ -455,9 +455,8 @@ def single_user(request, mvp_id, req):
                                          form.cleaned_data['End_Date'])],
                                      "End_Time": [str(
                                          form.cleaned_data['End_Time'])], "Activity": [str(
-                                form.cleaned_data['Activity'])], "Mul_Overlap": [str(
-                                form.cleaned_data['Mul_Over'])], }
-                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                                form.cleaned_data['Activity'])], "Mul_Overlap": "" }
+                        html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
                             html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
@@ -478,7 +477,7 @@ def single_user(request, mvp_id, req):
                                      "End_Time": [str(
                                          form.cleaned_data['End_Time'])], "Activity": [str(
                                 form.cleaned_data['Activity'])], "Mul_Overlap": [''], }
-                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                        html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
                             html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
@@ -696,7 +695,7 @@ def multi_user(request, mvp_id, req):
                     data_dict['Mul_Overlap'] = temp_list
                     if "Ind" in LOCATION:
 
-                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                        html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
                             html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
@@ -709,7 +708,7 @@ def multi_user(request, mvp_id, req):
                         msg.send()
 
                     else:
-                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                        html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
                             html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
@@ -914,8 +913,10 @@ def multi_user(request, mvp_id, req):
                     temp_list = data_dict['Mul_Overlap']
                     temp_list.append('')
                     data_dict['Mul_Overlap'] = temp_list
+                    #(prod_venv) C:\Users\vg3054204\PycharmProjects\Django_project\mvp_site>python manage.py runserver 0.0.0.0:80
+
                     if "Ind" in LOCATION:
-                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                        html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
                             html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
@@ -927,7 +928,7 @@ def multi_user(request, mvp_id, req):
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
                     else:
-                        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+                        html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
                             html_email += '<tr><td>' + '</td><td>'.join(row) + '</td></tr>'
@@ -1015,6 +1016,7 @@ def profile_upload(request):
             for column in csv.reader(io_string, delimiter=',', quotechar="|"):
                 count = count + 1
                 req_id = MvpUserRequest.objects.latest('id').id
+                request_ID_str = ""
 
                 try:
                     if count != 1 and count < 500:
@@ -1129,7 +1131,7 @@ def profile_upload(request):
             temp_list.append(new_items[6])
             data_dict['Mul_Overlap'] = temp_list
 
-        html_email = '<style>table, th, td {border: 1px solid black;}</style><h1>Thanks for your submission!</h1><h1>Submissions:</h1><table><tr><th>' + '</th><th>'.join(
+        html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
             data_dict.keys()) + '</th></tr>'
 
         for row in zip(*data_dict.values()):

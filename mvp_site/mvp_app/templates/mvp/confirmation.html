@@ -1,167 +1,117 @@
 {% extends "mvp/base.html" %}
-{% block title %}Confirmation{% endblock %}
+{% block title %}Submissions{% endblock %}
 
 {% block content %}
 
-<body>
-{% if messages %}
-<ul class="notification">
-    {% for message in messages %}
-    <li
-            {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message|safe }}
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<ul class="notification">
-    <li>
-        {{order}}
-    </li>
-</ul>
+{% load static %}
+{% load status %}
 
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+<!-- semantic UI -->
+<link rel="stylesheet" type='text/css'
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+<!--Chart js-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+        integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+      integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous"/>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
-<div class="box">
-    <article class="media">
-        <div class="media-content">
-            <div class="content">
-                <div class="container">
-                    <!--    <div class="notification is-primary">-->
-                    <div class="field is-grouped">
-                        <form action="" method="POST" enctype="multipart/form-data">
-                            <div class="field is-grouped">
-                                <div class="control">
-                                    {% csrf_token %}
-                                    <input class='input is-info' type="file" id="file1" name="file">
-                                </div>
+<form action="" method="post">
+    {% csrf_token %}
 
-
-                                <div class="control">
-                                    <a
-                                            href="https://docs.google.com/spreadsheets/d/19TgZ8lofb6iWlTMiLSMJ_voWTo3eBXXHLHhhZo_zrEM/edit?usp=sharing">OT
-                                        template</a>
-                                </div>
-
-                                <div class="control">
-                                    <a
-                                            href="https://docs.google.com/spreadsheets/d/1DEyMuFIEu0u-vUyoTXeK-OW0gD2tgtWC_mVrL7SvzeU/edit?usp=sharing">TeleOpti
-                                        template</a>
-                                </div>
-
-                                <div class="control">
-                                    <button class="button is-info" type="submit">Upload</button>
-                                </div>
-                            </div>
-
-
-                        </form>
+    <div class="tile is-ancestor">
+        <div class="tile is-vertical is-8">
+            <div class="tile">
+                <div class="tile is-parent is-vertical">
+                    <article class="tile is-child notification is-primary">
+                        <p class="title">Vertical...</p>
+                        <p class="subtitle">Top tile</p>
+                    </article>
+                    <article class="tile is-child notification is-warning">
+                        <p class="title">...tiles</p>
+                        <p class="subtitle">Bottom tile</p>
+                    </article>
+                </div>
+                <div class="tile is-parent">
+                    <article class="tile is-child notification is-info">
+                        <p class="title">Middle tile</p>
+                        <p class="subtitle">With an image</p>
+                        <figure class="image is-4by3">
+                            <img src="https://bulma.io/images/placeholders/640x480.png">
+                        </figure>
+                    </article>
+                </div>
+            </div>
+            <div class="tile is-parent">
+                <article class="tile is-child notification is-danger">
+                    <p class="title">Wide tile</p>
+                    <p class="subtitle">Aligned with the right tile</p>
+                    <div class="content">
+                        <!-- Content -->
                     </div>
-
+                </article>
+            </div>
+        </div>
+        <div class="tile is-parent">
+            <article class="tile is-child notification is-success">
+                <div class="content">
+                    <p class="title">Tall tile</p>
+                    <p class="subtitle">With even more content</p>
+                    <div class="content">
+                        <!-- Content -->
+                    </div>
                 </div>
-            </div>
+            </article>
         </div>
-    </article>
-</div>
-
-{% endif %}
-<div class="box">
-    <article class="media">
-        <div class="media-content">
-            <div class="content">
-
-                <div class="columns is-variable is-2-mobile is-0-tablet is-3-desktop is-8-widescreen is-1-fullhd">
-
-                    <div class="column"><a class="bd-notification is-primary"
-                                           href="{% url 'hello_mvp'  %}">Home
-                        Page</a></div>
+    </div>
 
 
-                    <div class="column"><a class="bd-notification is-primary"
-                                           href="{% url 'data_view'  %}">Submissions
-                        Page</a></div>
+</form>
 
-                </div>
-            </div>
-        </div>
-    </article>
-</div>
-<div class="box">
-    <article class="media">
-        <div class="media-content">
-            <div class="content">
-                <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
-                    <thead>
-                    <tr>
-                        <th><abbr title="Position">Request ID</abbr></th>
-                        <th><abbr title="Played">User ID</abbr></th>
-                        <th><abbr title="Won">Start Date</abbr></th>
-                        <th><abbr title="Drawn">Start Time</abbr></th>
-                        <th><abbr title="Lost">End Date</abbr></th>
-                        <th><abbr title="Goals for">End Time</abbr></th>
-                        <th><abbr title="Goals against">Activity</abbr></th>
-                        <th><abbr title="Goal difference">Multiplicator / OverTime</abbr></th>
-                        <th><abbr title="Points">Break Time</abbr></th>
-                        <th><abbr title="Points">Status</abbr></th>
-                        <th><abbr title="Points">Campaign</abbr></th>
-                        <th>Created At</th>
-                    </tr>
-                    </thead>
-                    <tfoot>
-                    <tr>
-                        <th><abbr title="Position">Request ID</abbr></th>
-                        <th><abbr title="Played">User ID</abbr></th>
-                        <th><abbr title="Won">Start Date</abbr></th>
-                        <th><abbr title="Drawn">Start Time</abbr></th>
-                        <th><abbr title="Lost">End Date</abbr></th>
-                        <th><abbr title="Goals for">End Time</abbr></th>
-                        <th><abbr title="Goals against">Activity</abbr></th>
-                        <th><abbr title="Goal difference">Multiplicator / OverTime</abbr></th>
-                        <th><abbr title="Points">Break Time</abbr></th>
-                        <th><abbr title="Points">Status</abbr></th>
-                        <th><abbr title="Points">Campaign</abbr></th>
-                        <th>Created At</th>
-                    </tr>
-                    </tfoot>
-                    <tbody>
+{% endblock content%}
 
-                    {% for post in profiles %}
+{% block scripts %}
+<script>
+                            $(document).ready(function(){
+                            var ctx = document.getElementById('myChart').getContext('2d');
+                                    var myChart = new Chart(ctx, {
+                                        type: 'pie',
+                                        data: {
+                                            labels: ['Total number of records', 'Completed', 'In Progress', 'Help Needed', 'Total number of US records', 'Total number of PH records', 'Total number of India records'],
+                                            datasets: [{
+                                                label: 'Analytics',
+                                                data: [{{total}}, {{completed}}, {{inprogress}}, {{helpneeded}}, {{us}}, {{ph}},{{ind}}],
+                                                backgroundColor: [
+                                                    'white',
+                                                    'red',
+                                                    'black',
+                                                    'blue',
+                                                    'yellow',
+                                                    'green'
+                                                ],
+                                                borderColor: [
+                                                    'white',
+                                                    'red',
+                                                    'black',
+                                                    'blue',
+                                                    'yellow',
+                                                    'green'
+                                                ],
+                                                borderWidth: 1
+                                            }]
+                                        },
 
-                    <tr>
-                        <th>{{ post.Name}}</th>
-                        <td>{{ post.user_ID}}
-                        </td>
-                        <td>{{ post.Start_Date }}</td>
-                        <td>{{ post.Start_Time }}</td>
-                        <td>{{ post.End_Date }}</td>
-                        <td>{{ post.End_Time }}</td>
-                        <td>{{ post.Activity|default:"-" }}</td>
-                        <td>{{ post.Mul_Over|default:"-" }}</td>
-                        <td>{{ post.BreakTime|default:"-" }}</td>
-                        {% if 'omplete' in post.Status %}
-                        <div class="has-text-info">
-                            <td>Complete</td>
-                        </div>
-                        {% elif 'elp' in post.Status %}
-                        <div class="has-text-info">
-                            <td>Help Needed</td>
-                        </div>
-                        {% else %}
-                        <div class="has-text-danger">
-                            <td>In Progress</td>
-                        </div>
-                        {% endif %}
-                        <td>{{ post.Timezone|default:"-" }}</td>
-                        <td>{{ post.created_at }}</td>
+                                    });
+                                                                });
 
 
-                    </tr>
 
-                    {%endfor%}
-                    </tbody>
-                </table>
 
-            </div>
-        </div>
-    </article>
-</div>
-</body>
-{% endblock %}
+
+
+
+</script>
+{% endblock scripts %}
