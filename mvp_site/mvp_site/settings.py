@@ -69,9 +69,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
         'NAME': 'Django_Application',
-        'USER': 'admin',
-        'PASSWORD': 'Hello12345',
-        'HOST': 'caawslp00dgtldb00.czstvmjg5rin.us-west-1.rds.amazonaws.com',
+        'USER': 'dbadmin',
+        'PASSWORD': 'ySpW<O:UWfx8jBFd',
+        'HOST': 'orawslp00dgtldb00.cj7ffjcrofvi.us-west-2.rds.amazonaws.com',
         'PORT': '1433',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server'
