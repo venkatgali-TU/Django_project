@@ -10,6 +10,7 @@ import simplejson as json
 
 import urllib3
 
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 USERS_REQ_TYPE = [('single_user', 'Single User'), ('multi_user', 'Multiple Users')]
@@ -59,7 +60,7 @@ BUSINESS_UNITS = [('san', 'San Antonio'), ('tij', 'Tijuana'), ('ind', 'India')]
 REQUEST_TYPES = [('ot', 'OverTime'), ('tel', 'TeleOpti plotting')]
 OT_TYPES = [('part_ot', 'Partial Over Time'), ('full_ot', 'Full Day OT')]
 LOCATIONS = [('nam', 'NAM'), ('mxc', 'Mexico'), ('ind', 'India')]
-YEAR_CHOICES = ['2020', '2021', '2022']
+YEAR_CHOICES = ['2021', '2022']
 OT_ACTIVITY = [('Productive Time', 'Productive Time'), ('Productive Time 15 mins', 'Productive Time 15 mins'),
                ('Productive Time 30 mins', 'Productive Time 30 mins'),
                ('Email', 'Email'), ('Email 30 mins', 'Email 30 mins'), ('Chat', 'Chat'),
@@ -77,6 +78,48 @@ TELEOPTI_OVERLAP = [('Move Non-Overwritable', 'Move Non-Overwritable'), ('Do Not
 BREAK = [('15 mins', '15 mins'), ('Lunch + 15 min', 'Lunch + 15 min'), ('Lunch + 30 min', 'Lunch + 30 min'),
          ('Lunch + 45 min', 'Lunch + 45 min'), ('Lunch + 60min', 'Lunch + 60min'), ('No Break', 'No Break')]
 
+
+def check_ot_availability(params):
+    day = datetime.now()
+    start_week = day - timedelta(days=day.weekday())
+    end_week = start_week + timedelta(days=6)
+    start_week = start_week.strftime('%Y-%m-%d')
+    end_week = end_week.strftime('%Y-%m-%d')
+
+    list1 = list(MvpUserRequest.objects.all().filter(created_at__range=[start_week, end_week]).filter(
+        user_ID__contains=params.strip()).values_list('Start_Time', flat=True))
+    list2 = list(MvpUserRequest.objects.all().filter(created_at__range=[start_week, end_week]).filter(
+        user_ID__contains=params.strip()).values_list('Start_Time', flat=True))
+    day = datetime.now()
+    # print(day)
+    start = day - timedelta(days=day.weekday())
+    end = start + timedelta(days=6)
+
+    add = datetime.strptime("00:00:00", '%H:%M:%S')
+    time_list = []
+    if len(list1) == len(list2):
+        l = len(list2)
+        for i in range(0, l):
+            temp_list1 = list1[i]
+            temp_list2 = list2[i]
+
+            time = datetime.strptime(temp_list2, '%H:%M') - datetime.strptime(temp_list1, '%H:%M')
+            if 'day' in str(time):
+                time = str(str(time).split(',')[1].strip())
+            # print(time)
+            time_list.append(str(time))
+
+    totalSecs = 0
+    for tm in time_list:
+        timeParts = [int(s) for s in tm.split(':')]
+        totalSecs += (timeParts[0] * 60 + timeParts[1]) * 60 + timeParts[2]
+    totalSecs, sec = divmod(totalSecs, 60)
+    hr, min = divmod(totalSecs, 60)
+
+    if hr >= 14:
+        return False
+    else:
+        return True
 
 class MvpForm(forms.ModelForm):
     # emp_ID = forms.CharField(label='Employee ID', required=True, widget=forms.TextInput(
@@ -262,6 +305,10 @@ class OverTimeUserRequestForm(forms.ModelForm):
                 new_activity = items[1]
         return new_activity
 
+
+
+
+
     def clean_mul_over(self, *args, **kwargs):
         mul = self.cleaned_data.get("Mul_Over")
         for items in OT_MULTIPLICATOR:
@@ -289,12 +336,17 @@ class OverTimeUserRequestForm(forms.ModelForm):
             try:
                 # fin = requests.get(final_url, final_headers, False)
                 # print(username[5:])
-                fin = requests.get(final_url, headers=final_headers, verify=False)
 
-                # temp_data_json = json.loads(json.dumps(fin.json()))
+                if check_ot_availability(u_id):
+                    fin = requests.get(final_url, headers=final_headers, verify=False)
 
-                temp_data_json = json.loads(json.dumps(fin.json()))
-                return str(temp_data_json['id'])
+                    # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                    temp_data_json = json.loads(json.dumps(fin.json()))
+                    return str(temp_data_json['id'])
+                else:
+                    return "OT limit reached for this user!!"
+
             except ConnectionError and KeyError:
                 return "Please enter a valid employee number"
 
@@ -407,6 +459,7 @@ class OverTimeUserRequestForm(forms.ModelForm):
             except ConnectionError and KeyError:
                 return "Please enter a valid employee number"
 
+
     def clean(self):
         global start_time_date, end_time_date
         cleaned_data = super(OverTimeUserRequestForm, self).clean()
@@ -494,8 +547,6 @@ class OverTimeUserRequestForm(forms.ModelForm):
                                                             fin = requests.get(final_url, headers=final_headers,
                                                                                verify=False)
 
-                                                            # temp_data_json = json.loads(json.dumps(fin.json()))
-
                                                             temp_data_json = json.loads(json.dumps(fin.json()))
                                                             country = str(temp_data_json['site']['countryCode'])
                                                             if country == 'US':
@@ -522,11 +573,9 @@ class OverTimeUserRequestForm(forms.ModelForm):
 
 
 
-
                                                         except ConnectionError and KeyError:
                                                             self.errors['user_ID'] = [
                                                                 u'Please enter valid user ID']
-
                                                 except ValueError:
                                                     self.errors['Start_Time'] = [
                                                         u'Please enter valid start time & end time, Start time should be less than end time']
@@ -792,3 +841,6 @@ class TeleOptiUserRequestForm(forms.ModelForm):
             if mul in items:
                 new_mul = items[1]
         return new_mul
+
+
+

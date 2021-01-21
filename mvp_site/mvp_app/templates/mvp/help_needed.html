@@ -11,15 +11,19 @@
 
 <form action="" method="post">
     {% csrf_token %}
-
-    <div class="container has-text-centered">
+    <article class="message is-link">
+        <div class="message-body">
+            Please select the completed records and click on submit
+        </div>
+    </article>
+    <!--<div class="container has-text-centered">
         <p class="title">
             Please select the completed records and click on submit
         </p>
         <p class="subtitle">
 
         </p>
-    </div>
+    </div>-->
 
     <div class="box">
         <article class="media">
@@ -113,7 +117,7 @@
                             </div>
                             {% else %}
                             <div class="has-text-danger">
-                                <td class="has-text-info">In Progress</td>
+                                <td class="has-text-danger">Failed</td>
                             </div>
                             {% endif %}
                             <td>{{ post.Timezone|default:"-" }}</td>

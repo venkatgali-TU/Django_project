@@ -190,7 +190,7 @@ def data_view(request):
                 elif locations[item] == "IND":
                     ind = ind + 1
             else:
-                print(item)
+                print("")
 
         total = len(MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]))
         InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
@@ -232,7 +232,8 @@ def data_view(request):
                 elif locations[item] == "IND":
                     ind = ind + 1
             else:
-                print(item)
+
+                print("")
 
         total = len(MvpUserRequest.objects.all())
         InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
@@ -245,11 +246,11 @@ def data_view(request):
             MvpUserRequest.objects.all().filter(Status__contains='Failed'))
 
         # print(" success data : " + request.POST['key'])
+
         all_objects = MvpUserRequest.objects.all().order_by('-id')
         paginator = Paginator(all_objects, 100)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
-
         return render(request, 'mvp/data.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
@@ -301,6 +302,53 @@ def help_needed(request):
         return render(request, 'mvp/help_needed.html',
                       {'posts': posts})
 
+def failed(request):
+    try:
+        locations = {}
+        with open(r'C:\Users\vg3054204\Desktop\roster_location.csv', 'rt') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if len(row) > 1:
+                    locations[row[0]] = row[1]
+    except:
+        locations[row[0]] = ""
+    # print(locations)
+
+    if request.method == "POST":
+
+        ids = ""
+        for items in request.POST:
+            if "chex" in items:
+                MvpUserRequest.objects.filter(id=items.split("_")[1].split('$')[0]).update(
+                    Status='Complete')
+                ids = ids + items.split("_")[1].split('$')[1]
+        all_objects = MvpUserRequest.objects.all().filter(Status__contains='Failed').order_by('-id')
+        paginator = Paginator(all_objects, 100)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+
+        html_str = "<h1>Thanks for your submission</h1><p>You have completed the folowing request IDs, Please check in submissions page for more info.</p><p><b>" + ids + "</b></p>"
+        msg = EmailMessage('WFM - Plotting website submissions: ', html_str, 'svc.aacr@taskus.com',
+                           [request.user.email, 'venkat.gali@taskus.com'])
+        msg.content_subtype = "html"  # Main content is now text/html
+        msg.send()
+
+        return render(request, 'mvp/help_needed.html',
+                      {'posts': posts})
+    elif request.method == 'GET':
+        print("--")
+        print(request.POST)
+
+        all_objects = MvpUserRequest.objects.all().filter(Status__contains='Failed').order_by('-id')
+        paginator = Paginator(all_objects, 100)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+
+        return render(request, 'mvp/help_needed.html',
+                      {'posts': posts})
+
+
+
 
 def single_user(request, mvp_id, req):
     global MESSAGE
@@ -333,13 +381,13 @@ def single_user(request, mvp_id, req):
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         BreakTime=NAME)
 
-                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
-                        form.cleaned_data['user_ID']) + " Start Date : " + str(
-                        form.cleaned_data['Start_Date']) + " Start time : " + str(
-                        form.cleaned_data['Start_Time']) + " End Date : " + str(
-                        form.cleaned_data['End_Date']) + " End Time : " + str(
-                        form.cleaned_data['End_Time']) + " Activity : " + str(
-                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : " + str(
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "$User ID : " + str(
+                        form.cleaned_data['user_ID']) + " $Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " $Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " $End Date : " + str(
+                        form.cleaned_data['End_Date']) + " $End Time : " + str(
+                        form.cleaned_data['End_Time']) + " $Activity : " + str(
+                        form.cleaned_data['Activity']) + " $Multiplicator/OverLap : " + str(
                         form.cleaned_data['Mul_Over'])
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
                     for mess in mess_split:
@@ -430,13 +478,13 @@ def single_user(request, mvp_id, req):
                     context['form'] = form
                     return render(request, "mvp/single.html", context)
                 else:
-                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "User ID : " + str(
-                        form.cleaned_data['user_ID']) + " Start Date : " + str(
-                        form.cleaned_data['Start_Date']) + " Start time : " + str(
-                        form.cleaned_data['Start_Time']) + " End Date : " + str(
-                        form.cleaned_data['End_Date']) + " End Time : " + str(
-                        form.cleaned_data['End_Time']) + " Activity : " + str(
-                        form.cleaned_data['Activity']) + " Multiplicator/OverLap : "
+                    MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "$User ID : " + str(
+                        form.cleaned_data['user_ID']) + " $Start Date : " + str(
+                        form.cleaned_data['Start_Date']) + " $Start time : " + str(
+                        form.cleaned_data['Start_Time']) + " $End Date : " + str(
+                        form.cleaned_data['End_Date']) + " $End Time : " + str(
+                        form.cleaned_data['End_Time']) + " $Activity : " + str(
+                        form.cleaned_data['Activity']) + " $Multiplicator/OverLap : "
                     mess_split = MESSAGE.replace("Enter the values in the portal below", "").split(" ---- ")
                     for mess in mess_split:
                         messages.success(request, mess)

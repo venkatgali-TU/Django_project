@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load filter_tags %}
 <html>
 <head>
     <meta charset="utf-8">
@@ -19,20 +20,44 @@
                     Thanks for your submission your request Id : {{user_ID}}
                 </h1>
             </div>
-            <nav>
-                <div class="level-left">
-                    <p class="level-item"><a href="{% url 'hello_mvp'  %}">Go back to Home page</a></p>
-                </div>
-                <div class="level-right">
-                    <p class="level-item"><a href="{% url 'data_view'  %}">Go to completed tasks</a></p>
-                </div>
-            </nav>
-            <ul class="messages">
+            <div class="box">
+                <article class="media">
+                    <div class="media-content">
+                        <div class="centered-is-widescreen">
+                            <nav class="level">
+                                <div class="level-item has-text-centered">
+                                    <p><a href="{% url 'hello_mvp'  %}">Home</a>
+                                    </p>
+                                </div>
+
+                                <div class="level-item has-text-centered">
+                                    <p><a href="{% url 'help_needed'  %}">Help Needed</a>
+                                    </p>
+                                </div>
+
+                                <div class="level-item has-text-centered">
+                                    <p><a href="{% url 'failed'  %}">Failed</a>
+                                    </p>
+                                </div>
+                                <div class="level-item has-text-centered">
+                                    <p><a href="{% url 'data_view'  %}">Submissions</a>
+                                    </p>
+                                </div>
+                            </nav>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            <ul class="message is-link">
+
                 {% for message in messages %}
-                <li
+
+                    <li
                         {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}
                 </li>
+
                 {% endfor %}
+
             </ul>
             {% load static %}
             <figure class="image is-square">

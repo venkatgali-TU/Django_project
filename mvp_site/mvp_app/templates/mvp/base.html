@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 {% load socialaccount %}
@@ -6,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}MVP site{% endblock %}</title>
+    <title>{% block title %}WFM Support Page{% endblock %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bulma.min.css">
@@ -14,8 +13,41 @@
 
 </head>
 <body>
-<section class="hero">
+<section class="hero is-medium">
+    <!-- Hero head: will stick at the top -->
     <div class="hero-head">
+        <nav class="navbar">
+            <div class="container">
+                <div class="navbar-brand">
+                    <a class="navbar-item">
+                        {% load static %}
+                        <img src="{% static 'images/download.png' %}" alt="Placeholder image">
+                    </a>
+                    <span class="navbar-burger" data-target="navbarMenuHeroA">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+                </div>
+                <div id="navbarMenuHeroA" class="navbar-menu">
+                    <div class="navbar-end">
+
+            <span class="navbar-item">
+               {% if user.is_authenticated %}
+                        <p class="title is-4">Welcome, <strong>{{ user.first_name|default:'seems like you are not logged in. Please login to continue' }}</strong>!</p>
+                        {% else %}
+                        <p class="title is-4">Please login here with your <a href="{% provider_login_url 'google' %}">TaskUs GMail account</a>
+                        </p>
+                        {% endif %}
+            </span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+
+    <!--<div class="hero-head">
 
         <div class="card">
             <div class="card-content">
@@ -23,29 +55,31 @@
                     <section>
                         <div class="container">
                             <figure class="media-left">
-                        {% load static %}
-                        <figure class="image is-128x128">
-                            <img src="{% static 'images/download.png' %}" alt="Placeholder image">
-                        </figure>
-                    </figure>
+                                {% load static %}
+                                <figure class="image is-128x128">
+                                    <img src="{% static 'images/download.png' %}" alt="Placeholder image">
+                                </figure>
+                            </figure>
                         </div>
                     </section>
 
 
-
                     <figure class="media-right">
                         {% if user.is_authenticated %}
-                        <p class="title is-4">Welcome, <strong>{{ user.first_name|default:'seems like you are not logged in. Please login to continue' }}</strong>!</p>
+                        <p class="title is-4">Welcome, <strong>{{ user.first_name|default:'seems like you are not
+                            logged in. Please login to continue' }}</strong>!</p>
                         {% else %}
-                        <p class="title is-4">Please login here with your <a href="{% provider_login_url 'google' %}">TaskUs GMail account</a>
+                        <p class="title is-4">Please login here with your <a
+                                href="{% provider_login_url 'google' %}">TaskUs GMail account</a>
                         </p>
                         {% endif %}
                     </figure>
                 </article>
             </div>
         </div>
-    </div>
+    </div>-->
     <div class="hero-body">
+
         {% block scripts %}{% endblock scripts %}
         {% block content %}{% endblock content%}
     </div>

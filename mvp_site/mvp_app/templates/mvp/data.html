@@ -11,6 +11,29 @@
 
 <form action="" method="post">
     {% csrf_token %}
+
+    <article class="message is-link">
+        <div class="message-body">
+            <div class="content">
+                <ol type="is-lower-alpha">
+                    <li>Please find all the submissions by the users across all campaigns</li>
+                    <li>Sort the results based on date of submission</li>
+                    <li>Find the status of the ticket based on the request ID</li>
+                    <li>Please find the records bot couldn't complete in help needed page</li>
+                    <li>Status of the bot and its significance</li>
+                    <ol class="is-lower-roman">
+                        <li>Submission recorded : request info is saved after successful validation</li>
+                        <li>Bot - request acknowledged : Bot picked up the request</li>
+                        <li>Bot - Search and Validation : Bot completed searching for the ID in TeleOpti site</li>
+                        <li>Bot - Activity code selected : Bot completed selecting the appropriate code in TeleOpti site</li>
+                        <li>Complete : Bot plotted the record and completed the request!</li>
+                    </ol>
+                </ol>
+            </div>
+
+        </div>
+    </article>
+
     <nav class="level">
         <div class="level-item has-text-centered">
             <div>
@@ -129,6 +152,11 @@
                         </div>
 
                         <div class="level-item has-text-centered">
+                            <p><a href="{% url 'failed'  %}">Failed</a>
+                            </p>
+                        </div>
+
+                        <div class="level-item has-text-centered">
                             <div>
                                 <p class="heading">
                                     <strong>Please enter the Request Ids to search</strong>
@@ -195,7 +223,7 @@
                             <th><abbr title="End Time">End Time</abbr></th>
                             <th><abbr title="Activity">Activity</abbr></th>
                             <th><abbr title="Multiplicator / OverTime">Multiplicator / OverTime</abbr></th>
-                                                        <th><abbr title="Requested By">Requested By</abbr></th>
+                            <th><abbr title="Requested By">Requested By</abbr></th>
                             <th><abbr title="Status">Status</abbr></th>
                             <th><abbr title="Campaign">Campaign</abbr></th>
                             <th>Created At</th>
@@ -215,7 +243,7 @@
                             <td>{{ post.Activity|default:"-" }}</td>
                             <td>{{ post.Mul_Over|default:"-" }}</td>
                             {% if 'Uknown' in post.BreakTime %}
-                            <td> Unknown User </td>
+                            <td> Unknown User</td>
                             {%else%}
                             <td>{{ post.BreakTime|default:"-" }}</td>
                             {%endif%}
@@ -235,6 +263,10 @@
                             {% elif 'Search' in post.Status %}
                             <div class="has-text-info">
                                 <td class="has-text-dark">Bot - Search and validation</td>
+                            </div>
+                            {% elif 'Teleopti' in post.Status %}
+                            <div class="has-text-info">
+                                <td class="has-text-dark">Bot - Request acknowledged</td>
                             </div>
                             {% elif 'acknowledged' in post.Status %}
                             <div class="has-text-info">
