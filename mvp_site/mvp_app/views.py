@@ -165,7 +165,36 @@ def data_view(request):
                     locations[row[0]] = row[1]
     except:
         locations[row[0]] = ""
+    try:
+        timezone = ""
+        with open(r'C:\Users\vg3054204\Desktop\roster_timezone.csv', 'rt') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if len(row) != 0 and row[0] != '' and row[1] != '' and str(row[0]).lower() == str(request.user.email).lower():
+                    timezone = row[1]
+                    if timezone == 'Central Standard Time':
+                        timezone = 'US/Central'
+                    elif timezone =='Singapore Standard Time':
+                        timezone = 'Asia/Singapore'
+                    elif timezone == 'Eastern Standard Time':
+                        timezone = 'US/Eastern'
+                    elif timezone == 'GTB Standard Time':
+                        timezone = 'Etc/GMT'
+                    elif timezone =='India Standard Time':
+                        timezone = 'Asia/Kolkata'
+                    elif timezone == 'Pacific Standard Time':
+                        timezone = 'US/Pacific'
+                    elif timezone =='Taipei Standard Time':
+                        timezone = 'Asia/Taipei'
+                    else:
+                        timezone = 'US/Pacific'
+                    break
+    except:
+        pass
     # print(locations)
+    if timezone == '':
+        print('here')
+        timezone = 'US/Pacific'
 
     if request.method == "POST":
         print("--")
@@ -236,7 +265,7 @@ def data_view(request):
         return render(request, 'mvp/confirmation.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
-                       'end_date': e_d})
+                       'end_date': e_d,'my_timezone':timezone})
     elif request.method == 'GET':
         all_objects = MvpUserRequest.objects.all().order_by('-id')
         s_d = "2020-10-26"
@@ -276,7 +305,7 @@ def data_view(request):
         return render(request, 'mvp/confirmation.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
-                       'end_date': e_d})
+                       'end_date': e_d,'my_timezone':timezone})
 
 def help_needed(request):
     try:
