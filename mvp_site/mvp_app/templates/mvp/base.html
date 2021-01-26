@@ -13,7 +13,7 @@
 
 </head>
 <body>
-<section class="hero is-medium">
+<section class="hero is-fullheight">
     <!-- Hero head: will stick at the top -->
     <div class="hero-head">
         <nav class="navbar">
@@ -79,9 +79,12 @@
         </div>
     </div>-->
     <div class="hero-body">
+        <div class="container is-max-widescreen">
 
-        {% block scripts %}{% endblock scripts %}
-        {% block content %}{% endblock content%}
+            {% block scripts %}{% endblock scripts %}
+            {% block content %}{% endblock content%}
+        </div>
+
     </div>
     <div class="hero-foot">
         <div class="content has-text-centered">

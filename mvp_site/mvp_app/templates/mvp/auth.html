@@ -94,3 +94,389 @@
 <!--</script>-->
 <!--</body>-->
 <!--</html>-->
+
+<!--<head>
+    &lt;!&ndash; Required meta tags &ndash;&gt;
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bulma.min.css">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    &lt;!&ndash; semantic UI &ndash;&gt;
+    <link rel="stylesheet" type='text/css'
+          href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+    &lt;!&ndash;Chart js&ndash;&gt;
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+            integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+          integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous"/>
+    &lt;!&ndash; jQuery &ndash;&gt;
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <title></title>
+</head>
+
+<body>
+
+<form action="" method="post">
+    {% csrf_token %}
+
+    <div class="tile is-ancestor">
+        <div class="tile is-4 is-vertical is-parent">
+            <div class="tile is-child box">
+                <div class="content">
+                    <nav class="level">
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Start Date</p>
+                                <input type="date" id="start_date" name="trip-start"
+                                       value={{st_d}}
+                                       min="2020-10-26" max="2025-12-31">
+                            </div>
+                        </div>
+
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">End Date</p>
+                                <input type="date" id="end_date" name="trip-end"
+                                       value={{end_date}}
+                                       min="2020-10-26" max="2025-12-31">
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading"></p>
+                                <button class="button is-info is-rounded" type="submit" name="date_search">Submit
+                                </button>
+                            </div>
+                        </div>
+
+                    </nav>
+                </div>
+            </div>
+            <div class="tile is-child box">
+                <div class="content">
+                    <div class="box">
+                        <article class="media">
+                            <div class="media-content">
+                                <div class="centered-is-widescreen">
+                                    <nav class="level">
+                                        <div class="level-item has-text-centered">
+                                            <p><a href="{% url 'hello_mvp'  %}">Home</a>
+                                            </p>
+                                        </div>
+
+                                        <div class="level-item has-text-centered">
+                                            <p><a href="{% url 'help_needed'  %}">Help Needed</a>
+                                            </p>
+                                        </div>
+
+                                        <div class="level-item has-text-centered">
+                                            <div>
+                                                <p class="heading">
+                                                    <strong>Please enter the Request Ids to search</strong>
+                                                </p>
+                                                <p class="control">
+                                                <div class="field has-addons">
+                                                    <div class="control">
+                                                        <input class="input" type="text" name="key"
+                                                               placeholder="WFM-IRA-##">
+                                                    </div>
+                                                    <div class="control">
+                                                        <button class="button is-info is-rounded" type="submit"
+                                                                value="Search"
+                                                                name="search">
+                                                            Search
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                &lt;!&ndash;<input class="input" type="text" name="key"
+                                                       placeholder="WFM-IRA-##">
+                                            <button class="button is-info is-rounded" type="submit"
+                                                        value="Search"
+                                                        name="search">Search
+                                                </button>&ndash;&gt;
+                                                </p>
+                                            </div>
+
+                                        </div>
+                                    </nav>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tile is-parent">
+            <div class="tile is-child box">
+                <div class="content">
+                    <canvas id="myChart" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tile is-ancestor">
+        <div class="tile is-parent">
+            <div class="tile is-child box">
+                <div class="content">
+                    <div class="box">
+                        <article class="media">
+                            <div class="media-content">
+                                <div class="centered-is-widescreen">
+                                    &lt;!&ndash;<nav>
+                                        <p><strong>Total number of records: </strong>{{total}}</p>
+                                        <p><strong>Completed: </strong>{{completed}}</p>
+                                        <p><STRONG>In progress: </STRONG>{{inprogress}}</p>
+                                        <p><strong>Help Needed: </strong>{{helpneeded}}</p>
+                                        <p><strong>Failed: </strong>{{failed}}</p>
+                                        <p><STRONG>Total Number of US requests: </STRONG>{{us}}</p>
+                                        <p><strong>Total Number of IND requests: </strong>{{ind}}</p>
+                                        <p><strong>Total Number of PH requests: </strong>{{ph}}</p>
+
+
+                                    </nav>&ndash;&gt;
+
+                                    <nav class="level">
+                                        <div class="level-item has-text-centered">
+                                            <div>
+                                                <p class="heading">Total number of records</p>
+                                                <p class="title">{{total}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="level-item has-text-centered">
+                                            <div>
+                                                <p class="heading">Completed</p>
+                                                <p class="title">{{completed}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="level-item has-text-centered">
+                                            <div>
+                                                <p class="heading">In Progress</p>
+                                                <p class="title">{{inprogress}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="level-item has-text-centered">
+                                            <div>
+                                                <p class="heading">Help Needed</p>
+                                                <p class="title">{{helpneeded}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="level-item has-text-centered">
+                                            <div>
+                                                <p class="heading">Failed</p>
+                                                <p class="title">{{failed}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="level-item has-text-centered">
+                                            <div>
+                                                <p class="heading">Total US requests</p>
+                                                <p class="title">{{us}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="level-item has-text-centered">
+                                            <div>
+                                                <p class="heading">Total IND requests</p>
+                                                <p class="title">{{ind}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="level-item has-text-centered">
+                                            <div>
+                                                <p class="heading">Total PH requests</p>
+                                                <p class="title">{{ph}}</p>
+                                            </div>
+                                        </div>
+                                    </nav>
+
+
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tile is-ancestor">
+        <div class="tile is-parent">
+            <div class="tile is-child box">
+                <div class="content">
+                    {% if posts %}
+
+                    <div class="box">
+                        <article class="media">
+                            <div class="media-content">
+                                <div class="content">
+                                    <table id="bulma_table"
+                                           class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                                        <thead>
+                                        <tr>
+                                            <th><abbr title="Request ID">Request ID</abbr></th>
+                                            <th><abbr title="User ID">User ID</abbr></th>
+                                            <th><abbr title="Start Date">Start Date</abbr></th>
+                                            <th><abbr title="Start Time">Start Time</abbr></th>
+                                            <th><abbr title="End Date">End Date</abbr></th>
+                                            <th><abbr title="End Time">End Time</abbr></th>
+                                            <th><abbr title="Activity">Activity</abbr></th>
+                                            <th><abbr title="Multiplicator / OverTime">Multiplicator / OverTime</abbr>
+                                            </th>
+                                            <th><abbr title="Requested By">Requested By</abbr></th>
+                                            <th><abbr title="Status">Status</abbr></th>
+                                            <th><abbr title="Campaign">Campaign</abbr></th>
+                                            <th>Created At (UTC)</th>
+                                        </tr>
+                                        </thead>
+                                        <tfoot>
+                                        <tr>
+                                            <th><abbr title="Request ID">Request ID</abbr></th>
+                                            <th><abbr title="User ID">User ID</abbr></th>
+                                            <th><abbr title="Start Date">Start Date</abbr></th>
+                                            <th><abbr title="Start Time">Start Time</abbr></th>
+                                            <th><abbr title="End Date">End Date</abbr></th>
+                                            <th><abbr title="End Time">End Time</abbr></th>
+                                            <th><abbr title="Activity">Activity</abbr></th>
+                                            <th><abbr title="Multiplicator / OverTime">Multiplicator / OverTime</abbr>
+                                            </th>
+                                            <th><abbr title="Requested By">Requested By</abbr></th>
+                                            <th><abbr title="Status">Status</abbr></th>
+                                            <th><abbr title="Campaign">Campaign</abbr></th>
+                                            <th>Created At</th>
+                                        </tr>
+                                        </tfoot>
+                                        <tbody>
+
+                                        {% for post in posts %}
+                                        <tr>
+                                            <th>{{ post.Name}}</th>
+                                            <td>{{ post.user_ID}}
+                                            </td>
+                                            <td>{{ post.Start_Date }}</td>
+                                            <td>{{ post.Start_Time }}</td>
+                                            <td>{{ post.End_Date }}</td>
+                                            <td>{{ post.End_Time }}</td>
+                                            <td>{{ post.Activity|default:"-" }}</td>
+                                            <td>{{ post.Mul_Over|default:"-" }}</td>
+                                            {% if 'Uknown' in post.BreakTime %}
+                                            <td> Unknown User</td>
+                                            {%else%}
+                                            <td>{{ post.BreakTime|default:"-" }}</td>
+                                            {%endif%}
+
+                                            {% if 'Complete' in post.Status %}
+                                            <div class="has-text-info">
+                                                <td class="has-text-success">Complete</td>
+                                            </div>
+                                            {% elif 'Help Needed' in post.Status %}
+                                            <div class="has-text-info">
+                                                <td class="has-text-danger">Help Needed</td>
+                                            </div>
+                                            {% else %}
+                                            <div class="has-text-danger">
+                                                <td class="has-text-info">In Progress</td>
+                                            </div>
+                                            {% endif %}
+                                            <td>{{ post.Timezone|default:"-" }}</td>
+                                            <td>{{ post.created_at }}</td>
+
+
+                                        </tr>
+
+                                        {%endfor%}
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    {% else %}
+
+                    <div class="card">
+                        <div class="card-content">
+                            <p class="title">
+                                {{ "Search results shows nothing!"}}
+                            </p>
+
+                        </div>
+
+                    </div>
+                    {% endif %}
+
+                    <div class="field is-grouped is-grouped-centered">
+                        {% if posts.paginator.num_pages > 1 %}
+
+                        {% if posts.has_previous %}
+                        <p class="control">
+                            <a class="button is-link is-rounded"
+                               href="?page={{ posts.previous_page_number }}">Previous</a>
+                        </p>
+                        {% endif %}
+
+                        {% if posts.has_next %}
+                        <p class="control">
+                            <a class="button is-link is-rounded" href="?page={{ posts.next_page_number }}">Next</a>
+                        </p>
+                        {% endif %}
+
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+</form>
+
+{% endblock content%}
+
+{% block scripts %}
+<script>
+                            $(document).ready(function(){
+                           var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+            label: '# of Votes',
+            data: [12, 19, 3, 5, 2, 3],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+                                            });
+
+
+
+
+</script>
+{% endblock scripts %}
+</body>-->

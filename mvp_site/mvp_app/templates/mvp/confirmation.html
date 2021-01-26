@@ -1,215 +1,289 @@
+{% extends "mvp/base.html" %}
 {% block title %}Submissions{% endblock %}
-
 {% block content %}
 
 {% load static %}
 {% load status %}
-<head>
-    <!-- Required meta tags -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.0/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/dataTables.bulma.min.css">
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- semantic UI -->
-    <link rel="stylesheet" type='text/css'
-          href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
-    <!--Chart js-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
-            integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
-          integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous"/>
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+<!-- Bulma Version 0.9.0-->
+<link rel="stylesheet" href="https://unpkg.com/bulma@0.9.0/css/bulma.min.css"/>
+<link rel="stylesheet" type="text/css" href="../css/admin.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title></title>
-</head>
+<link rel="stylesheet" type='text/css'
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
 
-<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+        integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+      integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous"/>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
 
 <form action="" method="post">
     {% csrf_token %}
-
-    <div class="tile is-ancestor">
-        <div class="tile is-4 is-vertical is-parent">
-            <div class="tile is-child box">
-                <div class="content">
+    <!-- START NAV -->
+    <div class="box">
+        <article class="media">
+            <div class="media-content">
+                <div class="centered-is-widescreen">
                     <nav class="level">
                         <div class="level-item has-text-centered">
-                            <div>
-                                <p class="heading">Start Date</p>
-                                <input type="date" id="start_date" name="trip-start"
-                                       value={{st_d}}
-                                       min="2020-10-26" max="2025-12-31">
-                            </div>
+                            <p><a href="{% url 'hello_mvp'  %}">Home</a>
+                            </p>
                         </div>
 
                         <div class="level-item has-text-centered">
-                            <div>
-                                <p class="heading">End Date</p>
-                                <input type="date" id="end_date" name="trip-end"
-                                       value={{end_date}}
-                                       min="2020-10-26" max="2025-12-31">
-                            </div>
-                        </div>
-                        <div class="level-item has-text-centered">
-                            <div>
-                                <p class="heading"></p>
-                                <button class="button is-info is-rounded" type="submit" name="date_search">Submit
-                                </button>
-                            </div>
+                            <p><a href="{% url 'help_needed'  %}">Help Needed</a>
+                            </p>
                         </div>
 
+                        <div class="level-item has-text-centered">
+                            <p><a href="{% url 'failed'  %}">Failed</a>
+                            </p>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <p>
+                                <a href="{% url 'profile_upload'  %}">Upload via CSV</a>
+                            </p>
+                        </div>
                     </nav>
                 </div>
             </div>
-            <div class="tile is-child box">
-                <div class="content">
-                    <div class="box">
-                        <article class="media">
-                            <div class="media-content">
-                                <div class="centered-is-widescreen">
-                                    <nav class="level">
-                                        <div class="level-item has-text-centered">
-                                            <p><a href="{% url 'hello_mvp'  %}">Home</a>
-                                            </p>
-                                        </div>
+        </article>
+    </div>
+    <!-- END NAV -->
+    <div class="container">
+        <section class="hero">
+            <div class="hero-body">
+                <article class="message">
+                    <div class="message-body">
+                        <div class="content">
+                            <ol type="is-lower-alpha">
+                                <li>Please find all the submissions by the users across all campaigns</li>
+                                <li>Sort the results based on date of submission</li>
+                                <li>Find the status of the ticket based on the request ID</li>
+                                <li>Please find the records bot couldn't complete in help needed page</li>
+                                <li>Status of the bot and its significance</li>
+                                <ol class="is-lower-roman">
+                                    <li>Submission recorded : request info is saved after successful validation</li>
+                                    <li>Bot - request acknowledged : Bot picked up the request</li>
+                                    <li>Bot - Search and Validation : Bot completed searching for the ID in TeleOpti
+                                        site
+                                    </li>
+                                    <li>Bot - Activity code selected : Bot completed selecting the appropriate code in
+                                        TeleOpti site
+                                    </li>
+                                    <li>Complete : Bot plotted the record and completed the request!</li>
+                                </ol>
+                            </ol>
+                        </div>
 
-                                        <div class="level-item has-text-centered">
-                                            <p><a href="{% url 'help_needed'  %}">Help Needed</a>
-                                            </p>
-                                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+        <div class="box">
+            <article class="media">
+                <div class="media-content">
+                    <div class="centered-is-widescreen">
+                        <!--<nav>
+                            <p><strong>Total number of records: </strong>{{total}}</p>
+                            <p><strong>Completed: </strong>{{completed}}</p>
+                            <p><STRONG>In progress: </STRONG>{{inprogress}}</p>
+                            <p><strong>Help Needed: </strong>{{helpneeded}}</p>
+                            <p><strong>Failed: </strong>{{failed}}</p>
+                            <p><STRONG>Total Number of US requests: </STRONG>{{us}}</p>
+                            <p><strong>Total Number of IND requests: </strong>{{ind}}</p>
+                            <p><strong>Total Number of PH requests: </strong>{{ph}}</p>
 
-                                        <div class="level-item has-text-centered">
-                                            <div>
-                                                <p class="heading">
-                                                    <strong>Please enter the Request Ids to search</strong>
-                                                </p>
-                                                <p class="control">
-                                                <div class="field has-addons">
-                                                    <div class="control">
-                                                        <input class="input" type="text" name="key"
-                                                               placeholder="WFM-IRA-##">
-                                                    </div>
-                                                    <div class="control">
-                                                        <button class="button is-info is-rounded" type="submit"
-                                                                value="Search"
-                                                                name="search">
-                                                            Search
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <!--<input class="input" type="text" name="key"
-                                                       placeholder="WFM-IRA-##">
-                                            <button class="button is-info is-rounded" type="submit"
-                                                        value="Search"
-                                                        name="search">Search
-                                                </button>-->
-                                                </p>
-                                            </div>
 
-                                        </div>
-                                    </nav>
+                        </nav>-->
+
+                        <nav class="level">
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Total number of records</p>
+                                    <p class="title">{{total}}</p>
                                 </div>
                             </div>
-                        </article>
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Completed</p>
+                                    <p class="title">{{completed}}</p>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">In Progress</p>
+                                    <p class="title">{{inprogress}}</p>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Help Needed</p>
+                                    <p class="title">{{helpneeded}}</p>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Failed</p>
+                                    <p class="title">{{failed}}</p>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Total US requests</p>
+                                    <p class="title">{{us}}</p>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Total IND requests</p>
+                                    <p class="title">{{ind}}</p>
+                                </div>
+                            </div>
+                            <div class="level-item has-text-centered">
+                                <div>
+                                    <p class="heading">Total PH requests</p>
+                                    <p class="title">{{ph}}</p>
+                                </div>
+                            </div>
+                        </nav>
+
+
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="columns">
+            <div class="column is-6">
+                <section class="hero is-danger is-small">
+                    <div class="content">
+                        <div class="card events-card">
+                            <div class="content">
+                                <canvas id="myChart" width="400" height="400"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+            <div class="column is-6">
+                <div class="card">
+                    <div class="content has-text-centered">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                                Sort by Date Range
+                            </p>
+                            <a href="#" class="card-header-icon" aria-label="more options">
+                  <span class="icon">
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                            </a>
+                        </header>
+                        <div class="card-content">
+                            <div class="content">
+
+                                <nav class="level">
+                                    <div class="level-item has-text-centered">
+                                        <div>
+                                            <p class="heading">Start Date</p>
+                                            <input type="date" id="start_date" name="trip-start"
+                                                   value={{st_d}}
+                                                   min="2020-10-26" max="2025-12-31">
+                                        </div>
+                                    </div>
+
+                                    <div class="level-item has-text-centered">
+                                        <div>
+                                            <p class="heading">End Date</p>
+                                            <input type="date" id="end_date" name="trip-end"
+                                                   value={{end_date}}
+                                                   min="2020-10-26" max="2025-12-31">
+                                        </div>
+                                    </div>
+                                    <div class="level-item has-text-centered">
+                                        <div>
+                                            <p class="heading"></p>
+                                            <button class="button is-info is-rounded" type="submit" name="date_search">
+                                                Submit
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </nav>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="control has-icons-left has-icons-right">
+                                <input class="input is-large" type="text" name="key" placeholder="WFM-IRA-##">
+                                <span class="icon is-medium is-left">
+                      <i class="fa fa-search"></i>
+                    </span>
+                                <span class="icon is-medium is-right">
+                      <i class="fa fa-check"></i>
+                    </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="control has-icons-left has-icons-right">
+                                <input class="input is-large" type="text" name="name" placeholder="User Name">
+                                <span class="icon is-medium is-left">
+                      <i class="fa fa-search"></i>
+                    </span>
+                                <span class="icon is-medium is-right">
+                      <i class="fa fa-check"></i>
+                    </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="content">
+                            <div class="control has-icons-left has-icons-right">
+                                <input class="input is-large" type="text" name="camp" placeholder="Campaign Name">
+                                <span class="icon is-medium is-left">
+                      <i class="fa fa-search"></i>
+                    </span>
+                                <span class="icon is-medium is-right">
+                      <i class="fa fa-check"></i>
+                    </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="content has-text-centered">
+                        <div class="card-content">
+                            <div class="content">
+                                <button class="button is-info is-rounded">Submit</button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
-        <div class="tile is-parent">
-            <div class="tile is-child box">
-                <div class="content">
-                    <canvas id="myChart" width="400" height="400"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="tile is-ancestor">
-        <div class="tile is-parent">
-            <div class="tile is-child box">
-                <div class="content">
-                    <div class="box">
-                        <article class="media">
-                            <div class="media-content">
-                                <div class="centered-is-widescreen">
-                                    <!--<nav>
-                                        <p><strong>Total number of records: </strong>{{total}}</p>
-                                        <p><strong>Completed: </strong>{{completed}}</p>
-                                        <p><STRONG>In progress: </STRONG>{{inprogress}}</p>
-                                        <p><strong>Help Needed: </strong>{{helpneeded}}</p>
-                                        <p><strong>Failed: </strong>{{failed}}</p>
-                                        <p><STRONG>Total Number of US requests: </STRONG>{{us}}</p>
-                                        <p><strong>Total Number of IND requests: </strong>{{ind}}</p>
-                                        <p><strong>Total Number of PH requests: </strong>{{ph}}</p>
-
-
-                                    </nav>-->
-
-                                    <nav class="level">
-                                        <div class="level-item has-text-centered">
-                                            <div>
-                                                <p class="heading">Total number of records</p>
-                                                <p class="title">{{total}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="level-item has-text-centered">
-                                            <div>
-                                                <p class="heading">Completed</p>
-                                                <p class="title">{{completed}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="level-item has-text-centered">
-                                            <div>
-                                                <p class="heading">In Progress</p>
-                                                <p class="title">{{inprogress}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="level-item has-text-centered">
-                                            <div>
-                                                <p class="heading">Help Needed</p>
-                                                <p class="title">{{helpneeded}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="level-item has-text-centered">
-                                            <div>
-                                                <p class="heading">Failed</p>
-                                                <p class="title">{{failed}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="level-item has-text-centered">
-                                            <div>
-                                                <p class="heading">Total US requests</p>
-                                                <p class="title">{{us}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="level-item has-text-centered">
-                                            <div>
-                                                <p class="heading">Total IND requests</p>
-                                                <p class="title">{{ind}}</p>
-                                            </div>
-                                        </div>
-                                        <div class="level-item has-text-centered">
-                                            <div>
-                                                <p class="heading">Total PH requests</p>
-                                                <p class="title">{{ph}}</p>
-                                            </div>
-                                        </div>
-                                    </nav>
-
-
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="tile is-ancestor">
-        <div class="tile is-parent">
-            <div class="tile is-child box">
+        <section class="hero">
+            <div class="hero-body">
                 <div class="content">
                     {% if posts %}
 
@@ -233,7 +307,7 @@
                                             <th><abbr title="Requested By">Requested By</abbr></th>
                                             <th><abbr title="Status">Status</abbr></th>
                                             <th><abbr title="Campaign">Campaign</abbr></th>
-                                            <th>Created At (UTC)</th>
+                                            <th>Created At (Local Time)</th>
                                         </tr>
                                         </thead>
                                         <tfoot>
@@ -280,13 +354,36 @@
                                             <div class="has-text-info">
                                                 <td class="has-text-danger">Help Needed</td>
                                             </div>
+                                            {% elif 'Activity Code' in post.Status %}
+                                            <div class="has-text-info">
+                                                <td class="has-text-dark">Bot - Activity Code selected</td>
+                                            </div>
+                                            {% elif 'Search' in post.Status %}
+                                            <div class="has-text-info">
+                                                <td class="has-text-dark">Bot - Search and validation</td>
+                                            </div>
+                                            {% elif 'Teleopti' in post.Status %}
+                                            <div class="has-text-info">
+                                                <td class="has-text-dark">Bot - Request acknowledged</td>
+                                            </div>
+                                            {% elif 'acknowledged' in post.Status %}
+                                            <div class="has-text-info">
+                                                <td class="has-text-dark">Bot - Request acknowledged</td>
+                                            </div>
+                                            {% elif 'Failed' in post.Status %}
+                                            <div class="has-text-info">
+                                                <td class="has-text-danger">Failed</td>
+                                            </div>
                                             {% else %}
                                             <div class="has-text-danger">
-                                                <td class="has-text-info">In Progress</td>
+                                                <td class="has-text-info">Submission recorded</td>
                                             </div>
                                             {% endif %}
                                             <td>{{ post.Timezone|default:"-" }}</td>
+                                            {% load tz %}
+                                            {% localtime on %}
                                             <td>{{ post.created_at }}</td>
+                                            {% endlocaltime %}
 
 
                                         </tr>
@@ -333,25 +430,24 @@
                 </div>
 
             </div>
-        </div>
+        </section>
     </div>
+    <script async type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 
 
 </form>
-
-{% endblock content%}
 
 {% block scripts %}
 <script>
                             $(document).ready(function(){
                            var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'bar',
+    type: 'pie',
     data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: ['Total number of submissions', 'Completed', 'Help Needed', 'Failed', 'US records', 'India records','PH records'],
         datasets: [{
             label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
+            data: [{{total}},{{completed}}, {{helpneeded}}, {{failed}}, {{us}}, {{in}}, {{ph}}],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
@@ -371,22 +467,18 @@ var myChart = new Chart(ctx, {
             borderWidth: 1
         }]
     },
-    options: {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
-        }
-    }
+
 });
                                             });
 
 
 
 
+
+
+
+
+
 </script>
 {% endblock scripts %}
-</body>
-
+{% endblock content %}

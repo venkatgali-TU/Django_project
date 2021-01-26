@@ -12,16 +12,12 @@ from .forms import MvpForm, TeleOptiUserRequestForm, OverTimeUserRequestForm
 from .models import Mvp
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import csv, io
 from django.shortcuts import render
 from django.contrib import messages
-# Create your views here.
-# one parameter named request
-
 from .serializers import *
 
 CRITICAL = 50
@@ -30,7 +26,6 @@ EMAIL = ""
 NAME = ""
 POSITION = ""
 LOCATION = ""
-
 
 def hello_mvp(request):
     # if this is a POST request we need to process the form data
@@ -160,7 +155,6 @@ def hello_mvp(request):
         # Mvp.objects.filter(emp_ID=request.user.username).update(emp_ID=username)
         # return render(request, "mvp/home.html", context)
 
-
 def data_view(request):
     try:
         locations = {}
@@ -181,6 +175,7 @@ def data_view(request):
         ind = 0
         ph = 0
         us = 0
+        count = 0
         for item in MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]).values_list('user_ID', flat=True):
             if item in locations:
                 if locations[item] == "PH":
@@ -190,8 +185,7 @@ def data_view(request):
                 elif locations[item] == "IND":
                     ind = ind + 1
             else:
-                print("")
-
+                count = count + 1
         total = len(MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]))
         InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
             Status__contains='Help Needed').filter(created_at__range=[s_d, e_d]))
@@ -202,27 +196,56 @@ def data_view(request):
         Failed = len(
             MvpUserRequest.objects.all().filter(Status__contains='Failed').filter(created_at__range=[s_d, e_d]))
         key = request.POST['key']
-        # print(" success data : " + request.POST['key'])
-        all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
-            created_at__range=[s_d, e_d]).order_by('-id')
-        paginator = Paginator(all_objects, 35)
+        name_ = request.POST['name']
+        camp = request.POST['camp']
+        if key == '':
+            if name_ =='':
+                all_objects = MvpUserRequest.objects.all().filter(Timezone__contains=camp).filter(
+                    created_at__range=[s_d, e_d]).order_by('-id')
+            elif camp== '':
+                all_objects = MvpUserRequest.objects.all().filter(
+                    BreakTime__contains=name_).filter(
+                    created_at__range=[s_d, e_d]).order_by('-id')
+        elif name_ == '':
+            if key == '':
+                all_objects = MvpUserRequest.objects.all().filter(Timezone__contains=camp).filter(
+                    created_at__range=[s_d, e_d]).order_by('-id')
+            elif camp == '':
+                all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
+                    created_at__range=[s_d, e_d]).order_by('-id')
+
+        elif camp == '':
+            if name_=='':
+                all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
+                    created_at__range=[s_d, e_d]).order_by('-id')
+            elif key == '':
+                all_objects = MvpUserRequest.objects.all().filter(
+                    BreakTime__contains=name_).filter(
+                    created_at__range=[s_d, e_d]).order_by('-id')
+        elif camp == name_ == key == '':
+            all_objects = MvpUserRequest.objects.all().filter(
+                created_at__range=[s_d, e_d]).order_by('-id')
+        elif camp != '' and name_ != '' and key != '':
+            all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
+                BreakTime__contains=name_).filter(Timezone__contains=camp).filter(
+                created_at__range=[s_d, e_d]).order_by('-id')
+
+        paginator = Paginator(all_objects, 1000)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
-
-        return render(request, 'mvp/data.html',
+        return render(request, 'mvp/confirmation.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
                        'end_date': e_d})
     elif request.method == 'GET':
-
         all_objects = MvpUserRequest.objects.all().order_by('-id')
         s_d = "2020-10-26"
         now = datetime.now()
-        print(now)
         e_d = str(now).split(' ')[0]
         ind = 0
         ph = 0
         us = 0
+        count = 0
         for item in MvpUserRequest.objects.all().values_list('user_ID', flat=True):
             if item in locations:
                 if locations[item] == "PH":
@@ -232,8 +255,7 @@ def data_view(request):
                 elif locations[item] == "IND":
                     ind = ind + 1
             else:
-
-                print("")
+                count = count + 1
 
         total = len(MvpUserRequest.objects.all())
         InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
@@ -248,14 +270,13 @@ def data_view(request):
         # print(" success data : " + request.POST['key'])
 
         all_objects = MvpUserRequest.objects.all().order_by('-id')
-        paginator = Paginator(all_objects, 100)
+        paginator = Paginator(all_objects, 200)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
-        return render(request, 'mvp/data.html',
+        return render(request, 'mvp/confirmation.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
                        'end_date': e_d})
-
 
 def help_needed(request):
     try:
@@ -346,9 +367,6 @@ def failed(request):
 
         return render(request, 'mvp/help_needed.html',
                       {'posts': posts})
-
-
-
 
 def single_user(request, mvp_id, req):
     global MESSAGE
@@ -555,7 +573,6 @@ def single_user(request, mvp_id, req):
             context = {}
             context['form'] = form
             return render(request, "mvp/single.html", context)
-
 
 def multi_user(request, mvp_id, req):
     global MESSAGE
@@ -1011,7 +1028,6 @@ def multi_user(request, mvp_id, req):
                 messages.info(request, MESSAGE, fail_silently=True)
                 return render(request, "mvp/multi.html", context)
 
-
 def profile_upload(request):
     # declaring template
     # print("name is: " + request.user.email)
@@ -1207,7 +1223,6 @@ def profile_upload(request):
         prompt['order'] = str(e)
         return render(request, template, prompt)
 
-
 @api_view(['GET', 'POST'])
 def request_list(request):
     """
@@ -1224,7 +1239,6 @@ def request_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def request_detail(request, pk):
@@ -1252,7 +1266,6 @@ def request_detail(request, pk):
     elif request.method == 'DELETE':
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 class MvpViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin,
                  generics.GenericAPIView):  # viewsets.ModelViewSet):
