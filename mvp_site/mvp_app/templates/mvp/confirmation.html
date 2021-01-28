@@ -333,6 +333,7 @@
                                         <font size="1" face="Courier New" >
 
                                         <tr>
+                                            {% load filter %}
                                             <th>{{ post.Name}}</th>
                                             <td>{{ post.user_ID}}
                                             </td>
@@ -382,9 +383,15 @@
                                             </div>
                                             {% endif %}
                                             <td>{{ post.Timezone|default:"-" }}</td>
-                                            {% load tz %}
 
+                                            {% if '$$$' in post.created_at %}
+                                            {% load filter %}
+                                            {% load tz %}
+                                            <td>{{ post.created_at|split:'$$$'|first|timezone:my_timezone }}</td>
+                                            {% else %}
+                                            {% load tz %}
                                             <td>{{ post.created_at|timezone:my_timezone }}</td>
+                                            {% endif %}
 
 
 

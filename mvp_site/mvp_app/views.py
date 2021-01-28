@@ -423,10 +423,23 @@ def single_user(request, mvp_id, req):
                     return render(request, "mvp/single.html", context)
                 else:
                     mvp_model = form.save()
+                    try:
+                        campaigns = {}
+                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                            reader = csv.reader(f)
+                            for row in reader:
+                                if len(row) > 1:
+                                    campaigns[row[0]] = row[1]
+                    except:
+                        context = {'user_ID' : 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
+                    camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Timezone=camp)
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Name='WFM-IRA-SOT-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         BreakTime=NAME)
+
 
                     MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "$User ID : " + str(
                         form.cleaned_data['user_ID']) + " $Start Date : " + str(
@@ -536,6 +549,19 @@ def single_user(request, mvp_id, req):
                     for mess in mess_split:
                         messages.success(request, mess)
                     mvp_model = form.save()
+                    try:
+                        campaigns = {}
+                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                            reader = csv.reader(f)
+                            for row in reader:
+                                if len(row) > 1:
+                                    campaigns[row[0]] = row[1]
+                    except:
+                        context = {
+                            'user_ID': 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
+                    camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Timezone=camp)
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Name='WFM-IRA-STEL-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
@@ -642,9 +668,23 @@ def multi_user(request, mvp_id, req):
                     return render(request, "mvp/multi.html", context)
                 else:
                     mvp_model = form.save()
+                    context = {}
+                    try:
+                        campaigns = {}
+                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                            reader = csv.reader(f)
+                            for row in reader:
+                                if len(row) > 1:
+                                    campaigns[row[0]] = row[1]
+                    except:
+                        context = {
+                            'user_ID': 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
+                    camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Timezone=camp)
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-MOT-S-' + str(mvp_id))
-                    context = {}
+
 
                     new_form = OverTimeUserRequestForm()
                     context['form'] = new_form
@@ -735,6 +775,23 @@ def multi_user(request, mvp_id, req):
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-MOT-E' + str(mvp_id))
                     context = {}
+                    try:
+                        campaigns = {}
+                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                            reader = csv.reader(f)
+                            for row in reader:
+                                if len(row) > 1:
+                                    campaigns[row[0]] = row[1]
+                        camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
+                    except:
+                        camp = 'Cannot find the right campaign for the User, Please check with digital@taskus.com'
+                        context = {
+                            'user_ID': 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
+
+                    #camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Timezone=camp)
+
 
                     new_form = OverTimeUserRequestForm()
                     context['form'] = new_form
@@ -874,6 +931,19 @@ def multi_user(request, mvp_id, req):
                     return render(request, "mvp/multi.html", context)
                 else:
                     mvp_model = form.save()
+                    try:
+                        campaigns = {}
+                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                            reader = csv.reader(f)
+                            for row in reader:
+                                if len(row) > 1:
+                                    campaigns[row[0]] = row[1]
+                    except:
+                        context = {
+                            'user_ID': 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
+                    camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Timezone=camp)
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-MTEL-S' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
@@ -958,6 +1028,19 @@ def multi_user(request, mvp_id, req):
                     return render(request, "mvp/multi.html", context)
                 else:
                     mvp_model = form.save()
+                    try:
+                        campaigns = {}
+                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                            reader = csv.reader(f)
+                            for row in reader:
+                                if len(row) > 1:
+                                    campaigns[row[0]] = row[1]
+                    except:
+                        context = {
+                            'user_ID': 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
+                    camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
+                    MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
+                        Timezone=camp)
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-MTEL-E' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(

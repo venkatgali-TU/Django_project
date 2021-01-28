@@ -8,4 +8,9 @@ def split(value, key):
     """
       Returns the value turned into a list.
     """
-    return value.split(key)
+    if isinstance(value,str):
+        return value.split(key)
+    else:
+        temp_value = str(value)
+        return temp_value.split(key)
+
