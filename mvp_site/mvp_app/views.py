@@ -195,6 +195,13 @@ def data_view(request):
     if timezone == '':
         print('here')
         timezone = 'US/Pacific'
+    current_processing_record = MvpUserRequest.objects.all().filter(
+            Status__contains='Bot').values_list('Name',flat=True)
+    if len(current_processing_record)>0:
+        for items in current_processing_record:
+            curr = items
+    else:
+         curr = "No requests in progress, please refresh!"
 
     if request.method == "POST":
         print("--")
@@ -204,6 +211,8 @@ def data_view(request):
         ind = 0
         ph = 0
         us = 0
+        gr = 0
+        mx = 0
         count = 0
         for item in MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]).values_list('user_ID', flat=True):
             if item in locations:
@@ -213,8 +222,12 @@ def data_view(request):
                     us = us + 1
                 elif locations[item] == "IND":
                     ind = ind + 1
+                elif locations[item] == "GR":
+                    gr = gr + 1
+                else:
+                    mx = mx + 1
             else:
-                count = count + 1
+                count = count +1
         total = len(MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]))
         InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
             Status__contains='Help Needed').filter(created_at__range=[s_d, e_d]))
@@ -265,7 +278,7 @@ def data_view(request):
         return render(request, 'mvp/confirmation.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
-                       'end_date': e_d,'my_timezone':timezone})
+                       'end_date': e_d,'my_timezone':timezone,'curr':curr,'mx':mx,'gr':gr})
     elif request.method == 'GET':
         all_objects = MvpUserRequest.objects.all().order_by('-id')
         s_d = "2020-10-26"
@@ -275,6 +288,8 @@ def data_view(request):
         ph = 0
         us = 0
         count = 0
+        gr = 0
+        mx = 0
         for item in MvpUserRequest.objects.all().values_list('user_ID', flat=True):
             if item in locations:
                 if locations[item] == "PH":
@@ -283,8 +298,12 @@ def data_view(request):
                     us = us + 1
                 elif locations[item] == "IND":
                     ind = ind + 1
+                elif locations[item] == "GR":
+                    gr = gr + 1
+                else:
+                    mx = mx + 1
             else:
-                count = count + 1
+                count = count +1
 
         total = len(MvpUserRequest.objects.all())
         InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
@@ -305,7 +324,7 @@ def data_view(request):
         return render(request, 'mvp/confirmation.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
-                       'end_date': e_d,'my_timezone':timezone})
+                       'end_date': e_d,'my_timezone':timezone,'curr':curr,'mx':mx,'gr':gr})
 
 def help_needed(request):
     try:
@@ -386,8 +405,6 @@ def failed(request):
         return render(request, 'mvp/help_needed.html',
                       {'posts': posts})
     elif request.method == 'GET':
-        print("--")
-        print(request.POST)
 
         all_objects = MvpUserRequest.objects.all().filter(Status__contains='Failed').order_by('-id')
         paginator = Paginator(all_objects, 100)

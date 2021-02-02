@@ -177,6 +177,14 @@
 
             </div>
             <div class="column is-6">
+                <article class="message is-info">
+                    <div class="message-header">
+                        <p>Current request in progress</p>
+                    </div>
+                    <div class="message-body">
+                        {{curr}}
+                    </div>
+                </article>
                 <div class="card">
                     <div class="content has-text-centered">
                         <header class="card-header">
@@ -330,72 +338,71 @@
                                         <tbody>
 
                                         {% for post in posts %}
-                                        <font size="1" face="Courier New" >
+                                        <font size="1" face="Courier New">
 
-                                        <tr>
-                                            {% load filter %}
-                                            <th>{{ post.Name}}</th>
-                                            <td>{{ post.user_ID}}
-                                            </td>
-                                            <td>{{ post.Start_Date }}</td>
-                                            <td>{{ post.Start_Time }}</td>
-                                            <td>{{ post.End_Date }}</td>
-                                            <td>{{ post.End_Time }}</td>
-                                            <td>{{ post.Activity|default:"-" }}</td>
-                                            <td>{{ post.Mul_Over|default:"-" }}</td>
-                                            {% if 'Uknown' in post.BreakTime %}
-                                            <td> Unknown User</td>
-                                            {%else%}
-                                            <td>{{ post.BreakTime|default:"-" }}</td>
-                                            {%endif%}
+                                            <tr>
+                                                {% load filter %}
+                                                <th>{{ post.Name}}</th>
+                                                <td>{{ post.user_ID}}
+                                                </td>
+                                                <td>{{ post.Start_Date }}</td>
+                                                <td>{{ post.Start_Time }}</td>
+                                                <td>{{ post.End_Date }}</td>
+                                                <td>{{ post.End_Time }}</td>
+                                                <td>{{ post.Activity|default:"-" }}</td>
+                                                <td>{{ post.Mul_Over|default:"-" }}</td>
+                                                {% if 'Uknown' in post.BreakTime %}
+                                                <td> Unknown User</td>
+                                                {%else%}
+                                                <td>{{ post.BreakTime|default:"-" }}</td>
+                                                {%endif%}
 
-                                            {% if 'Complete' in post.Status %}
-                                            <div class="has-text-info">
-                                                <td class="has-text-success">Complete</td>
-                                            </div>
-                                            {% elif 'Help Needed' in post.Status %}
-                                            <div class="has-text-info">
-                                                <td class="has-text-danger">Help Needed</td>
-                                            </div>
-                                            {% elif 'Activity Code' in post.Status %}
-                                            <div class="has-text-info">
-                                                <td class="has-text-dark">Bot - Activity Code selected</td>
-                                            </div>
-                                            {% elif 'Search' in post.Status %}
-                                            <div class="has-text-info">
-                                                <td class="has-text-dark">Bot - Search and validation</td>
-                                            </div>
-                                            {% elif 'Teleopti' in post.Status %}
-                                            <div class="has-text-info">
-                                                <td class="has-text-dark">Bot - Request acknowledged</td>
-                                            </div>
-                                            {% elif 'acknowledged' in post.Status %}
-                                            <div class="has-text-info">
-                                                <td class="has-text-dark">Bot - Request acknowledged</td>
-                                            </div>
-                                            {% elif 'Failed' in post.Status %}
-                                            <div class="has-text-info">
-                                                <td class="has-text-danger">Failed</td>
-                                            </div>
-                                            {% else %}
-                                            <div class="has-text-danger">
-                                                <td class="has-text-info">Submission recorded</td>
-                                            </div>
-                                            {% endif %}
-                                            <td>{{ post.Timezone|default:"-" }}</td>
+                                                {% if 'Complete' in post.Status %}
+                                                <div class="has-text-info">
+                                                    <td class="has-text-success">Complete</td>
+                                                </div>
+                                                {% elif 'Help Needed' in post.Status %}
+                                                <div class="has-text-info">
+                                                    <td class="has-text-danger">Help Needed</td>
+                                                </div>
+                                                {% elif 'Activity Code' in post.Status %}
+                                                <div class="has-text-info">
+                                                    <td class="has-text-dark">Bot - Activity Code selected</td>
+                                                </div>
+                                                {% elif 'Search' in post.Status %}
+                                                <div class="has-text-info">
+                                                    <td class="has-text-dark">Bot - Search and validation</td>
+                                                </div>
+                                                {% elif 'Teleopti' in post.Status %}
+                                                <div class="has-text-info">
+                                                    <td class="has-text-dark">Bot - Request acknowledged</td>
+                                                </div>
+                                                {% elif 'acknowledged' in post.Status %}
+                                                <div class="has-text-info">
+                                                    <td class="has-text-dark">Bot - Request acknowledged</td>
+                                                </div>
+                                                {% elif 'Failed' in post.Status %}
+                                                <div class="has-text-info">
+                                                    <td class="has-text-danger">Failed</td>
+                                                </div>
+                                                {% else %}
+                                                <div class="has-text-danger">
+                                                    <td class="has-text-info">Submission recorded</td>
+                                                </div>
+                                                {% endif %}
+                                                <td>{{ post.Timezone|default:"-" }}</td>
 
-                                            {% if '$$$' in post.created_at %}
-                                            {% load filter %}
-                                            {% load tz %}
-                                            <td>{{ post.created_at|split:'$$$'|first|timezone:my_timezone }}</td>
-                                            {% else %}
-                                            {% load tz %}
-                                            <td>{{ post.created_at|timezone:my_timezone }}</td>
-                                            {% endif %}
+                                                {% if '$$$' in post.created_at %}
+                                                {% load filter %}
+                                                {% load tz %}
+                                                <td>{{ post.created_at|split:'$$$'|first|timezone:my_timezone }}</td>
+                                                {% else %}
+                                                {% load tz %}
+                                                <td>{{ post.created_at|timezone:my_timezone }}</td>
+                                                {% endif %}
 
 
-
-                                        </tr>
+                                            </tr>
                                         </font>
 
                                         {%endfor%}
@@ -488,6 +495,7 @@ var myChart = new Chart(ctx, {
 
 });
                                             });
+
 
 
 

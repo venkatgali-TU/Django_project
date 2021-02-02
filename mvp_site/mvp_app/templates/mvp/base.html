@@ -35,11 +35,15 @@
             <span class="navbar-item">
                {% if user.is_authenticated %}
                         <p class="title is-4">Welcome, <strong>{{ user.first_name|default:'seems like you are not logged in. Please login to continue' }}</strong>!</p>
+
                         {% else %}
                         <p class="title is-4">Please login here with your <a href="{% provider_login_url 'google' %}">TaskUs GMail account</a>
                         </p>
                         {% endif %}
             </span>
+                        <span class="navbar-item">
+  <img class="is-rounded" src="{{ user.socialaccount_set.all.0.get_avatar_url }}">
+                        </span>
                     </div>
                 </div>
             </div>
