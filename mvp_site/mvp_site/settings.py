@@ -68,21 +68,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mvp_site.wsgi.application'
 SECURE_SSL_REDIRECT = False
-
 DATABASES = {
     'default': {
-        'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'Django_Application',
-        'USER': 'dbadmin',
-        'PASSWORD': 'ySpW<O:UWfx8jBFd',
-        'HOST': 'orawslp00dgtldb00.cj7ffjcrofvi.us-west-2.rds.amazonaws.com',
-        'PORT': '1433',
-        'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server'
-        }
-
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': str(BASE_DIR / "db.sqlite3"),
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'sql_server.pyodbc',
+#         'NAME': 'Django_Application',
+#         'USER': 'dbadmin',
+#         'PASSWORD': 'ySpW<O:UWfx8jBFd',
+#         'HOST': 'orawslp00dgtldb00.cj7ffjcrofvi.us-west-2.rds.amazonaws.com',
+#         'PORT': '1433',
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 17 for SQL Server'
+#         }
+#
+#     }
+# }
 #
 # DATABASES = {
 #     'default': {

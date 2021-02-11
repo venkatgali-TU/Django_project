@@ -6,14 +6,14 @@ from rest_framework import routers
 
 from django.urls import path, include
 from .views import hello_mvp, single_user, multi_user, MvpViewSet, data_view, request_detail, help_needed, request_list, \
-    profile_upload, failed
+    profile_upload, failed, tap_view
 
 router = routers.DefaultRouter()
 router.register(r'irabot', MvpViewSet)
 
 urlpatterns = [
     path('', hello_mvp, name='hello_mvp'),
-    path('data/', data_view, name='data_view'),
+    path('data/', tap_view, name='data_view'),
     path('helpneeded/', help_needed, name='help_needed'),
     path('failed/', failed, name='failed'),
     path('single/<int:mvp_id>/<str:req>', single_user, name='single_user'),

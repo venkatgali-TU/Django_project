@@ -1,0 +1,148 @@
+{% extends "mvp/base.html" %}
+{% block title %}TaskUs Tap{% endblock %}
+{% block content %}
+
+{% load static %}
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+<!-- Bulma Version 0.9.0-->
+<link rel="stylesheet" href="https://unpkg.com/bulma@0.9.0/css/bulma.min.css"/>
+<link rel="stylesheet" type="text/css" href="../css/admin.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<link rel="stylesheet" type='text/css'
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+        integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+      integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous"/>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="columns">
+        <div class="column">
+            <section class="hero">
+                <div class="hero-body">
+                    <div class="container has-text-centered">
+                        <h1 class="title is-1 has-text-danger">TaskTap - Digital</h1>
+                    </div>
+                </div>
+            </section>
+            <section class="hero">
+                <div class="hero-body">
+                    <ul class="notification">
+                        <li>
+                            {{order}}
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <section class="hero">
+                <div class="hero-body">
+                    <h1 class="title is-4">Thanks for the submission! please check the selected channel</h1>
+                </div>
+            </section>
+            <section class="hero">
+                <div class="hero-body">
+                    <figure class="image is-640x640">
+                        {% load static %}
+                        <img src="{% static 'images/lizardbear.jpg' %}">
+                    </figure>
+                </div>
+            </section>
+            <section class="hero">
+                <div class="hero-body">
+                   <div class="container has-text-centered">
+                        <a class="bd-notification is-primary is-size-2"
+                                               href="{% url 'data_view'  %}">Go Back!</a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+        <div class="column">
+
+            <figure class="image is-1by1">
+                {% load static %}
+                <img src="{% static 'images/ramesh.png' %}">
+            </figure>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+ window.onload = function() {
+    console.log("Hello world!");
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'none';
+}
+function channelCheck() {
+    console.log("In");
+    if (document.getElementById('email').checked) {
+    console.log("Email");
+    document.getElementById('email_').style.display = 'block';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'none';
+    }
+    else if(document.getElementById('whatsapp').checked) {
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'block';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'none';
+   }
+   else if(document.getElementById('sms').checked) {
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'block';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'none';
+   }
+   else if(document.getElementById('slack').checked) {
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'block';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'none';
+   }
+   else if(document.getElementById('twbuddy').checked) {
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'block';
+    document.getElementById('googlechat_').style.display = 'none';
+   }
+   else if(document.getElementById('googlechat').checked) {
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'block';
+   }
+}
+
+
+
+
+
+</script>
+{% endblock content %}

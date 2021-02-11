@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+import os
+from twilio.rest import Client
 
 import urllib3
 from django.core.mail import send_mail
@@ -6,6 +8,12 @@ from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from rest_framework import generics, mixins
 from django.core.mail import EmailMessage
+from datetime import datetime
+import collections
+import gspread
+from apiclient.discovery import build
+from httplib2 import Http
+from oauth2client.service_account import ServiceAccountCredentials
 
 # Create your views here.
 from .forms import MvpForm, TeleOptiUserRequestForm, OverTimeUserRequestForm
@@ -26,6 +34,7 @@ EMAIL = ""
 NAME = ""
 POSITION = ""
 LOCATION = ""
+
 
 def hello_mvp(request):
     # if this is a POST request we need to process the form data
@@ -155,10 +164,183 @@ def hello_mvp(request):
         # Mvp.objects.filter(emp_ID=request.user.username).update(emp_ID=username)
         # return render(request, "mvp/home.html", context)
 
+
+def tap_view(request):
+    order = "Please select a channel of your choice and a message to broadcast!"
+
+    if request.method == "POST":
+        try:
+            if request.POST['submit'] == 'Submit':
+                print(request.POST)
+                for items in request.POST:
+                    if 'email' in items:
+                        if request.POST['message_'] is None:
+                            order = "Please provide the message!"
+                            return render(request, 'mvp/data.html', {'order': order})
+                        else:
+                            if request.POST['email_'] is None or "@taskus.com" not in request.POST['email_']:
+                                order = "Please provide the correct email address!"
+                                return render(request, 'mvp/data.html', {'order': order})
+                            else:
+                                msg = EmailMessage('TaskTap - Email notification ', request.POST['message_'],
+                                                   'svc.aacr@taskus.com',
+                                                   [request.POST['email_'], 'venkat.gali@taskus.com'])
+                                msg.send()
+                                order = "Broadcast was successful!"
+                        return render(request, 'mvp/thanks_submission.html', {'order': order})
+                    elif 'slack' in items:
+                        if request.POST['message_'] is None:
+                            order = "Please provide the message!"
+                            return render(request, 'mvp/data.html', {'order': order})
+                        else:
+                            if request.POST['slack_'] is None:
+                                order = "Please provide the slack workspace!"
+                                return render(request, 'mvp/data.html', {'order': order})
+                            else:
+                                str_post = request.POST['message_']
+                                final_obj = {
+
+                                    "text": str_post
+
+                                }
+                                headers = {
+                                    "Content-type": "application/json"
+                                }
+                                req_new = requests.post(
+                                    "https://hooks.slack.com/services/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",
+                                    headers=headers, json=final_obj)
+
+                                order = "Broadcast was successful!"
+                        return render(request, 'mvp/thanks_submission.html', {'order': order})
+                    elif 'googlechat' in items:
+                        if request.POST['message_'] is None:
+                            order = "Please provide the message!"
+                            return render(request, 'mvp/data.html', {'order': order})
+                        else:
+                            if request.POST['googlechat_'] is None:
+                                order = "Please provide the correct email address!"
+                                return render(request, 'mvp/data.html', {'order': order})
+                            else:
+                                jsonKeyFilePath = r"/Users/venkatgali/Downloads/rpachatbot-283314-3f167aa77833.json"
+                                # jsonKeyFilePath = r"D:\Users\svc.autoataskus15\Downloads\rpachatbot-283314-3f167aa77833.json"
+                                scopes = 'https://www.googleapis.com/auth/chat.bot'
+                                credentials = ServiceAccountCredentials.from_json_keyfile_name(jsonKeyFilePath, scopes)
+                                chat = build('chat', 'v1', http=credentials.authorize(Http()))
+                                displayName = "Ramesh Personal"
+                                isRichText = "T"
+                                chatMessage = request.POST['message_']
+
+                                if isRichText == 'T':
+                                    cards = [
+                                        {
+                                            "sections": [
+                                                {
+                                                    "widgets": [
+                                                        {
+                                                            "textParagraph": {
+                                                                "text": chatMessage
+                                                            }
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                # get the list of all spaces bot is part of
+                                r = ""
+                                resp = chat.spaces().list(pageSize=100).execute()
+                                pagetoken = resp.get('nextPageToken')
+                                nextpagetoken = pagetoken  # meaningful name; can delete the other one
+                                currpageresults = resp.get('spaces')  # this page results
+                                list_spaces = {}  # to hold all spaces
+                                # print("*******")
+                                # print(len(currpageresults))
+                                # print(nextpagetoken)
+                                # print("*******")
+                                while len(currpageresults) != 0:
+                                    # for space in resp.get('spaces'):
+                                    # list_spaces.append(str(space.get('name'))[7:])
+                                    for space in currpageresults:
+                                        list_spaces[str(space.get('name'))[7:]] = space.get('displayName')
+                                    # print("entering loop next page name=" + nextpagetoken +" "+str(len(nextpagetoken)))
+                                    if len(nextpagetoken) != 0:
+                                        respcallnextpage = chat.spaces().list(pageSize=100,
+                                                                              pageToken=nextpagetoken).execute()
+                                        currpageresults = respcallnextpage.get(
+                                            'spaces')  # update current results with new results
+                                        nextpagetoken = respcallnextpage.get('nextPageToken')
+                                        # print("******")
+                                        # print("Inside loop next page results =" + str(len(currpageresults)))
+                                        # print("Inside loop next page name=" + nextpagetoken)
+                                        # print("********")
+                                    else:
+                                        currpageresults = []  # pagetoken is empty; we can assume that there are no more results
+                                        nextpagetoken = ""  # this should be null here anyway; setting to null for understanding
+                                # resp_t = chat.spaces().list(pageSize=100, pageToken=resp.get(pagetoken)).execute()
+                                # nextpageresults = resp_t.get('spaces')
+                                # print(len(nextpageresults))
+                                # while len(nextpageresults) !=0:
+                                #   for spacese in resp_t.get('spaces'):
+                                #      list_spaces.append(str(spacese.get('name'))[7:])
+                                # pagetoken = resp_t.get('nextPageToken')
+                                # print(pagetoken)
+                                # resp_t = chat.spaces().list(pageSize=100, pageToken=pagetoken).execute()
+                                # nextpageresults = resp_t.get('spaces')
+                                # print(len(nextpageresults))
+
+                                today_day = datetime.now().day
+                                today_month = datetime.now().month
+                                today_year = datetime.now().year
+                                thread_key = str(today_day) + str(today_month) + str(today_year)
+                                # print(thread_key)
+                                for key, value in list_spaces.items():
+                                    if value == displayName:
+                                        print('spaces/' + key + '/messages/TestName')
+                                        r = chat.spaces().messages().create(parent='spaces/' + key,
+                                                                            threadKey=thread_key,
+                                                                            body={'text': chatMessage}).execute()
+                                order = "Broadcast was successful!"
+                        return render(request, 'mvp/thanks_submission.html', {'order': order})
+                    elif 'sms' in items:
+                        if request.POST['message_'] is None:
+                            order = "Please provide the message!"
+                            return render(request, 'mvp/data.html', {'order': order})
+                        else:
+                            if request.POST['sms_'] is None or len(request.POST['sms_']) != 12 or "+1" not in request.POST['sms_'] :
+                                order = "Please provide the correct phone number!"
+                                return render(request, 'mvp/data.html', {'order': order})
+                            else:
+                                # Download the helper library from https://www.twilio.com/docs/python/install
+
+                                # Your Account Sid and Auth Token from twilio.com/console
+                                # and set the environment variables. See http://twil.io/secure
+                                account_sid = 'ACdb12be9b7c5c303bc3fc379452ba9b40'
+                                auth_token = 'd598e8bdf2e5eceee24365516e53bf5b'
+                                client = Client(account_sid, auth_token)
+
+                                message = client.messages.create(
+                                    body=request.POST['message_'],
+                                    from_='+14842091201',
+                                    to=str(request.POST['sms_'])
+                                )
+                                message.sid
+
+                                order = "Broadcast was successful!"
+                        return render(request, 'mvp/thanks_submission.html', {'order': order})
+            else:
+                order = "Successfully cleared the input!"
+                return render(request, 'mvp/data.html', {'order': order})
+        except Exception as e:
+            order = "please select one (only) channel of communication!"
+            return render(request, 'mvp/data.html', {'order': e})
+    else:
+        return render(request, 'mvp/data.html', {'order': order})
+
+
 def data_view(request):
     try:
         locations = {}
-        with open(r'C:\Users\vg3054204\Desktop\roster_location.csv', 'rt') as f:
+        with open(r'/Users/venkatgali/Documents/Django/roster_location.csv', 'rt') as f:
             reader = csv.reader(f)
             for row in reader:
                 if len(row) > 1:
@@ -170,21 +352,22 @@ def data_view(request):
         with open(r'C:\Users\vg3054204\Desktop\roster_timezone.csv', 'rt') as f:
             reader = csv.reader(f)
             for row in reader:
-                if len(row) != 0 and row[0] != '' and row[1] != '' and str(row[0]).lower() == str(request.user.email).lower():
+                if len(row) != 0 and row[0] != '' and row[1] != '' and str(row[0]).lower() == str(
+                        request.user.email).lower():
                     timezone = row[1]
                     if timezone == 'Central Standard Time':
                         timezone = 'US/Central'
-                    elif timezone =='Singapore Standard Time':
+                    elif timezone == 'Singapore Standard Time':
                         timezone = 'Asia/Singapore'
                     elif timezone == 'Eastern Standard Time':
                         timezone = 'US/Eastern'
                     elif timezone == 'GTB Standard Time':
                         timezone = 'Etc/GMT'
-                    elif timezone =='India Standard Time':
+                    elif timezone == 'India Standard Time':
                         timezone = 'Asia/Kolkata'
                     elif timezone == 'Pacific Standard Time':
                         timezone = 'US/Pacific'
-                    elif timezone =='Taipei Standard Time':
+                    elif timezone == 'Taipei Standard Time':
                         timezone = 'Asia/Taipei'
                     else:
                         timezone = 'US/Pacific'
@@ -195,13 +378,6 @@ def data_view(request):
     if timezone == '':
         print('here')
         timezone = 'US/Pacific'
-    current_processing_record = MvpUserRequest.objects.all().filter(
-            Status__contains='Bot').values_list('Name',flat=True)
-    if len(current_processing_record)>0:
-        for items in current_processing_record:
-            curr = items
-    else:
-         curr = "No requests in progress, please refresh!"
 
     if request.method == "POST":
         print("--")
@@ -211,8 +387,6 @@ def data_view(request):
         ind = 0
         ph = 0
         us = 0
-        gr = 0
-        mx = 0
         count = 0
         for item in MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]).values_list('user_ID', flat=True):
             if item in locations:
@@ -222,12 +396,8 @@ def data_view(request):
                     us = us + 1
                 elif locations[item] == "IND":
                     ind = ind + 1
-                elif locations[item] == "GR":
-                    gr = gr + 1
-                else:
-                    mx = mx + 1
             else:
-                count = count +1
+                count = count + 1
         total = len(MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]))
         InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
             Status__contains='Help Needed').filter(created_at__range=[s_d, e_d]))
@@ -241,10 +411,10 @@ def data_view(request):
         name_ = request.POST['name']
         camp = request.POST['camp']
         if key == '':
-            if name_ =='':
+            if name_ == '':
                 all_objects = MvpUserRequest.objects.all().filter(Timezone__contains=camp).filter(
                     created_at__range=[s_d, e_d]).order_by('-id')
-            elif camp== '':
+            elif camp == '':
                 all_objects = MvpUserRequest.objects.all().filter(
                     BreakTime__contains=name_).filter(
                     created_at__range=[s_d, e_d]).order_by('-id')
@@ -257,7 +427,7 @@ def data_view(request):
                     created_at__range=[s_d, e_d]).order_by('-id')
 
         elif camp == '':
-            if name_=='':
+            if name_ == '':
                 all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
                     created_at__range=[s_d, e_d]).order_by('-id')
             elif key == '':
@@ -278,53 +448,11 @@ def data_view(request):
         return render(request, 'mvp/confirmation.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
-                       'end_date': e_d,'my_timezone':timezone,'curr':curr,'mx':mx,'gr':gr})
+                       'end_date': e_d, 'my_timezone': timezone})
     elif request.method == 'GET':
-        all_objects = MvpUserRequest.objects.all().order_by('-id')
-        s_d = "2020-10-26"
-        now = datetime.now()
-        e_d = str(now).split(' ')[0]
-        ind = 0
-        ph = 0
-        us = 0
-        count = 0
-        gr = 0
-        mx = 0
-        for item in MvpUserRequest.objects.all().values_list('user_ID', flat=True):
-            if item in locations:
-                if locations[item] == "PH":
-                    ph = ph + 1
-                elif locations[item] == "US":
-                    us = us + 1
-                elif locations[item] == "IND":
-                    ind = ind + 1
-                elif locations[item] == "GR":
-                    gr = gr + 1
-                else:
-                    mx = mx + 1
-            else:
-                count = count +1
 
-        total = len(MvpUserRequest.objects.all())
-        InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
-            Status__contains='Help Needed'))
-        Completed = len(
-            MvpUserRequest.objects.all().filter(Status__contains='Complete'))
-        HelpNeeded = len(
-            MvpUserRequest.objects.all().filter(Status__contains='Help Needed'))
-        Failed = len(
-            MvpUserRequest.objects.all().filter(Status__contains='Failed'))
+        return render(request, 'mvp/data.html')
 
-        # print(" success data : " + request.POST['key'])
-
-        all_objects = MvpUserRequest.objects.all().order_by('-id')
-        paginator = Paginator(all_objects, 200)
-        page = request.GET.get('page')
-        posts = paginator.get_page(page)
-        return render(request, 'mvp/confirmation.html',
-                      {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
-                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
-                       'end_date': e_d,'my_timezone':timezone,'curr':curr,'mx':mx,'gr':gr})
 
 def help_needed(request):
     try:
@@ -371,6 +499,7 @@ def help_needed(request):
         return render(request, 'mvp/help_needed.html',
                       {'posts': posts})
 
+
 def failed(request):
     try:
         locations = {}
@@ -405,6 +534,8 @@ def failed(request):
         return render(request, 'mvp/help_needed.html',
                       {'posts': posts})
     elif request.method == 'GET':
+        print("--")
+        print(request.POST)
 
         all_objects = MvpUserRequest.objects.all().filter(Status__contains='Failed').order_by('-id')
         paginator = Paginator(all_objects, 100)
@@ -413,6 +544,7 @@ def failed(request):
 
         return render(request, 'mvp/help_needed.html',
                       {'posts': posts})
+
 
 def single_user(request, mvp_id, req):
     global MESSAGE
@@ -448,7 +580,8 @@ def single_user(request, mvp_id, req):
                                 if len(row) > 1:
                                     campaigns[row[0]] = row[1]
                     except:
-                        context = {'user_ID' : 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
+                        context = {
+                            'user_ID': 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
                     camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Timezone=camp)
@@ -456,7 +589,6 @@ def single_user(request, mvp_id, req):
                         Name='WFM-IRA-SOT-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         BreakTime=NAME)
-
 
                     MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "$User ID : " + str(
                         form.cleaned_data['user_ID']) + " $Start Date : " + str(
@@ -472,15 +604,15 @@ def single_user(request, mvp_id, req):
                     context = {'user_ID': 'WFM-IRA-SOT-' + str(mvp_id)}
                     if "Ind" in LOCATION:
                         data_dict = {"Request_ID": ['WFM-IRA-SOT-' + str(mvp_id)], "User_ID": [str(
-                        form.cleaned_data['user_ID'])], "Start_Date": [str(
-                        form.cleaned_data['Start_Date'])], "Start_Time": [str(
-                        form.cleaned_data['Start_Time'])],
+                            form.cleaned_data['user_ID'])], "Start_Date": [str(
+                            form.cleaned_data['Start_Date'])], "Start_Time": [str(
+                            form.cleaned_data['Start_Time'])],
                                      "End_Date": [str(
-                        form.cleaned_data['End_Date'])],
+                                         form.cleaned_data['End_Date'])],
                                      "End_Time": [str(
-                        form.cleaned_data['End_Time'])], "Activity": [str(
-                        form.cleaned_data['Activity'])], "Mul_Overlap": [str(
-                        form.cleaned_data['Mul_Over'])], }
+                                         form.cleaned_data['End_Time'])], "Activity": [str(
+                                form.cleaned_data['Activity'])], "Mul_Overlap": [str(
+                                form.cleaned_data['Mul_Over'])], }
                         html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
@@ -488,7 +620,8 @@ def single_user(request, mvp_id, req):
 
                         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
                         msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                                           [request.user.email, 'venkat.gali@taskus.com','workforce.indore@taskus.com'])
+                                           [request.user.email, 'venkat.gali@taskus.com',
+                                            'workforce.indore@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
                     else:
@@ -593,7 +726,7 @@ def single_user(request, mvp_id, req):
                                          form.cleaned_data['End_Date'])],
                                      "End_Time": [str(
                                          form.cleaned_data['End_Time'])], "Activity": [str(
-                                form.cleaned_data['Activity'])], "Mul_Overlap": "" }
+                                form.cleaned_data['Activity'])], "Mul_Overlap": ""}
                         html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
@@ -645,6 +778,7 @@ def single_user(request, mvp_id, req):
             context = {}
             context['form'] = form
             return render(request, "mvp/single.html", context)
+
 
 def multi_user(request, mvp_id, req):
     global MESSAGE
@@ -701,7 +835,6 @@ def multi_user(request, mvp_id, req):
                         Timezone=camp)
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-MOT-S-' + str(mvp_id))
-
 
                     new_form = OverTimeUserRequestForm()
                     context['form'] = new_form
@@ -805,10 +938,9 @@ def multi_user(request, mvp_id, req):
                         context = {
                             'user_ID': 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
 
-                    #camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
+                    # camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Timezone=camp)
-
 
                     new_form = OverTimeUserRequestForm()
                     context['form'] = new_form
@@ -886,7 +1018,6 @@ def multi_user(request, mvp_id, req):
                                            [request.user.email, 'venkat.gali@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
-
 
                     MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
@@ -1107,7 +1238,7 @@ def multi_user(request, mvp_id, req):
                     temp_list = data_dict['Mul_Overlap']
                     temp_list.append('')
                     data_dict['Mul_Overlap'] = temp_list
-                    #(prod_venv) C:\Users\vg3054204\PycharmProjects\Django_project\mvp_site>python manage.py runserver 0.0.0.0:80
+                    # (prod_venv) C:\Users\vg3054204\PycharmProjects\Django_project\mvp_site>python manage.py runserver 0.0.0.0:80
 
                     if "Ind" in LOCATION:
                         html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
@@ -1156,6 +1287,7 @@ def multi_user(request, mvp_id, req):
                 context['form'] = form
                 messages.info(request, MESSAGE, fail_silently=True)
                 return render(request, "mvp/multi.html", context)
+
 
 def profile_upload(request):
     # declaring template
@@ -1332,7 +1464,6 @@ def profile_upload(request):
 
         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
 
-
         EMAIL = request.user.email
 
         if "Ind" in LOCATION:
@@ -1352,6 +1483,7 @@ def profile_upload(request):
         prompt['order'] = str(e)
         return render(request, template, prompt)
 
+
 @api_view(['GET', 'POST'])
 def request_list(request):
     """
@@ -1368,6 +1500,7 @@ def request_list(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def request_detail(request, pk):
@@ -1395,6 +1528,7 @@ def request_detail(request, pk):
     elif request.method == 'DELETE':
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class MvpViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin,
                  generics.GenericAPIView):  # viewsets.ModelViewSet):

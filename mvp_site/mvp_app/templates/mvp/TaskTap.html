@@ -1,0 +1,228 @@
+{% extends "mvp/base.html" %}
+{% block title %}TaskUs Tap{% endblock %}
+{% block content %}
+
+{% load static %}
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+<!-- Bulma Version 0.9.0-->
+<link rel="stylesheet" href="https://unpkg.com/bulma@0.9.0/css/bulma.min.css"/>
+<link rel="stylesheet" type="text/css" href="../css/admin.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<link rel="stylesheet" type='text/css'
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+        integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+      integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous"/>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="columns">
+        <div class="column">
+
+            <section class="hero">
+                <div class="hero-body">
+                    <div class="container has-text-centered">
+                        <h1 class="title is-1 has-text-link">TaskTap - Digital</h1>
+                    </div>
+                </div>
+            </section>
+            <section class="hero">
+                <div class="hero-body">
+                    <ul class="notification">
+                        <li>
+                            {{order}}
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <div class="field">
+                <label class="label">Channel of communication</label>
+                <div class="control has-icons-left has-icons-right">
+                    <div class="control">
+                        <label class="radio">
+                            <input type="radio" onclick="javascript:channelCheck();" name="email" id="email">
+                            Email
+                        </label>
+                    </div>
+
+                    <div class="control">
+                        <label class="radio">
+                            <input type="radio" onclick="javascript:channelCheck();" name="whatsapp" id="whatsapp">
+                            WhatsApp
+                        </label>
+
+                    </div>
+                    <div class="control">
+                        <label class="radio">
+                            <input type="radio" onclick="javascript:channelCheck();" name="sms" id="sms">
+                            SMS
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label class="radio">
+                            <input type="radio" onclick="javascript:channelCheck();" name="slack" id="slack">
+                            Slack
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label class="radio">
+                            <input type="radio" onclick="javascript:channelCheck();" name="twbuddy" id="twbuddy">
+                            TW Buddy
+                        </label>
+                    </div>
+                    <div class="control">
+                        <label class="radio">
+                            <input type="radio" onclick="javascript:channelCheck();" name="googlechat" id="googlechat">
+                            Google Chat
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="field" id="email_">
+                <label class="label">Email</label>
+                <div class="control has-icons-left has-icons-right">
+                    <input class="input is-success" placeholder="Email input" value="hello@" name="email_">
+                </div>
+            </div>
+            <div class="field">
+                <div id="googlechat_" style="display:none">
+                    <label class="label">G-Chat Room Name</label>
+                    <div class="control has-icons-left has-icons-right">
+                        <input class="input is-success" placeholder="G-Chat room Name input" value=""
+                               name="googlechat_">
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div id="twbuddy_" style="display:none">
+                    <label class="label">Phone-Number</label>
+                    <div class="control has-icons-left has-icons-right">
+                        <input class="input is-success" placeholder="Phone number input" value="+1-" name="twbuddy_">
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div id="whatsapp_" style="display:none">
+                    <label class="label">Phone-Number</label>
+                    <div class="control has-icons-left has-icons-right">
+                        <input class="input is-success" placeholder="Phone number input" value="+1" name="whatsapp_">
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div id="slack_" style="display:none">
+                    <label class="label">Slack Workspace</label>
+                    <div class="control has-icons-left has-icons-right">
+                        <input class="input is-success" placeholder="Slack workspace input" value="#" name="slack_">
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div id="sms_" style="display:none">
+                    <label class="label">Phone-Number</label>
+                    <div class="control has-icons-left has-icons-right">
+                        <input class="input is-success" placeholder="Phone number input" value="+1" name="sms_">
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Message</label>
+                <div class="control">
+                    <input class="textarea is-success" placeholder="Textarea" name="message_">
+                </div>
+            </div>
+            <div class="field is-grouped">
+                <div class="control">
+                    <input class="button is-info is-rounded" type="submit" value="Submit" name="submit">
+                </div>
+                <div class="control">
+                    <input class="button is-danger is-rounded" type="submit" value="Clear" name="submit">
+                </div>
+            </div>
+        </div>
+        <div class="column">
+
+            <figure class="image is-1by1">
+                {% load static %}
+                <img src="{% static 'images/ramesh.png' %}">
+            </figure>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+ window.onload = function() {
+    console.log("Hello world!");
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'none';
+}
+function channelCheck() {
+    console.log("In");
+    if (document.getElementById('email').checked) {
+    console.log("Email");
+    document.getElementById('email_').style.display = 'block';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'none';
+    }
+    else if(document.getElementById('whatsapp').checked) {
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'block';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'none';
+   }
+   else if(document.getElementById('sms').checked) {
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'block';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'none';
+   }
+   else if(document.getElementById('slack').checked) {
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'block';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'none';
+   }
+   else if(document.getElementById('twbuddy').checked) {
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'block';
+    document.getElementById('googlechat_').style.display = 'none';
+   }
+   else if(document.getElementById('googlechat').checked) {
+    document.getElementById('email_').style.display = 'none';
+    document.getElementById('whatsapp_').style.display = 'none';
+    document.getElementById('sms_').style.display = 'none';
+    document.getElementById('slack_').style.display = 'none';
+    document.getElementById('twbuddy_').style.display = 'none';
+    document.getElementById('googlechat_').style.display = 'block';
+   }
+}
+
+
+</script>
+{% endblock content %}
