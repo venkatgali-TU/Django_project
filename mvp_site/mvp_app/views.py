@@ -334,7 +334,8 @@ def tap_view(request):
             order = "please select one (only) channel of communication!"
             return render(request, 'mvp/data.html', {'order': e})
     else:
-        return render(request, 'mvp/data.html', {'order': order})
+        form = MvpForm()
+        return render(request, 'mvp/confirmation.html', {'order': order,'form':form})
 
 
 def data_view(request):
