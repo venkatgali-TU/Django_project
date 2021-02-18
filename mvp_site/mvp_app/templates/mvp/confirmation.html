@@ -15,6 +15,11 @@
 <link rel="stylesheet" type="text/css" href="../css/admin.css">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script src="https://code.highcharts.com/modules/cylinder.js"></script>
+<script src="https://code.highcharts.com/modules/funnel3d.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
 
 <link rel="stylesheet" type='text/css'
       href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
@@ -24,6 +29,21 @@
 <script src="/node_modules/bulma-extensions/bulma-calendar/dist/bulma-calendar.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
       integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous"/>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script src="https://code.highcharts.com/modules/cylinder.js"></script>
+<script src="https://code.highcharts.com/modules/funnel3d.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -51,6 +71,140 @@
   background-color: white;
   overflow: hidden;
 }
+
+
+
+
+
+
+
+
+
+</style>
+<style>
+   .highcharts-figure, .highcharts-data-table table {
+  min-width: 320px;
+  max-width: 660px;
+  margin: 1em auto;
+}
+
+.highcharts-data-table table {
+	font-family: Verdana, sans-serif;
+	border-collapse: collapse;
+	border: 1px solid #EBEBEB;
+	margin: 10px auto;
+	text-align: center;
+	width: 100%;
+	max-width: 500px;
+}
+.highcharts-data-table caption {
+  padding: 1em 0;
+  font-size: 1.2em;
+  color: #555;
+}
+.highcharts-data-table th {
+	font-weight: 600;
+  padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+  padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+  background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+  background: #f1f7ff;
+}
+
+
+
+
+
+</style>
+<style>
+    #container {
+  height: 420px;
+}
+
+.highcharts-figure, .highcharts-data-table table {
+  min-width: 360px;
+  max-width: 600px;
+  margin: 1em auto;
+}
+
+.highcharts-data-table table {
+  font-family: Verdana, sans-serif;
+  border-collapse: collapse;
+  border: 1px solid #EBEBEB;
+  margin: 10px auto;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+}
+.highcharts-data-table caption {
+  padding: 1em 0;
+  font-size: 1.2em;
+  color: #555;
+}
+.highcharts-data-table th {
+	font-weight: 600;
+  padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+  padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+  background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+  background: #f1f7ff;
+}
+
+
+
+
+
+
+</style>
+<style>
+    #container {
+  height: 400px;
+}
+
+.highcharts-figure, .highcharts-data-table table {
+  min-width: 310px;
+  max-width: 800px;
+  margin: 1em auto;
+}
+
+.highcharts-data-table table {
+  font-family: Verdana, sans-serif;
+  border-collapse: collapse;
+  border: 1px solid #EBEBEB;
+  margin: 10px auto;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+}
+.highcharts-data-table caption {
+  padding: 1em 0;
+  font-size: 1.2em;
+  color: #555;
+}
+.highcharts-data-table th {
+  font-weight: 600;
+  padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+  padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+  background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+  background: #f1f7ff;
+}
+
 
 
 </style>
@@ -112,6 +266,9 @@
                             </tr>
                             {% endfor %}
                         </table>
+                        <div class="content has-text-centered">
+                            <button class="button is-info is-rounded">Submit</button>
+                        </div>
                     </div>
                 </article>
             </div>
@@ -151,103 +308,117 @@
                 <div class="content">
                     <div class="card events-card">
                         <div class="content">
-                            <canvas id="myChart" width="10" height="10"></canvas>
+                            <figure class="highcharts-figure">
+                                <div id="pie_chart"></div>
+                            </figure>
                         </div>
                     </div>
                 </div>
             </section>
-
         </div>
         <div class="column">
             <section class="hero is-danger is-small">
                 <div class="content">
                     <div class="card events-card">
                         <div class="content">
-                            <canvas id="myChart1" width="10" height="10"></canvas>
+                            <figure class="highcharts-figure">
+                                <div id="container"></div>
+                            </figure>
                         </div>
                     </div>
                 </div>
             </section>
-
+        </div>
+    </div>
+    <div class="columns">
+        <div class="column">
+            <section class="hero is-danger is-small">
+                <div class="content">
+                    <div class="card events-card">
+                        <div class="content">
+                            <figure class="highcharts-figure">
+                                <div id="container_funnel"></div>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
         <div class="column">
             <section class="hero is-danger is-small">
                 <div class="content">
                     <div class="card events-card">
                         <div class="content">
-                            <canvas id="myChart2" width="10" height="10"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-        <div class="column">
-            <div class="card">
-                <div class="card-content">
-                    <div class="content">
-                        <article class="message is-info">
-                            <div class="message-header">
-                                <p>Current request in progress</p>
-                            </div>
-                            <div class="message-body">
-                                WFM-ST-130-56
-                            </div>
-                        </article>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="content has-text-centered">
-                    <div class="card-content">
-                        <div class="content">
-                            <nav class="level">
-                                <div class="level-item has-text-centered">
-                                    <div>
-                                        <p class="heading">Start Date</p>
-                                        <input type="date" id="start_date" name="trip-start"
-                                               value={{st_d}}
-                                               min="2020-10-26" max="2025-12-31">
+                            <div class="card">
+                                <div class="card-content">
+                                    <div class="content">
+                                        <article class="message is-info">
+                                            <div class="message-header">
+                                                <p>Current request in progress</p>
+                                            </div>
+                                            <div class="message-body">
+                                                WFM-ST-130-56
+                                            </div>
+                                        </article>
                                     </div>
                                 </div>
-                                <div class="level-item has-text-centered">
-                                    <div>
-                                        <p class="heading">End Date</p>
-                                        <input type="date" id="end_date" name="trip-end"
-                                               value={{end_date}}
-                                               min="2020-10-26" max="2025-12-31">
+                            </div>
+                            <div class="card">
+                                <div class="content has-text-centered">
+                                    <div class="card-content">
+                                        <div class="content">
+                                            <nav class="level">
+                                                <div class="level-item has-text-centered">
+                                                    <div>
+                                                        <p class="heading">Start Date</p>
+                                                        <input type="date" id="start_date" name="trip-start"
+                                                               value={{st_d}}
+                                                               min="2020-10-26" max="2025-12-31">
+                                                    </div>
+                                                </div>
+                                                <div class="level-item has-text-centered">
+                                                    <div>
+                                                        <p class="heading">End Date</p>
+                                                        <input type="date" id="end_date" name="trip-end"
+                                                               value={{end_date}}
+                                                               min="2020-10-26" max="2025-12-31">
+                                                    </div>
+                                                </div>
+                                            </nav>
+                                        </div>
                                     </div>
                                 </div>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-content">
-                    <div class="content">
-                        <div class="control has-icons-left has-icons-right">
-                            <input class="input is-large" type="text" name="key"
-                                   placeholder="">
-                            <span class="icon is-medium is-left">
+                            </div>
+                            <div class="card">
+                                <div class="card-content">
+                                    <div class="content">
+                                        <div class="control has-icons-left has-icons-right">
+                                            <input class="input is-large" type="text" name="key"
+                                                   placeholder="">
+                                            <span class="icon is-medium is-left">
                       <i class="fa fa-search"></i>
                     </span>
-                            <span class="icon is-medium is-right">
+                                            <span class="icon is-medium is-right">
                       <i class="fa fa-check"></i>
                     </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="content has-text-centered">
-                    <div class="card-content">
-                        <div class="content">
-                            <button class="button is-info is-rounded">Submit</button>
-                        </div>
-                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="content has-text-centered">
+                                    <div class="card-content">
+                                        <div class="content">
+                                            <button class="button is-info is-rounded">Submit</button>
+                                        </div>
+                                    </div>
 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
     <div class="card">
@@ -674,98 +845,6 @@ for (i = 0; i < acc.length; i++) {
   });
 }
 
-</script>
-<script>
-                            $(document).ready(function(){
-                           var ctx = document.getElementById('myChart').getContext('2d');
-var myChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Completed', 'Help Needed', 'Failed', 'US records', 'India records','PH records'],
-        datasets: [{
-            data: [70, 89, 90, 34, 67, 66],
-            backgroundColor: [
-
-                'Green',
-                'Yellow',
-                'Red',
-                'Purple',
-                'Orange',
-                'Brown'
-            ],
-            borderColor: [
-
-                'Green',
-                'Yellow',
-                'Red',
-                'Purple',
-                'Orange',
-                'Brown'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        title: {
-            display: false,
-            text: 'Total number of Records = {{total}}'
-        }
-    }
-
-
-});
-                                            });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -829,99 +908,6 @@ function yesnoCheck1() {
 
 
 
-</script>
-<script>
-                            $(document).ready(function(){
-                           var ctx = document.getElementById('myChart1').getContext('2d');
-var myChart1 = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Completed', 'Help Needed', 'Failed', 'US records', 'India records','PH records'],
-        datasets: [{
-            data: [70, 89, 90, 34, 67, 66],
-            backgroundColor: [
-
-                'Green',
-                'Yellow',
-                'Red',
-                'Purple',
-                'Orange',
-                'Brown'
-            ],
-            borderColor: [
-
-                'Green',
-                'Yellow',
-                'Red',
-                'Purple',
-                'Orange',
-                'Brown'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-
-        title: {
-            display: false,
-            text: 'Total number of Records = {{total}}'
-        }
-    }
-
-
-});
-                                            });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -931,45 +917,65 @@ var myChart1 = new Chart(ctx, {
 
 </script>
 <script>
-                            $(document).ready(function(){
-                           var ctx = document.getElementById('myChart2').getContext('2d');
-var myChart2 = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Completed', 'Help Needed', 'Failed', 'US records', 'India records','PH records'],
-        datasets: [{
-            data: [70, 89, 90, 34, 67, 66],
-            backgroundColor: [
-
-                'Green',
-                'Yellow',
-                'Red',
-                'Purple',
-                'Orange',
-                'Brown'
-            ],
-            borderColor: [
-
-                'Green',
-                'Yellow',
-                'Red',
-                'Purple',
-                'Orange',
-                'Brown'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        title: {
-            display: false,
-            text: 'Total number of Records = {{total}}'
-        }
-    }
-
-
+   // Radialize the colors
+Highcharts.setOptions({
+  colors: Highcharts.map(Highcharts.getOptions().colors, function (color) {
+    return {
+      radialGradient: {
+        cx: 0.5,
+        cy: 0.3,
+        r: 0.7
+      },
+      stops: [
+        [0, color],
+        [1, Highcharts.color(color).brighten(-0.3).get('rgb')] // darken
+      ]
+    };
+  })
 });
-                                            });
+
+// Build the chart
+Highcharts.chart('pie_chart', {
+  chart: {
+    plotBackgroundColor: null,
+    plotBorderWidth: null,
+    plotShadow: false,
+    type: 'pie'
+  },
+  title: {
+    text: 'Browser market shares in January, 2018'
+  },
+  tooltip: {
+    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+  },
+  accessibility: {
+    point: {
+      valueSuffix: '%'
+    }
+  },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: 'pointer',
+      dataLabels: {
+        enabled: true,
+        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+        connectorColor: 'silver'
+      }
+    }
+  },
+  series: [{
+    name: 'Share',
+    data: [
+      { name: 'Chrome', y: 61.41 },
+      { name: 'Internet Explorer', y: 11.84 },
+      { name: 'Firefox', y: 10.85 },
+      { name: 'Edge', y: 4.67 },
+      { name: 'Safari', y: 4.18 },
+      { name: 'Other', y: 7.05 }
+    ]
+  }]
+});
 
 
 
@@ -977,55 +983,103 @@ var myChart2 = new Chart(ctx, {
 
 
 
+</script>
+<script>
+// Set up the chart
+Highcharts.chart('container_funnel', {
+  chart: {
+    type: 'funnel3d',
+    options3d: {
+      enabled: true,
+      alpha: 10,
+      depth: 50,
+      viewDistance: 50
+    }
+  },
+  title: {
+    text: 'Highcharts Funnel3D Chart'
+  },
+  plotOptions: {
+    series: {
+      dataLabels: {
+        enabled: true,
+        format: '<b>{point.name}</b> ({point.y:,.0f})',
+        allowOverlap: true,
+        y: 10
+      },
+      neckWidth: '30%',
+      neckHeight: '25%',
+      width: '80%',
+      height: '80%'
+    }
+  },
+  series: [{
+    name: 'Unique users',
+    data: [
+      ['Website visits', 15654],
+      ['Downloads', 4064],
+      ['Requested price list', 1987],
+      ['Invoice sent', 976],
+      ['Finalized', 846]
+    ]
+  }]
+});
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</script>
+<script>
+    Highcharts.chart('container', {
+  chart: {
+    type: 'pie',
+    options3d: {
+      enabled: true,
+      alpha: 45,
+      beta: 0
+    }
+  },
+  title: {
+    text: 'Browser market shares at a specific website, 2014'
+  },
+  accessibility: {
+    point: {
+      valueSuffix: '%'
+    }
+  },
+  tooltip: {
+    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+  },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: 'pointer',
+      depth: 35,
+      dataLabels: {
+        enabled: true,
+        format: '{point.name}'
+      }
+    }
+  },
+  series: [{
+    type: 'pie',
+    name: 'Browser share',
+    data: [
+      ['Firefox', 45.0],
+      ['IE', 26.8],
+      {
+        name: 'Chrome',
+        y: 12.8,
+        sliced: true,
+        selected: true
+      },
+      ['Safari', 8.5],
+      ['Opera', 6.2],
+      ['Others', 0.7]
+    ]
+  }]
+});
 
 
 </script>
