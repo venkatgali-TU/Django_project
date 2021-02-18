@@ -1,4 +1,8 @@
+import smtplib
+import ssl
 from datetime import datetime, timedelta
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 import urllib3
 from django.core.mail import send_mail
@@ -26,6 +30,7 @@ EMAIL = ""
 NAME = ""
 POSITION = ""
 LOCATION = ""
+
 
 def hello_mvp(request):
     # if this is a POST request we need to process the form data
@@ -155,6 +160,7 @@ def hello_mvp(request):
         # Mvp.objects.filter(emp_ID=request.user.username).update(emp_ID=username)
         # return render(request, "mvp/home.html", context)
 
+
 def data_view(request):
     try:
         locations = {}
@@ -170,21 +176,22 @@ def data_view(request):
         with open(r'C:\Users\vg3054204\Desktop\roster_timezone.csv', 'rt') as f:
             reader = csv.reader(f)
             for row in reader:
-                if len(row) != 0 and row[0] != '' and row[1] != '' and str(row[0]).lower() == str(request.user.email).lower():
+                if len(row) != 0 and row[0] != '' and row[1] != '' and str(row[0]).lower() == str(
+                        request.user.email).lower():
                     timezone = row[1]
                     if timezone == 'Central Standard Time':
                         timezone = 'US/Central'
-                    elif timezone =='Singapore Standard Time':
+                    elif timezone == 'Singapore Standard Time':
                         timezone = 'Asia/Singapore'
                     elif timezone == 'Eastern Standard Time':
                         timezone = 'US/Eastern'
                     elif timezone == 'GTB Standard Time':
                         timezone = 'Etc/GMT'
-                    elif timezone =='India Standard Time':
+                    elif timezone == 'India Standard Time':
                         timezone = 'Asia/Kolkata'
                     elif timezone == 'Pacific Standard Time':
                         timezone = 'US/Pacific'
-                    elif timezone =='Taipei Standard Time':
+                    elif timezone == 'Taipei Standard Time':
                         timezone = 'Asia/Taipei'
                     else:
                         timezone = 'US/Pacific'
@@ -196,12 +203,12 @@ def data_view(request):
         print('here')
         timezone = 'US/Pacific'
     current_processing_record = MvpUserRequest.objects.all().filter(
-            Status__contains='Bot').values_list('Name',flat=True)
-    if len(current_processing_record)>0:
+        Status__contains='Bot').values_list('Name', flat=True)
+    if len(current_processing_record) > 0:
         for items in current_processing_record:
             curr = items
     else:
-         curr = "No requests in progress, please refresh!"
+        curr = "No requests in progress, please refresh!"
 
     if request.method == "POST":
         print("--")
@@ -227,7 +234,8 @@ def data_view(request):
                 else:
                     mx = mx + 1
             else:
-                count = count +1
+                print(item)
+                count = count + 1
         total = len(MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]))
         InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
             Status__contains='Help Needed').filter(created_at__range=[s_d, e_d]))
@@ -241,10 +249,10 @@ def data_view(request):
         name_ = request.POST['name']
         camp = request.POST['camp']
         if key == '':
-            if name_ =='':
+            if name_ == '':
                 all_objects = MvpUserRequest.objects.all().filter(Timezone__contains=camp).filter(
                     created_at__range=[s_d, e_d]).order_by('-id')
-            elif camp== '':
+            elif camp == '':
                 all_objects = MvpUserRequest.objects.all().filter(
                     BreakTime__contains=name_).filter(
                     created_at__range=[s_d, e_d]).order_by('-id')
@@ -257,7 +265,7 @@ def data_view(request):
                     created_at__range=[s_d, e_d]).order_by('-id')
 
         elif camp == '':
-            if name_=='':
+            if name_ == '':
                 all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
                     created_at__range=[s_d, e_d]).order_by('-id')
             elif key == '':
@@ -278,7 +286,7 @@ def data_view(request):
         return render(request, 'mvp/confirmation.html',
                       {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
-                       'end_date': e_d,'my_timezone':timezone,'curr':curr,'mx':mx,'gr':gr})
+                       'end_date': e_d, 'my_timezone': timezone, 'curr': curr, 'mx': mx, 'gr': gr})
     elif request.method == 'GET':
         all_objects = MvpUserRequest.objects.all().order_by('-id')
         s_d = "2020-10-26"
@@ -303,7 +311,8 @@ def data_view(request):
                 else:
                     mx = mx + 1
             else:
-                count = count +1
+                print(item)
+                count = count + 1
 
         total = len(MvpUserRequest.objects.all())
         InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
@@ -321,10 +330,11 @@ def data_view(request):
         paginator = Paginator(all_objects, 200)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
-        return render(request, 'mvp/confirmation.html',
-                      {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
+        return render(request, 'mvp/new_UI.html',
+                      {'posts': posts, 'form': MvpForm ,'total': total, 'inprogress': InProgress, 'completed': Completed,
                        'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
-                       'end_date': e_d,'my_timezone':timezone,'curr':curr,'mx':mx,'gr':gr})
+                       'end_date': e_d, 'my_timezone': timezone, 'curr': curr, 'mx': mx, 'gr': gr})
+
 
 def help_needed(request):
     try:
@@ -371,6 +381,7 @@ def help_needed(request):
         return render(request, 'mvp/help_needed.html',
                       {'posts': posts})
 
+
 def failed(request):
     try:
         locations = {}
@@ -414,6 +425,7 @@ def failed(request):
         return render(request, 'mvp/help_needed.html',
                       {'posts': posts})
 
+
 def single_user(request, mvp_id, req):
     global MESSAGE
     # #print("req is :" + req)
@@ -448,7 +460,8 @@ def single_user(request, mvp_id, req):
                                 if len(row) > 1:
                                     campaigns[row[0]] = row[1]
                     except:
-                        context = {'user_ID' : 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
+                        context = {
+                            'user_ID': 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
                     camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Timezone=camp)
@@ -456,7 +469,6 @@ def single_user(request, mvp_id, req):
                         Name='WFM-IRA-SOT-' + str(mvp_id))
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         BreakTime=NAME)
-
 
                     MESSAGE = MESSAGE + "\n" + "\n" + " ---- " + "$User ID : " + str(
                         form.cleaned_data['user_ID']) + " $Start Date : " + str(
@@ -472,15 +484,15 @@ def single_user(request, mvp_id, req):
                     context = {'user_ID': 'WFM-IRA-SOT-' + str(mvp_id)}
                     if "Ind" in LOCATION:
                         data_dict = {"Request_ID": ['WFM-IRA-SOT-' + str(mvp_id)], "User_ID": [str(
-                        form.cleaned_data['user_ID'])], "Start_Date": [str(
-                        form.cleaned_data['Start_Date'])], "Start_Time": [str(
-                        form.cleaned_data['Start_Time'])],
+                            form.cleaned_data['user_ID'])], "Start_Date": [str(
+                            form.cleaned_data['Start_Date'])], "Start_Time": [str(
+                            form.cleaned_data['Start_Time'])],
                                      "End_Date": [str(
-                        form.cleaned_data['End_Date'])],
+                                         form.cleaned_data['End_Date'])],
                                      "End_Time": [str(
-                        form.cleaned_data['End_Time'])], "Activity": [str(
-                        form.cleaned_data['Activity'])], "Mul_Overlap": [str(
-                        form.cleaned_data['Mul_Over'])], }
+                                         form.cleaned_data['End_Time'])], "Activity": [str(
+                                form.cleaned_data['Activity'])], "Mul_Overlap": [str(
+                                form.cleaned_data['Mul_Over'])], }
                         html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
@@ -488,7 +500,8 @@ def single_user(request, mvp_id, req):
 
                         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
                         msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                                           [request.user.email, 'venkat.gali@taskus.com','workforce.indore@taskus.com'])
+                                           [request.user.email, 'venkat.gali@taskus.com',
+                                            'workforce.indore@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
                     else:
@@ -593,7 +606,7 @@ def single_user(request, mvp_id, req):
                                          form.cleaned_data['End_Date'])],
                                      "End_Time": [str(
                                          form.cleaned_data['End_Time'])], "Activity": [str(
-                                form.cleaned_data['Activity'])], "Mul_Overlap": "" }
+                                form.cleaned_data['Activity'])], "Mul_Overlap": ""}
                         html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
                             data_dict.keys()) + '</th></tr>'
                         for row in zip(*data_dict.values()):
@@ -645,6 +658,7 @@ def single_user(request, mvp_id, req):
             context = {}
             context['form'] = form
             return render(request, "mvp/single.html", context)
+
 
 def multi_user(request, mvp_id, req):
     global MESSAGE
@@ -701,7 +715,6 @@ def multi_user(request, mvp_id, req):
                         Timezone=camp)
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Status='WFM-IRA-MOT-S-' + str(mvp_id))
-
 
                     new_form = OverTimeUserRequestForm()
                     context['form'] = new_form
@@ -805,10 +818,9 @@ def multi_user(request, mvp_id, req):
                         context = {
                             'user_ID': 'Cannot find the right campaign for the User, Please check with digital@taskus.com'}
 
-                    #camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
+                    # camp = campaigns[MvpUserRequest.objects.latest('id').user_ID]
                     MvpUserRequest.objects.filter(id=MvpUserRequest.objects.latest('id').id).update(
                         Timezone=camp)
-
 
                     new_form = OverTimeUserRequestForm()
                     context['form'] = new_form
@@ -886,7 +898,6 @@ def multi_user(request, mvp_id, req):
                                            [request.user.email, 'venkat.gali@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
-
 
                     MESSAGE = ""
                     return render(request, "mvp/thanks.html", context)
@@ -1107,7 +1118,7 @@ def multi_user(request, mvp_id, req):
                     temp_list = data_dict['Mul_Overlap']
                     temp_list.append('')
                     data_dict['Mul_Overlap'] = temp_list
-                    #(prod_venv) C:\Users\vg3054204\PycharmProjects\Django_project\mvp_site>python manage.py runserver 0.0.0.0:80
+                    # (prod_venv) C:\Users\vg3054204\PycharmProjects\Django_project\mvp_site>python manage.py runserver 0.0.0.0:80
 
                     if "Ind" in LOCATION:
                         html_email = '<h1>Thanks for your submission!</h1><h1>Submissions:</h1><table cellpadding = "0" cellspacing = "0" width = "640" align = "center" border = "1"><tr><th>' + '</th><th>'.join(
@@ -1156,6 +1167,7 @@ def multi_user(request, mvp_id, req):
                 context['form'] = form
                 messages.info(request, MESSAGE, fail_silently=True)
                 return render(request, "mvp/multi.html", context)
+
 
 def profile_upload(request):
     # declaring template
@@ -1332,7 +1344,6 @@ def profile_upload(request):
 
         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
 
-
         EMAIL = request.user.email
 
         if "Ind" in LOCATION:
@@ -1352,6 +1363,7 @@ def profile_upload(request):
         prompt['order'] = str(e)
         return render(request, template, prompt)
 
+
 @api_view(['GET', 'POST'])
 def request_list(request):
     """
@@ -1369,6 +1381,7 @@ def request_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET', 'PUT', 'DELETE'])
 def request_detail(request, pk):
     """
@@ -1376,6 +1389,7 @@ def request_detail(request, pk):
     """
     try:
         product = MvpUserRequest.objects.get(pk=pk)
+        print(type(pk))
     except MvpUserRequest.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -1395,6 +1409,58 @@ def request_detail(request, pk):
     elif request.method == 'DELETE':
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET', 'POST'])
+def pixel_tracker(request):
+    """
+    Retrieve, update or delete a product instance.
+    """
+
+    if request.method == 'GET':
+        print("GET")
+        return Response(status=status.HTTP_200_OK)
+    elif request.method == 'POST':
+        port = 587
+        smtp_server = "smtp.gmail.com"
+        login = "svc.aacr@taskus.com"  # paste your login
+        password = "L3Ti5H@En6iN3!CaL"  # paste your password
+
+        sender_email = "svc.aacr@taskus.com"
+        receiver_email = "venkat.gali@taskus.com"
+
+        message = MIMEMultipart("alternative")
+        message["Subject"] = "multipart test"
+        message["From"] = sender_email
+        message["To"] = receiver_email
+        message["Disposition-Notification-To"] = sender_email
+        # Write the plain text part
+        text = """Hi, 
+                    Test Email from SVC AACR Automation"""
+
+        # write the HTML part
+        html = """<html> <body> 
+                    <p>Hi,<br> 
+                    Test Email from SVC AACR Automation
+                    </p> </body> </html> """
+
+        # convert both parts to MIMEText objects and add them to the MIMEMultipart message
+        part1 = MIMEText(text, "plain")
+        part2 = MIMEText(html, "html")
+        message.attach(part1)
+        message.attach(part2)
+
+        context = ssl.create_default_context()
+
+        # send your email
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.starttls(context=context)
+            server.ehlo()  # Can be omitted
+            server.login(login, password)
+            server.sendmail(sender_email, receiver_email, message.as_string())
+
+        return Response(status=status.HTTP_200_OK)
+
 
 class MvpViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin,
                  generics.GenericAPIView):  # viewsets.ModelViewSet):

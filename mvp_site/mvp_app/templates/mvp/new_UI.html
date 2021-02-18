@@ -1,0 +1,932 @@
+{% extends "mvp/base.html" %}
+{% block title %}Submissions{% endblock %}
+{% block content %}
+
+{% load static %}
+
+{% load static %}
+{% load status %}
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+<!-- Bulma Version 0.9.0-->
+<link rel="stylesheet" href="https://unpkg.com/bulma@0.9.0/css/bulma.min.css"/>
+<link rel="stylesheet" type="text/css" href="../css/admin.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<link rel="stylesheet" type='text/css'
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+        integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+      integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous"/>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+<!-- Bulma Version 0.9.0-->
+<link rel="stylesheet" href="https://unpkg.com/bulma@0.9.0/css/bulma.min.css"/>
+<link rel="stylesheet" type="text/css" href="../css/admin.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script src="https://code.highcharts.com/modules/cylinder.js"></script>
+<script src="https://code.highcharts.com/modules/funnel3d.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+
+<link rel="stylesheet" type='text/css'
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+<link href="css/admin/style/bulma/bulma-accordion.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"
+        integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+<script src="/node_modules/bulma-extensions/bulma-calendar/dist/bulma-calendar.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css"
+      integrity="sha256-aa0xaJgmK/X74WM224KMQeNQC2xYKwlAt08oZqjeF0E=" crossorigin="anonymous"/>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script src="https://code.highcharts.com/modules/cylinder.js"></script>
+<script src="https://code.highcharts.com/modules/funnel3d.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.accordion {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  transition: 0.4s;
+}
+
+.active, .accordion:hover {
+  background-color: #1E90FF;
+}
+
+.panel {
+  padding: 0 18px;
+  display: none;
+  background-color: white;
+  overflow: hidden;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+</style>
+<style>
+   .highcharts-figure, .highcharts-data-table table {
+  min-width: 320px;
+  max-width: 660px;
+  margin: 1em auto;
+}
+
+.highcharts-data-table table {
+	font-family: Verdana, sans-serif;
+	border-collapse: collapse;
+	border: 1px solid #EBEBEB;
+	margin: 10px auto;
+	text-align: center;
+	width: 100%;
+	max-width: 500px;
+}
+.highcharts-data-table caption {
+  padding: 1em 0;
+  font-size: 1.2em;
+  color: #555;
+}
+.highcharts-data-table th {
+	font-weight: 600;
+  padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+  padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+  background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+  background: #f1f7ff;
+}
+
+
+
+
+
+
+
+
+</style>
+<style>
+    #container {
+  height: 420px;
+}
+
+.highcharts-figure, .highcharts-data-table table {
+  min-width: 360px;
+  max-width: 600px;
+  margin: 1em auto;
+}
+
+.highcharts-data-table table {
+  font-family: Verdana, sans-serif;
+  border-collapse: collapse;
+  border: 1px solid #EBEBEB;
+  margin: 10px auto;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+}
+.highcharts-data-table caption {
+  padding: 1em 0;
+  font-size: 1.2em;
+  color: #555;
+}
+.highcharts-data-table th {
+	font-weight: 600;
+  padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+  padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+  background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+  background: #f1f7ff;
+}
+
+
+
+
+
+
+
+
+
+</style>
+<style>
+    #container {
+  height: 400px;
+}
+
+.highcharts-figure, .highcharts-data-table table {
+  min-width: 310px;
+  max-width: 800px;
+  margin: 1em auto;
+}
+
+.highcharts-data-table table {
+  font-family: Verdana, sans-serif;
+  border-collapse: collapse;
+  border: 1px solid #EBEBEB;
+  margin: 10px auto;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+}
+.highcharts-data-table caption {
+  padding: 1em 0;
+  font-size: 1.2em;
+  color: #555;
+}
+.highcharts-data-table th {
+  font-weight: 600;
+  padding: 0.5em;
+}
+.highcharts-data-table td, .highcharts-data-table th, .highcharts-data-table caption {
+  padding: 0.5em;
+}
+.highcharts-data-table thead tr, .highcharts-data-table tr:nth-child(even) {
+  background: #f8f8f8;
+}
+.highcharts-data-table tr:hover {
+  background: #f1f7ff;
+}
+
+
+
+
+
+
+</style>
+
+<div class="container">
+    <button class="accordion">Click here for FAQ!</button>
+    <div class="panel">
+        <article class="message">
+            <div class="message-body">
+                <div class="content">
+                    <ol type="is-lower-alpha">
+                        <li>Please find all the submissions by the users across all campaigns</li>
+                        <li>Sort the results based on date of submission</li>
+                        <li>Find the status of the ticket based on the request ID</li>
+                        <li>Please find the records bot couldn't complete in help needed page</li>
+                        <li>Status of the bot and its significance</li>
+                        <ol class="is-lower-roman">
+                            <li>Submission recorded : request info is saved after successful validation</li>
+                            <li>Bot - request acknowledged : Bot picked up the request</li>
+                            <li>Bot - Search and Validation : Bot completed searching for the ID in TeleOpti
+                                site
+                            </li>
+                            <li>Bot - Activity code selected : Bot completed selecting the appropriate code in
+                                TeleOpti site
+                            </li>
+                            <li>Complete : Bot plotted the record and completed the request!</li>
+                        </ol>
+                    </ol>
+                </div>
+
+            </div>
+        </article>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div class="content">
+                <article class="message is-info">
+                    <div class="message-header">
+                        <p>Create a new ticket!</p>
+                    </div>
+                    <div class="message-body">
+                        <table class="table is-fullwidth">
+                            {% for field in form.visible_fields %}
+                            <tr>
+                                <th>{{ field.label_tag }}</th>
+                                <td>
+                                    {% if field.errors %}
+                                    <ul>
+                                        {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                    <br/>{{ field.help_text }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        <div class="content has-text-centered">
+                            <button class="button is-info is-rounded">Submit</button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+    <div class="box">
+        <article class="media">
+            <div class="media-content">
+                <div class="centered-is-widescreen">
+                    <nav class="level">
+                        <div class="level-item has-text-centered">
+                            <p><a href="{% url 'hello_mvp'  %}">In progress</a>
+                            </p>
+                        </div>
+
+                        <div class="level-item has-text-centered">
+                            <p><a href="{% url 'help_needed'  %}">Help Needed</a>
+                            </p>
+                        </div>
+
+                        <div class="level-item has-text-centered">
+                            <p><a href="{% url 'failed'  %}">Failed</a>
+                            </p>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <p><a href="{% url 'failed'  %}">Upload via CSV</a>
+                            </p>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </article>
+    </div>
+    <div class="columns">
+        <div class="column">
+            <section class="hero is-danger is-small">
+                <div class="content">
+                    <div class="card events-card">
+                        <div class="content">
+                            <figure class="highcharts-figure">
+                                <div id="pie_chart"></div>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="column">
+            <section class="hero is-danger is-small">
+                <div class="content">
+                    <div class="card events-card">
+                        <div class="content">
+                            <figure class="highcharts-figure">
+                                <div id="container"></div>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div class="columns">
+        <div class="column">
+            <section class="hero is-danger is-small">
+                <div class="content">
+                    <div class="card events-card">
+                        <div class="content">
+                            <figure class="highcharts-figure">
+                                <div id="container_funnel"></div>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="column">
+            <section class="hero is-danger is-small">
+                <div class="content">
+                    <div class="card events-card">
+                        <div class="content">
+                            <article class="message is-info">
+                                <div class="message-header">
+                                    <p>Current request in progress</p>
+                                </div>
+                                <div class="message-body">
+                                    {{curr}}
+                                </div>
+                            </article>
+                            <div class="card">
+                                <div class="content has-text-centered">
+                                    <header class="card-header">
+                                        <p class="card-header-title">
+                                            Sort by Date Range
+                                        </p>
+                                        <a href="#" class="card-header-icon" aria-label="more options">
+                  <span class="icon">
+                    <i class="fa fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                                        </a>
+                                    </header>
+                                    <div class="card-content">
+                                        <div class="content">
+
+                                            <nav class="level">
+                                                <div class="level-item has-text-centered">
+                                                    <div>
+                                                        <p class="heading">Start Date</p>
+                                                        <input type="date" id="start_date" name="trip-start"
+                                                               value={{st_d}}
+                                                               min="2020-10-26" max="2025-12-31">
+                                                    </div>
+                                                </div>
+
+                                                <div class="level-item has-text-centered">
+                                                    <div>
+                                                        <p class="heading">End Date</p>
+                                                        <input type="date" id="end_date" name="trip-end"
+                                                               value={{end_date}}
+                                                               min="2020-10-26" max="2025-12-31">
+                                                    </div>
+                                                </div>
+                                                <!--                                                <div class="level-item has-text-centered">-->
+                                                <!--                                                    <div>-->
+                                                <!--                                                        <p class="heading"></p>-->
+                                                <!--                                                        <button class="button is-info is-rounded" type="submit"-->
+                                                <!--                                                                name="date_search">-->
+                                                <!--                                                            Submit-->
+                                                <!--                                                        </button>-->
+                                                <!--                                                    </div>-->
+                                                <!--                                                </div>-->
+
+                                            </nav>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-content">
+                                    <div class="content">
+                                        <div class="control has-icons-left has-icons-right">
+                                            <input class="input is-large" type="text" name="key"
+                                                   placeholder="WFM-IRA-##">
+                                            <span class="icon is-medium is-left">
+                      <i class="fa fa-search"></i>
+                    </span>
+                                            <span class="icon is-medium is-right">
+                      <i class="fa fa-check"></i>
+                    </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="content has-text-centered">
+                                    <div class="card-content">
+                                        <div class="content">
+                                            <button class="button is-info is-rounded">Submit</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <article class="message is-info">
+                    <div class="message-header">
+                        <p>Request Details!</p>
+                    </div>
+                    <div class="message-body">
+                        <div class="box">
+                            <article class="media">
+                                <div class="media-content">
+                                    <div class="centered-is-widescreen">
+                                        <section class="hero">
+                                            <div class="hero-body">
+                                                {% if posts %}
+                                                <table id="bulma_table"
+                                                       class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                                                    <thead>
+                                                    <tr>
+                                                        <th><abbr title="Request ID">Request ID</abbr>
+                                                        </th>
+                                                        <th><abbr title="User ID">User ID</abbr></th>
+                                                        <th><abbr title="Start Date">Start Date</abbr>
+                                                        </th>
+                                                        <th><abbr title="Start Time">Start Time</abbr>
+                                                        </th>
+                                                        <th><abbr title="End Date">End Date</abbr></th>
+                                                        <th><abbr title="End Time">End Time</abbr></th>
+                                                        <th><abbr title="Activity">Activity</abbr></th>
+                                                        <th><abbr title="Multiplicator / OverTime">Multiplicator
+                                                            / OverTime</abbr>
+                                                        </th>
+                                                        <th><abbr title="Requested By">Requested
+                                                            By</abbr></th>
+                                                        <th><abbr title="Status">Status</abbr></th>
+                                                        <th><abbr title="Campaign">Campaign</abbr></th>
+                                                        <th>Created At ({{my_timezone}})</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tfoot>
+                                                    <tr>
+                                                        <th><abbr title="Request ID">Request ID</abbr>
+                                                        </th>
+                                                        <th><abbr title="User ID">User ID</abbr></th>
+                                                        <th><abbr title="Start Date">Start Date</abbr>
+                                                        </th>
+                                                        <th><abbr title="Start Time">Start Time</abbr>
+                                                        </th>
+                                                        <th><abbr title="End Date">End Date</abbr></th>
+                                                        <th><abbr title="End Time">End Time</abbr></th>
+                                                        <th><abbr title="Activity">Activity</abbr></th>
+                                                        <th><abbr title="Multiplicator / OverTime">Multiplicator
+                                                            / OverTime</abbr>
+                                                        </th>
+                                                        <th><abbr title="Requested By">Requested
+                                                            By</abbr></th>
+                                                        <th><abbr title="Status">Status</abbr></th>
+                                                        <th><abbr title="Campaign">Campaign</abbr></th>
+                                                        <th>Created At</th>
+                                                    </tr>
+                                                    </tfoot>
+                                                    <tbody>
+
+                                                    {% for post in posts %}
+                                                    <font size="1" face="Courier New">
+
+                                                        <tr>
+                                                            {% load filter %}
+                                                            <th>{{ post.Name}}</th>
+                                                            <td>{{ post.user_ID}}
+                                                            </td>
+                                                            <td>{{ post.Start_Date }}</td>
+                                                            <td>{{ post.Start_Time }}</td>
+                                                            <td>{{ post.End_Date }}</td>
+                                                            <td>{{ post.End_Time }}</td>
+                                                            <td>{{ post.Activity|default:"-" }}</td>
+                                                            <td>{{ post.Mul_Over|default:"-" }}</td>
+                                                            {% if 'Uknown' in post.BreakTime %}
+                                                            <td> Unknown User</td>
+                                                            {%else%}
+                                                            <td>{{ post.BreakTime|default:"-" }}</td>
+                                                            {%endif%}
+
+                                                            {% if 'Complete' in post.Status %}
+                                                            <div class="has-text-info">
+                                                                <td class="has-text-success">Complete
+                                                                </td>
+                                                            </div>
+                                                            {% elif 'Help Needed' in post.Status %}
+                                                            <div class="has-text-info">
+                                                                <td class="has-text-danger">Help
+                                                                    Needed
+                                                                </td>
+                                                            </div>
+                                                            {% elif 'Activity Code' in post.Status %}
+                                                            <div class="has-text-info">
+                                                                <td class="has-text-dark">Bot - Activity
+                                                                    Code selected
+                                                                </td>
+                                                            </div>
+                                                            {% elif 'Search' in post.Status %}
+                                                            <div class="has-text-info">
+                                                                <td class="has-text-dark">Bot - Search
+                                                                    and validation
+                                                                </td>
+                                                            </div>
+                                                            {% elif 'Teleopti' in post.Status %}
+                                                            <div class="has-text-info">
+                                                                <td class="has-text-dark">Bot - Request
+                                                                    acknowledged
+                                                                </td>
+                                                            </div>
+                                                            {% elif 'acknowledged' in post.Status %}
+                                                            <div class="has-text-info">
+                                                                <td class="has-text-dark">Bot - Request
+                                                                    acknowledged
+                                                                </td>
+                                                            </div>
+                                                            {% elif 'Failed' in post.Status %}
+                                                            <div class="has-text-info">
+                                                                <td class="has-text-danger">Failed</td>
+                                                            </div>
+                                                            {% else %}
+                                                            <div class="has-text-danger">
+                                                                <td class="has-text-info">Submission
+                                                                    recorded
+                                                                </td>
+                                                            </div>
+                                                            {% endif %}
+                                                            <td>{{ post.Timezone|default:"-" }}</td>
+
+                                                            {% if '$$$' in post.created_at %}
+                                                            {% load filter %}
+                                                            {% load tz %}
+                                                            <td>{{
+                                                                post.created_at|split:'$$$'|first|timezone:my_timezone
+                                                                }}
+                                                            </td>
+                                                            {% else %}
+                                                            {% load tz %}
+                                                            <td>{{ post.created_at|timezone:my_timezone
+                                                                }}
+                                                            </td>
+                                                            {% endif %}
+
+
+                                                        </tr>
+                                                    </font>
+
+                                                    {%endfor%}
+                                                    </tbody>
+                                                </table>
+
+                                                {% else %}
+
+                                                <p class="title">
+                                                    {{ "Search results shows nothing!"}}
+                                                </p>
+                                                {% endif %}
+
+                                                <div class="field is-grouped is-grouped-centered">
+                                                    {% if posts.paginator.num_pages > 1 %}
+
+                                                    {% if posts.has_previous %}
+                                                    <p class="control">
+                                                        <a class="button is-link is-rounded"
+                                                           href="?page={{ posts.previous_page_number }}">Previous</a>
+                                                    </p>
+                                                    {% endif %}
+
+                                                    {% if posts.has_next %}
+                                                    <p class="control">
+                                                        <a class="button is-link is-rounded"
+                                                           href="?page={{ posts.next_page_number }}">Next</a>
+                                                    </p>
+                                                    {% endif %}
+
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </div>
+                </article>
+</div>
+{% block scripts %}
+<script>
+var acc = document.getElementsByClassName("accordion");
+var i;
+
+for (i = 0; i < acc.length; i++) {
+  acc[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var panel = this.nextElementSibling;
+    if (panel.style.display === "block") {
+      panel.style.display = "none";
+    } else {
+      panel.style.display = "block";
+    }
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<script type="text/javascript">
+ window.onload = function() {
+    document.getElementById('ifYes').style.display = 'none';
+    document.getElementById('ifNo').style.display = 'none';
+}
+function yesnoCheck() {
+    if (document.getElementById('yesCheck').checked) {
+        document.getElementById('ifYes').style.display = 'block';
+        document.getElementById('ifNo').style.display = 'none';
+        document.getElementById('redhat1').style.display = 'none';
+        document.getElementById('aix1').style.display = 'none';
+    }
+    else if(document.getElementById('noCheck').checked) {
+        document.getElementById('ifNo').style.display = 'block';
+        document.getElementById('ifYes').style.display = 'none';
+        document.getElementById('redhat1').style.display = 'none';
+        document.getElementById('aix1').style.display = 'none';
+   }
+}
+function yesnoCheck1() {
+   if(document.getElementById('redhat').checked) {
+       document.getElementById('redhat1').style.display = 'block';
+       document.getElementById('aix1').style.display = 'none';
+    }
+   if(document.getElementById('aix').checked) {
+       document.getElementById('aix1').style.display = 'block';
+       document.getElementById('redhat1').style.display = 'none';
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+<script>
+   // Radialize the colors
+Highcharts.setOptions({
+  colors: Highcharts.map(Highcharts.getOptions().colors, function (color) {
+    return {
+      radialGradient: {
+        cx: 0.5,
+        cy: 0.3,
+        r: 0.7
+      },
+      stops: [
+        [0, color],
+        [1, Highcharts.color(color).brighten(-0.3).get('rgb')] // darken
+      ]
+    };
+  })
+});
+
+// Build the chart
+Highcharts.chart('pie_chart', {
+  chart: {
+    plotBackgroundColor: null,
+    plotBorderWidth: null,
+    plotShadow: false,
+    type: 'pie'
+  },
+  title: {
+    text: 'Browser market shares in January, 2018'
+  },
+  tooltip: {
+    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+  },
+  accessibility: {
+    point: {
+      valueSuffix: '%'
+    }
+  },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: 'pointer',
+      dataLabels: {
+        enabled: true,
+        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+        connectorColor: 'silver'
+      }
+    }
+  },
+  series: [{
+    name: 'Share',
+    data: [
+      { name: 'Chrome', y: 61.41 },
+      { name: 'Internet Explorer', y: 11.84 },
+      { name: 'Firefox', y: 10.85 },
+      { name: 'Edge', y: 4.67 },
+      { name: 'Safari', y: 4.18 },
+      { name: 'Other', y: 7.05 }
+    ]
+  }]
+});
+
+
+
+
+
+
+
+
+
+
+</script>
+<script>
+// Set up the chart
+Highcharts.chart('container_funnel', {
+  chart: {
+    type: 'funnel3d',
+    options3d: {
+      enabled: true,
+      alpha: 10,
+      depth: 50,
+      viewDistance: 50
+    }
+  },
+  title: {
+    text: 'Highcharts Funnel3D Chart'
+  },
+  plotOptions: {
+    series: {
+      dataLabels: {
+        enabled: true,
+        format: '<b>{point.name}</b> ({point.y:,.0f})',
+        allowOverlap: true,
+        y: 10
+      },
+      neckWidth: '30%',
+      neckHeight: '25%',
+      width: '80%',
+      height: '80%'
+    }
+  },
+  series: [{
+    name: 'Unique users',
+    data: [
+      ['Website visits', 15654],
+      ['Downloads', 4064],
+      ['Requested price list', 1987],
+      ['Invoice sent', 976],
+      ['Finalized', 846]
+    ]
+  }]
+});
+
+
+
+
+
+
+
+
+</script>
+<script>
+    Highcharts.chart('container', {
+  chart: {
+    type: 'pie',
+    options3d: {
+      enabled: true,
+      alpha: 45,
+      beta: 0
+    }
+  },
+  title: {
+    text: 'Browser market shares at a specific website, 2014'
+  },
+  accessibility: {
+    point: {
+      valueSuffix: '%'
+    }
+  },
+  tooltip: {
+    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+  },
+  plotOptions: {
+    pie: {
+      allowPointSelect: true,
+      cursor: 'pointer',
+      depth: 35,
+      dataLabels: {
+        enabled: true,
+        format: '{point.name}'
+      }
+    }
+  },
+  series: [{
+    type: 'pie',
+    name: 'Browser share',
+    data: [
+      ['Firefox', 45.0],
+      ['IE', 26.8],
+      {
+        name: 'Chrome',
+        y: 12.8,
+        sliced: true,
+        selected: true
+      },
+      ['Safari', 8.5],
+      ['Opera', 6.2],
+      ['Others', 0.7]
+    ]
+  }]
+});
+
+
+
+
+
+</script>
+{% endblock scripts %}
+{% endblock content %}

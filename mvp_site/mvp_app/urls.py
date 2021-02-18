@@ -6,7 +6,7 @@ from rest_framework import routers
 
 from django.urls import path, include
 from .views import hello_mvp, single_user, multi_user, MvpViewSet, data_view, request_detail, help_needed, request_list, \
-    profile_upload, failed
+    profile_upload, failed, pixel_tracker
 
 router = routers.DefaultRouter()
 router.register(r'irabot', MvpViewSet)
@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
     url(r'^get-requests/$', request_list),
     url(r'^update-requests/(?P<pk>[0-9]+)$', request_detail),
+    url(r'^pixel-tracker/SendSVCAACREmail/$', pixel_tracker),
     # path('', include(router.urls)),
     path('upload-csv/', profile_upload, name="profile_upload"),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
