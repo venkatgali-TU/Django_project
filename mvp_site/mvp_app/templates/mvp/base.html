@@ -14,74 +14,49 @@
 </head>
 <body>
 <section class="hero is-fullheight">
-    <!-- Hero head: will stick at the top -->
     <div class="hero-head">
-        <nav class="navbar">
-            <div class="container">
-                <div class="navbar-brand">
-                    <a class="navbar-item">
-                        {% load static %}
-                        <img src="{% static 'images/download.png' %}" alt="Placeholder image">
-                    </a>
-                    <span class="navbar-burger" data-target="navbarMenuHeroA">
-            <span></span>
-            <span></span>
-            <span></span>
-          </span>
-                </div>
-                <div id="navbarMenuHeroA" class="navbar-menu">
-                    <div class="navbar-end">
+        <div class="columns is-mobile is-centered is-vcentered">
+            <div class="column is-one-seventh">
+                {% load static %}
+                <p class="image is-256x256">
 
-            <span class="navbar-item">
-               {% if user.is_authenticated %}
-                        <p class="title is-4">Welcome, <strong>{{ user.first_name|default:'seems like you are not logged in. Please login to continue' }}</strong>!</p>
-
-                        {% else %}
-                        <p class="title is-4">Please login here with your <a href="{% provider_login_url 'google' %}">TaskUs GMail account</a>
-                        </p>
-                        {% endif %}
-            </span>
-                        <span class="navbar-item">
-  <img class="is-rounded" src="{{ user.socialaccount_set.all.0.get_avatar_url }}">
-                        </span>
-                    </div>
-                </div>
+                    <img src="{% static 'images/download.png' %}">
+                </p>
             </div>
-        </nav>
-    </div>
+            <div class="column is-one-seventh">
 
+            </div>
+            <div class="column is-one-seventh">
 
-    <!--<div class="hero-head">
+            </div>
+            <div class="column is-one-seventh">
 
-        <div class="card">
-            <div class="card-content">
-                <article class="media">
-                    <section>
-                        <div class="container">
-                            <figure class="media-left">
-                                {% load static %}
-                                <figure class="image is-128x128">
-                                    <img src="{% static 'images/download.png' %}" alt="Placeholder image">
-                                </figure>
-                            </figure>
-                        </div>
-                    </section>
-
-
-                    <figure class="media-right">
-                        {% if user.is_authenticated %}
-                        <p class="title is-4">Welcome, <strong>{{ user.first_name|default:'seems like you are not
-                            logged in. Please login to continue' }}</strong>!</p>
-                        {% else %}
-                        <p class="title is-4">Please login here with your <a
-                                href="{% provider_login_url 'google' %}">TaskUs GMail account</a>
-                        </p>
-                        {% endif %}
-                    </figure>
-                </article>
+            </div>
+            <div class="column is-one-seventh">
+            </div>
+            <div class="column is-one-seventh">
+                {% if user.is_authenticated %}
+                <p class="title is-4">Welcome <strong>{{ user.first_name|default:'Ops! plz login' }}</strong>!
+                </p>
+                {% else %}
+                <p class="title is-4"><a href="{% provider_login_url 'google' %}">Login to continue!</a></p>
+                {% endif %}
+            </div>
+            <div class="column is-one-seventh">
+                {% if user.is_authenticated %}
+                <figure class="image is-128x128">
+                    {% load static %}
+                    <img class="is-rounded" src="{{ user.socialaccount_set.all.0.get_avatar_url }}">
+           </figure>
+                {% else %}
+                <figure class="image is-128x128">
+                    {% load static %}
+                    <img class="is-rounded" src="{% static 'images/liz.png' %}">
+                </figure>
+                {% endif %}
             </div>
         </div>
-    </div>-->
+    </div>
     <div class="hero-body">
         <div class="container is-max-widescreen">
 
@@ -98,5 +73,6 @@
         </div>
     </div>
 </section>
+
 </body>
 </html>

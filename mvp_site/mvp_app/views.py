@@ -7,6 +7,7 @@ from email.mime.text import MIMEText
 import urllib3
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
+from django.db.models import Count
 from django.http import HttpResponseRedirect
 from rest_framework import generics, mixins
 from django.core.mail import EmailMessage
@@ -211,82 +212,218 @@ def data_view(request):
         curr = "No requests in progress, please refresh!"
 
     if request.method == "POST":
-        print("--")
         print(request.POST)
-        s_d = request.POST['trip-start']
-        e_d = request.POST['trip-end']
-        ind = 0
-        ph = 0
-        us = 0
-        gr = 0
-        mx = 0
-        count = 0
-        for item in MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]).values_list('user_ID', flat=True):
-            if item in locations:
-                if locations[item] == "PH":
-                    ph = ph + 1
-                elif locations[item] == "US":
-                    us = us + 1
-                elif locations[item] == "IND":
-                    ind = ind + 1
-                elif locations[item] == "GR":
-                    gr = gr + 1
+        for items in request.POST:
+            if "create" in items:
+                print("found create")
+                global EMAIL, NAME, POSITION, LOCATION
+
+                # print(MvpForm(request.POST).errors)
+                if request.method == 'POST' and MvpForm(request.POST).is_valid():
+                    # create a form instance and populate it with data from the request:
+                    #############
+                    if not request.user.is_authenticated:
+                        form = MvpForm()
+                        context = {}
+                        context['form'] = form
+                        messages.warning(request, " Please login to the Gmail accoun to continue")
+                        return render(request, "mvp/home.html", context)
+
+                    #############
+
+                    form = MvpForm(request.POST)
+                    # check whether it's valid:
+
+                    form.full_clean()
+                    form.fields
+                    mvp_model = form.save()
+                    # print(form.clean_req_type())
+                    if 'Single' in form.clean_user_req():
+
+                        if form.clean_req_type() == "OverTime":
+                            if POSITION != "Teammate":
+                                print(POSITION)
+                                return HttpResponseRedirect('/single/' + str(mvp_model.id) + '/OverTime')
+                            else:
+                                context = {}
+                                context['form'] = form
+                                messages.warning(request,
+                                                 " You are not authorized to raise requests. Please contact your supervisor!")
+                                return render(request, "mvp/home.html", context)
+
+                        else:
+                            if POSITION != "Teammate":
+                                print(POSITION)
+                                return HttpResponseRedirect('/single/' + str(mvp_model.id) + '/TeleOpti')
+                            else:
+                                context = {}
+                                context['form'] = form
+                                messages.warning(request,
+                                                 " You are not authorized to raise requests. Please contact your supervisor!")
+                                return render(request, "mvp/home.html", context)
+                    else:
+                        # context = {}
+                        if form.clean_req_type() == "OverTime":
+                            if POSITION != "Teammate":
+                                return HttpResponseRedirect('/multi/' + str(mvp_model.id) + '/OverTime')
+                            else:
+                                context = {}
+                                context['form'] = form
+                                messages.warning(request,
+                                                 " You are not authorized to raise requests. Please contact your supervisor!")
+                                return render(request, "mvp/home.html", context)
+                        else:
+                            if POSITION != "Teammate":
+                                return HttpResponseRedirect('/multi/' + str(mvp_model.id) + '/TeleOpti')
+                            else:
+                                context = {}
+                                context['form'] = form
+                                messages.warning(request,
+                                                 " You are not authorized to raise requests. Please contact your supervisor!")
+                                return render(request, "mvp/home.html", context)
+
+                    # return HttpResponseRedirect('/mvp_app/')
+
+                # if a GET (or any other method) we'll create a blank form
                 else:
-                    mx = mx + 1
-            else:
-                print(item)
-                count = count + 1
-        total = len(MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]))
-        InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
-            Status__contains='Help Needed').filter(created_at__range=[s_d, e_d]))
-        Completed = len(
-            MvpUserRequest.objects.all().filter(Status__contains='Complete').filter(created_at__range=[s_d, e_d]))
-        HelpNeeded = len(
-            MvpUserRequest.objects.all().filter(Status__contains='Help Needed').filter(created_at__range=[s_d, e_d]))
-        Failed = len(
-            MvpUserRequest.objects.all().filter(Status__contains='Failed').filter(created_at__range=[s_d, e_d]))
-        key = request.POST['key']
-        name_ = request.POST['name']
-        camp = request.POST['camp']
-        if key == '':
-            if name_ == '':
-                all_objects = MvpUserRequest.objects.all().filter(Timezone__contains=camp).filter(
-                    created_at__range=[s_d, e_d]).order_by('-id')
-            elif camp == '':
-                all_objects = MvpUserRequest.objects.all().filter(
-                    BreakTime__contains=name_).filter(
-                    created_at__range=[s_d, e_d]).order_by('-id')
-        elif name_ == '':
-            if key == '':
-                all_objects = MvpUserRequest.objects.all().filter(Timezone__contains=camp).filter(
-                    created_at__range=[s_d, e_d]).order_by('-id')
-            elif camp == '':
-                all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
-                    created_at__range=[s_d, e_d]).order_by('-id')
+                    if request.user.is_authenticated:
+                        username = str(request.user.email).replace("@", "%40")
+                    else:
+                        username = "Please login to continue"
 
-        elif camp == '':
-            if name_ == '':
-                all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
-                    created_at__range=[s_d, e_d]).order_by('-id')
-            elif key == '':
-                all_objects = MvpUserRequest.objects.all().filter(
-                    BreakTime__contains=name_).filter(
-                    created_at__range=[s_d, e_d]).order_by('-id')
-        elif camp == name_ == key == '':
-            all_objects = MvpUserRequest.objects.all().filter(
-                created_at__range=[s_d, e_d]).order_by('-id')
-        elif camp != '' and name_ != '' and key != '':
-            all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
-                BreakTime__contains=name_).filter(Timezone__contains=camp).filter(
-                created_at__range=[s_d, e_d]).order_by('-id')
+                    if not MvpForm(request.POST).is_valid():
+                        if "This field is required." in str(MvpForm(request.POST).errors):
+                            if "Please" not in username:
+                                final_url = "https://epmsapi.taskus.prv/v1/api/employees/email/" + username  # 3054204"
+                                final_headers = {
+                                    "x-api-key": "lsUfB4oaUX"
+                                }
+                                try:
+                                    # fin = requests.get(final_url, final_headers, False)
+                                    # #print(username[5:])
+                                    fin = requests.get(final_url, headers=final_headers, verify=False)
 
-        paginator = Paginator(all_objects, 1000)
-        page = request.GET.get('page')
-        posts = paginator.get_page(page)
-        return render(request, 'mvp/confirmation.html',
-                      {'posts': posts, 'total': total, 'inprogress': InProgress, 'completed': Completed,
-                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
-                       'end_date': e_d, 'my_timezone': timezone, 'curr': curr, 'mx': mx, 'gr': gr})
+                                    # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                                    temp_data_json = json.loads(json.dumps(fin.json()))
+                                    EMAIL = str(temp_data_json['email'])
+                                    POSITION = str(temp_data_json['position']['name'])
+                                    NAME = str(temp_data_json['firstName']) + " " + str(temp_data_json['lastName'])
+                                    LOCATION = str(temp_data_json['site']['location'])
+                                    messages.warning(request, " ID : " + str(temp_data_json['id']))
+                                    messages.warning(request, " First Name : " + str(temp_data_json['firstName']))
+                                    messages.warning(request, " Last Name : " + str(temp_data_json['lastName']))
+                                    messages.warning(request, " Email : " + str(temp_data_json['email']))
+                                    messages.warning(request, " Supervisor Email : " + str(
+                                        temp_data_json['supervisorEmployeeId']))
+                                    messages.warning(request, " Position : " + str(temp_data_json['position']['name']))
+                                    messages.warning(request, " Site : " + str(temp_data_json['site']['name']))
+                                    messages.warning(request,
+                                                     " Country Code : " + str(temp_data_json['site']['countryCode']))
+                                    messages.warning(request, " Location : " + str(temp_data_json['site']['location']))
+                                    messages.warning(request, " Time Zone : " + str(temp_data_json['site']['timeZone']))
+                                    messages.warning(request, " Campaign : " + str(temp_data_json['campaign']['name']))
+                                except ConnectionError and KeyError:
+                                    messages.warning(request, " Couldn't identify your profile! " + str(username))
+                                    # print("connection refused")
+
+                            else:
+                                messages.warning(request, username)
+
+                        else:
+                            messages.warning(request, str(MvpForm(request.POST).errors), fail_silently=True)
+
+            elif "submit" in items:
+                s_d = request.POST['trip-start']
+                e_d = request.POST['trip-end']
+                ind = 0
+                ph = 0
+                us = 0
+                gr = 0
+                mx = 0
+                count = 0
+                for item in MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]).values_list('user_ID',
+                                                                                                          flat=True):
+                    if item in locations:
+                        if locations[item] == "PH":
+                            ph = ph + 1
+                        elif locations[item] == "US":
+                            us = us + 1
+                        elif locations[item] == "IND":
+                            ind = ind + 1
+                        elif locations[item] == "GR":
+                            gr = gr + 1
+                        else:
+                            mx = mx + 1
+                    else:
+                        count = count + 1
+                total = len(MvpUserRequest.objects.all().filter(created_at__range=[s_d, e_d]))
+                InProgress = len(MvpUserRequest.objects.all().exclude(Status__contains='Complete').exclude(
+                    Status__contains='Help Needed').filter(created_at__range=[s_d, e_d]))
+                Completed = len(
+                    MvpUserRequest.objects.all().filter(Status__contains='Complete').filter(
+                        created_at__range=[s_d, e_d]))
+                HelpNeeded = len(
+                    MvpUserRequest.objects.all().filter(Status__contains='Help Needed').filter(
+                        created_at__range=[s_d, e_d]))
+                Failed = len(
+                    MvpUserRequest.objects.all().filter(Status__contains='Failed').filter(created_at__range=[s_d, e_d]))
+                key = request.POST['key']
+                name_ = ''
+                camp = ''
+                if key == '':
+                    if name_ == '':
+                        all_objects = MvpUserRequest.objects.all().filter(Timezone__contains=camp).filter(
+                            created_at__range=[s_d, e_d]).order_by('-id')
+                    elif camp == '':
+                        all_objects = MvpUserRequest.objects.all().filter(
+                            BreakTime__contains=name_).filter(
+                            created_at__range=[s_d, e_d]).order_by('-id')
+                elif name_ == '':
+                    if key == '':
+                        all_objects = MvpUserRequest.objects.all().filter(Timezone__contains=camp).filter(
+                            created_at__range=[s_d, e_d]).order_by('-id')
+                    elif camp == '':
+                        all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
+                            created_at__range=[s_d, e_d]).order_by('-id')
+
+                elif camp == '':
+                    if name_ == '':
+                        all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
+                            created_at__range=[s_d, e_d]).order_by('-id')
+                    elif key == '':
+                        all_objects = MvpUserRequest.objects.all().filter(
+                            BreakTime__contains=name_).filter(
+                            created_at__range=[s_d, e_d]).order_by('-id')
+                elif camp == name_ == key == '':
+                    all_objects = MvpUserRequest.objects.all().filter(
+                        created_at__range=[s_d, e_d]).order_by('-id')
+                elif camp != '' and name_ != '' and key != '':
+                    all_objects = MvpUserRequest.objects.all().filter(Name__contains=key).filter(
+                        BreakTime__contains=name_).filter(Timezone__contains=camp).filter(
+                        created_at__range=[s_d, e_d]).order_by('-id')
+
+                paginator = Paginator(all_objects, 1000)
+                page = request.GET.get('page')
+                posts = paginator.get_page(page)
+                to = int(us) + int(ph) + int(ind)
+                camp_list = []
+                for item in MvpUserRequest.objects.all().values('Timezone').distinct().annotate(
+                        total=Count('Timezone')):
+                    # print(item[0])
+                    camp_name = item['Timezone']
+                    count_ = item['total']
+                    temp_list = {}
+                    temp_list['name'] = camp_name
+                    temp_list['count_'] = count_
+                    camp_list.append(temp_list)
+                return render(request, 'mvp/new_UI.html',
+                              {'posts': posts, 'form': MvpForm, 'total': total, 'inprogress': InProgress,
+                               'completed': Completed,
+                               'helpneeded': HelpNeeded, 'failed': Failed, 'us': int(us) / int(to),
+                               'ind': int(ind) / int(to), 'ph': int(ph) / int(to), 'st_d': s_d,
+                               'end_date': e_d, 'my_timezone': timezone, 'curr': curr, 'mx': mx, 'gr': gr, 'usa': us,
+                               'india': ind, 'phillipines': ph, 'data_': camp_list})
     elif request.method == 'GET':
         all_objects = MvpUserRequest.objects.all().order_by('-id')
         s_d = "2020-10-26"
@@ -311,7 +448,6 @@ def data_view(request):
                 else:
                     mx = mx + 1
             else:
-                print(item)
                 count = count + 1
 
         total = len(MvpUserRequest.objects.all())
@@ -330,10 +466,20 @@ def data_view(request):
         paginator = Paginator(all_objects, 200)
         page = request.GET.get('page')
         posts = paginator.get_page(page)
+        to = int(us)+int(ph)+int(ind)
+        camp_list = []
+        for item in MvpUserRequest.objects.all().values('Timezone').distinct().annotate(total=Count('Timezone')):
+            #print(item[0])
+            camp_name = item['Timezone']
+            count_ = item['total']
+            temp_list = {}
+            temp_list['name'] = camp_name
+            temp_list['count_'] = count_
+            camp_list.append(temp_list)
         return render(request, 'mvp/new_UI.html',
                       {'posts': posts, 'form': MvpForm ,'total': total, 'inprogress': InProgress, 'completed': Completed,
-                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': us, 'ind': ind, 'ph': ph, 'st_d': s_d,
-                       'end_date': e_d, 'my_timezone': timezone, 'curr': curr, 'mx': mx, 'gr': gr})
+                       'helpneeded': HelpNeeded, 'failed': Failed, 'us': int(us)/int(to), 'ind': int(ind)/int(to), 'ph': int(ph)/int(to), 'st_d': s_d,
+                       'end_date': e_d, 'my_timezone': timezone, 'curr': curr, 'mx': mx, 'gr': gr,'usa':us,'india':ind,'phillipines':ph,'data_': camp_list})
 
 
 def help_needed(request):

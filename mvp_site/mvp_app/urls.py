@@ -12,7 +12,7 @@ router = routers.DefaultRouter()
 router.register(r'irabot', MvpViewSet)
 
 urlpatterns = [
-    path('', hello_mvp, name='hello_mvp'),
+    path('', data_view, name='hello_mvp'),
     path('data/', data_view, name='data_view'),
     path('helpneeded/', help_needed, name='help_needed'),
     path('failed/', failed, name='failed'),

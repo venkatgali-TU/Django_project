@@ -72,7 +72,7 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
             # temp_data_json = json.loads(json.dumps(fin.json()))
 
             temp_data_json = json.loads(json.dumps(fin.json()))
-            result_bus = ""
+            result_bus = "San Antonio"
             if "San Antonio" in str(temp_data_json['site']['location']):
                 result_bus = "San Antonio"
             elif "Tijuana" in str(temp_data_json['site']['location']):
@@ -89,6 +89,9 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
                 result_bus = "Manila"
             elif "PH" in str(temp_data_json['site']['countryCode']):
                 result_bus = "Manila"
+            else:
+                if "US" in str(temp_data_json['site']['countryCode']):
+                    result_bus = "San Antonio"
             return result_bus
         except ConnectionError and KeyError:
             return "Couldnt find the correct business name"
