@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
     url(r'^get-requests/$', request_list),
     url(r'^update-requests/(?P<pk>[0-9]+)$', request_detail),
-    url(r'^pixel-tracker/SendSVCAACREmail/$', pixel_tracker),
+    url(r'^pixel-tracker/SendSVCAACREmail', pixel_tracker),
     # path('', include(router.urls)),
     path('upload-csv/', profile_upload, name="profile_upload"),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))

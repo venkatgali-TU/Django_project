@@ -201,7 +201,7 @@ def data_view(request):
         pass
     # print(locations)
     if timezone == '':
-        print('here')
+        #print('here')
         timezone = 'US/Pacific'
     current_processing_record = MvpUserRequest.objects.all().filter(
         Status__contains='Bot').values_list('Name', flat=True)
@@ -213,6 +213,11 @@ def data_view(request):
 
     if request.method == "POST":
         print(request.POST)
+        if request.user is None:
+            print("None is the user")
+        else:
+            print(request.user)
+            print("there is go!")
         for items in request.POST:
             if "create" in items:
                 print("found create")
@@ -1318,6 +1323,12 @@ def multi_user(request, mvp_id, req):
 def profile_upload(request):
     # declaring template
     # print("name is: " + request.user.email)
+    if not request.user.is_authenticated:
+        form = MvpForm()
+        context = {}
+        context['form'] = form
+        messages.warning(request, " Please login to the Gmail accoun to continue")
+        return render(request, "mvp/home.html", context)
     NAME = request.user.first_name + " " + request.user.last_name
     print("name is: " + NAME)
 
@@ -1338,7 +1349,7 @@ def profile_upload(request):
         if not csv_file.name.endswith('.csv'):
             prompt['order'] = "Please upload a valid CSV!"
             return render(request, template, prompt)
-        data_set = csv_file.read().decode('UTF-8')
+        data_set = csv_file.read().decode("ISO-8859-1")
         # setup a stream which is when we loop through each line we are able to handle a data in a stream
         io_string = io.StringIO(data_set)
         next(io_string)
@@ -1354,6 +1365,7 @@ def profile_upload(request):
         except:
             prompt['order'] = "Cannot find a campaign for the user!"
 
+        print(campaigns)
         with open(
                 'C:/Users/vg3054204/PycharmProjects/Django_project/mvp_site/mvp_app/static/mvp_app/submission_results.csv',
                 'w', newline="") as csvfile:
@@ -1380,7 +1392,27 @@ def profile_upload(request):
                         str_date = datetime.strptime(str_date, '%Y-%m-%d')
                         end_date = datetime.strptime(end_date, '%Y-%m-%d')
                         past = datetime.now() - timedelta(days=7)
-                        if column[0] in campaigns and end_date >= str_date >= past:
+                        if end_date >= str_date >= past:
+                            if column[0] not in campaigns:
+                                final_url = "https://epmsapi.taskus.prv/v1/api/employees/employeeno/" + column[
+                                    0]  # 3054204"
+                                final_headers = {
+                                    "x-api-key": "lsUfB4oaUX"
+                                }
+                                try:
+                                    # fin = requests.get(final_url, final_headers, False)
+                                    # #print(username[5:])
+                                    fin = requests.get(final_url, headers=final_headers, verify=False)
+
+                                    # temp_data_json = json.loads(json.dumps(fin.json()))
+
+                                    temp_data_json = json.loads(json.dumps(fin.json()))
+
+                                    campaigns[column[0]] = str(temp_data_json['campaign']['name'])
+                                except ConnectionError and KeyError:
+                                    messages.warning(request, " Couldn't identify your profile! " + str(column[0]))
+                                    # print("connection refused")
+
                             if start_time_date > end_time_date and str_date == end_date:
                                 continue
                             timezone = campaigns[column[0]]
@@ -1442,6 +1474,7 @@ def profile_upload(request):
                                                 'End_Date': column[2],
                                                 'End_Time': column[4], 'Activity': column[5], 'Mul/Overlap': "",
                                                 'Status': "Fail"})
+                            #print(column[0])
                 except Exception as e:
                     prompt['order'] = e
                     csvwriter.writerow({'Req_ID': request_ID_str, 'User_ID': column[0], 'Start_Date': column[1],
@@ -1567,28 +1600,26 @@ def pixel_tracker(request):
         print("GET")
         return Response(status=status.HTTP_200_OK)
     elif request.method == 'POST':
+        print("pixel tracker")
+        print(request.data['email'])
         port = 587
         smtp_server = "smtp.gmail.com"
         login = "svc.aacr@taskus.com"  # paste your login
         password = "L3Ti5H@En6iN3!CaL"  # paste your password
 
         sender_email = "svc.aacr@taskus.com"
-        receiver_email = "venkat.gali@taskus.com"
+        receiver_email = request.data['email']
 
         message = MIMEMultipart("alternative")
-        message["Subject"] = "multipart test"
+        message["Subject"] = request.data['subject']
         message["From"] = sender_email
         message["To"] = receiver_email
         message["Disposition-Notification-To"] = sender_email
         # Write the plain text part
-        text = """Hi, 
-                    Test Email from SVC AACR Automation"""
+        text = request.data['body']
 
         # write the HTML part
-        html = """<html> <body> 
-                    <p>Hi,<br> 
-                    Test Email from SVC AACR Automation
-                    </p> </body> </html> """
+        html = request.data['body']
 
         # convert both parts to MIMEText objects and add them to the MIMEMultipart message
         part1 = MIMEText(text, "plain")
@@ -1598,7 +1629,7 @@ def pixel_tracker(request):
 
         context = ssl.create_default_context()
 
-        # send your email
+        # send your emailpythin
         with smtplib.SMTP(smtp_server, port) as server:
             server.starttls(context=context)
             server.ehlo()  # Can be omitted
