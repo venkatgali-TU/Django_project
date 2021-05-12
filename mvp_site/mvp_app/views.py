@@ -165,7 +165,7 @@ def hello_mvp(request):
 def data_view(request):
     try:
         locations = {}
-        with open(r'C:\Users\vg3054204\Desktop\roster_location.csv', 'rt') as f:
+        with open(r'C:\Users\av3066462\Desktop\roster_location.csv', 'rt') as f:
             reader = csv.reader(f)
             for row in reader:
                 if len(row) > 1:
@@ -174,7 +174,7 @@ def data_view(request):
         locations[row[0]] = ""
     try:
         timezone = ""
-        with open(r'C:\Users\vg3054204\Desktop\roster_timezone.csv', 'rt') as f:
+        with open(r'C:\Users\av3066462\Desktop\roster_timezone.csv', 'rt') as f:
             reader = csv.reader(f)
             for row in reader:
                 if len(row) != 0 and row[0] != '' and row[1] != '' and str(row[0]).lower() == str(
@@ -490,7 +490,7 @@ def data_view(request):
 def help_needed(request):
     try:
         locations = {}
-        with open(r'C:\Users\vg3054204\Desktop\roster_location.csv', 'rt') as f:
+        with open(r'C:\Users\av3066462\Desktop\roster_location.csv', 'rt') as f:
             reader = csv.reader(f)
             for row in reader:
                 if len(row) > 1:
@@ -514,7 +514,7 @@ def help_needed(request):
 
         html_str = "<h1>Thanks for your submission</h1><p>You have completed the folowing request IDs, Please check in submissions page for more info.</p><p><b>" + ids + "</b></p>"
         msg = EmailMessage('WFM - Plotting website submissions: ', html_str, 'svc.aacr@taskus.com',
-                           [request.user.email, 'venkat.gali@taskus.com'])
+                           [request.user.email, 'chander.kaloiya@taskus.com'])
         msg.content_subtype = "html"  # Main content is now text/html
         msg.send()
 
@@ -536,7 +536,7 @@ def help_needed(request):
 def failed(request):
     try:
         locations = {}
-        with open(r'C:\Users\vg3054204\Desktop\roster_location.csv', 'rt') as f:
+        with open(r'C:\Users\av3066462\Desktop\roster_location.csv', 'rt') as f:
             reader = csv.reader(f)
             for row in reader:
                 if len(row) > 1:
@@ -560,7 +560,7 @@ def failed(request):
 
         html_str = "<h1>Thanks for your submission</h1><p>You have completed the folowing request IDs, Please check in submissions page for more info.</p><p><b>" + ids + "</b></p>"
         msg = EmailMessage('WFM - Plotting website submissions: ', html_str, 'svc.aacr@taskus.com',
-                           [request.user.email, 'venkat.gali@taskus.com'])
+                           [request.user.email, 'chander.kaloiya@taskus.com'])
         msg.content_subtype = "html"  # Main content is now text/html
         msg.send()
 
@@ -605,7 +605,7 @@ def single_user(request, mvp_id, req):
                     mvp_model = form.save()
                     try:
                         campaigns = {}
-                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                        with open(r'C:\Users\av3066462\Desktop\roster_campaign.csv', 'rt') as f:
                             reader = csv.reader(f)
                             for row in reader:
                                 if len(row) > 1:
@@ -651,7 +651,7 @@ def single_user(request, mvp_id, req):
 
                         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
                         msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                                           [request.user.email, 'venkat.gali@taskus.com',
+                                           [request.user.email, 'chander.kaloiya@taskus.com',
                                             'workforce.indore@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
@@ -674,7 +674,7 @@ def single_user(request, mvp_id, req):
 
                         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
                         msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                                           [request.user.email, 'venkat.gali@taskus.com'])
+                                           [request.user.email, 'chander.kaloiya@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
 
@@ -732,7 +732,7 @@ def single_user(request, mvp_id, req):
                     mvp_model = form.save()
                     try:
                         campaigns = {}
-                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                        with open(r'C:\Users\av3066462\Desktop\roster_campaign.csv', 'rt') as f:
                             reader = csv.reader(f)
                             for row in reader:
                                 if len(row) > 1:
@@ -765,7 +765,7 @@ def single_user(request, mvp_id, req):
 
                         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
                         msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                                           [request.user.email, 'venkat.gali@taskus.com',
+                                           [request.user.email, 'chander.kaloiya@taskus.com',
                                             'workforce.indore@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
@@ -786,7 +786,7 @@ def single_user(request, mvp_id, req):
 
                         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
                         msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                                           [request.user.email, 'venkat.gali@taskus.com'])
+                                           [request.user.email, 'chander.kaloiya@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
 
@@ -853,7 +853,7 @@ def multi_user(request, mvp_id, req):
                     context = {}
                     try:
                         campaigns = {}
-                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                        with open(r'C:\Users\av3066462\Desktop\roster_campaign.csv', 'rt') as f:
                             reader = csv.reader(f)
                             for row in reader:
                                 if len(row) > 1:
@@ -958,7 +958,7 @@ def multi_user(request, mvp_id, req):
                     context = {}
                     try:
                         campaigns = {}
-                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                        with open(r'C:\Users\av3066462\Desktop\roster_campaign.csv', 'rt') as f:
                             reader = csv.reader(f)
                             for row in reader:
                                 if len(row) > 1:
@@ -1033,7 +1033,7 @@ def multi_user(request, mvp_id, req):
 
                         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
                         msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                                           [request.user.email, 'venkat.gali@taskus.com',
+                                           [request.user.email, 'chander.kaloiya@taskus.com',
                                             'workforce.indore@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
@@ -1046,7 +1046,7 @@ def multi_user(request, mvp_id, req):
 
                         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
                         msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                                           [request.user.email, 'venkat.gali@taskus.com'])
+                                           [request.user.email, 'chander.kaloiya@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
 
@@ -1112,7 +1112,7 @@ def multi_user(request, mvp_id, req):
                     mvp_model = form.save()
                     try:
                         campaigns = {}
-                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                        with open(r'C:\Users\av3066462\Desktop\roster_campaign.csv', 'rt') as f:
                             reader = csv.reader(f)
                             for row in reader:
                                 if len(row) > 1:
@@ -1209,7 +1209,7 @@ def multi_user(request, mvp_id, req):
                     mvp_model = form.save()
                     try:
                         campaigns = {}
-                        with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+                        with open(r'C:\Users\av3066462\Desktop\roster_campaign.csv', 'rt') as f:
                             reader = csv.reader(f)
                             for row in reader:
                                 if len(row) > 1:
@@ -1279,7 +1279,7 @@ def multi_user(request, mvp_id, req):
 
                         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
                         msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                                           [request.user.email, 'venkat.gali@taskus.com',
+                                           [request.user.email, 'chander.kaloiya@taskus.com',
                                             'workforce.indore@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
@@ -1291,7 +1291,7 @@ def multi_user(request, mvp_id, req):
 
                         html_email += '</table><h1>Please contact digital team for any assitance, Thanks</h1>'
                         msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                                           [request.user.email, 'venkat.gali@taskus.com',
+                                           [request.user.email, 'chander.kaloiya@taskus.com',
                                             'workforce.indore@taskus.com'])
                         msg.content_subtype = "html"  # Main content is now text/html
                         msg.send()
@@ -1357,7 +1357,7 @@ def profile_upload(request):
         submitted_requests = {}
         try:
             campaigns = {}
-            with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+            with open(r'C:\Users\av3066462\Desktop\roster_campaign.csv', 'rt') as f:
                 reader = csv.reader(f)
                 for row in reader:
                     if len(row) > 1:
@@ -1367,7 +1367,7 @@ def profile_upload(request):
 
         print(campaigns)
         with open(
-                'C:/Users/vg3054204/PycharmProjects/Django_project/mvp_site/mvp_app/static/mvp_app/submission_results.csv',
+                r'C:\Users\av3066462\PycharmProjects\Django_project\mvp_site\mvp_app\static\mvp_app\submission_results.csv',
                 'w', newline="") as csvfile:
             new_header = ['Req_ID', 'User_ID', 'Start_Date',
                           'Start_Time',
@@ -1527,12 +1527,12 @@ def profile_upload(request):
 
         if "Ind" in LOCATION:
             msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                               [EMAIL, "workforce.indore@taskus.com", 'venkat.gali@taskus.com'])
+                               [EMAIL, "workforce.indore@taskus.com", 'chander.kaloiya@taskus.com'])
             msg.content_subtype = "html"  # Main content is now text/html
             msg.send()
         else:
             msg = EmailMessage('WFM - Plotting website submissions: ', html_email, 'svc.aacr@taskus.com',
-                               [EMAIL, 'venkat.gali@taskus.com'])
+                               [EMAIL, 'chander.kaloiya@taskus.com'])
             msg.content_subtype = "html"  # Main content is now text/html
             msg.send()
 

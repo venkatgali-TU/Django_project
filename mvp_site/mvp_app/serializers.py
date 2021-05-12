@@ -25,7 +25,7 @@ class MvpSerializer(serializers.HyperlinkedModelSerializer):
 
         try:
             campaigns = {}
-            with open(r'C:\Users\vg3054204\Desktop\roster_campaign.csv', 'rt') as f:
+            with open(r'C:\Users\av3066462\Desktop\roster_campaign.csv', 'rt') as f:
                 reader = csv.reader(f)
                 for row in reader:
                     if len(row) > 1:
